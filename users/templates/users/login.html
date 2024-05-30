@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+
+	<title>LOGIN</title>
+
+{% endblock %}
+
+{% block content %}
+
+	<h1>This will be LOGIN PAGE !</h1>
+
+	<h1>User Login</h1>
+	<form action="{% url 'users:login' %}" method="post">
+		{% csrf_token %}
+		{{ form }}
+		{% if request.GET.next %}
+			<input type="hidden" name="next" value="{{ request.GET.next }}">
+		{% endif %}
+		<button type="submit">Login</button>
+	</form>
+
+{% endblock %}
