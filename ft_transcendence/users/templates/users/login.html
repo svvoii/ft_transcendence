@@ -8,8 +8,6 @@
 
 {% block content %}
 
-	<h1>This will be LOGIN PAGE !</h1>
-
 	<h1>User Login</h1>
 	<form action="{% url 'users:login' %}" method="post">
 		{% csrf_token %}

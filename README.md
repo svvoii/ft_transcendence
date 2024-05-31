@@ -346,6 +346,17 @@ In the `users/templates/users/login.html` file:
 {% endblock %}
 ```
 
+At this point the new users can register and login to the website.  
+
+#### 2. Creating a superuser for Django admin panel
+
+1) Creating a superuser for the Django admin panel. 
+
+`python manage.py createsuperuser` - to create a superuser.  
+
+This will prompt for username, email and password.  
+After the superuser is created, the admin panel can be accessed by adding `/admin` to the URL.  
+
 ...
 
 

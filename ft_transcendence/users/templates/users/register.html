@@ -8,9 +8,6 @@
 
 {% block content %}
 
-	<h1>This page will be for !</h1>
-	<h1>REGISTRATION !</h1>
-
 	<h1>Register New User</h1>
 	<form action="{% url 'users:register' %}" method="post">
 		{% csrf_token %}
