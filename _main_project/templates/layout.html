@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+
+<body>
+	{% include 'header.html' %}
+
+	<div>
+		{% block content %}
+
+			{% if request.user.is_authenticated %}
+				<p>{{ request.user.username }} is authenticated.</p>
+				<p>profile image: {{ request.user.profile_image.url }}</p>
+			{% else %}
+				<p>not logged in</p>
+
+			{% endif %}
+
+		{% endblock content %}
+	</div>
+
+	{% include 'footer.html' %}
+</body>
+
+</html>

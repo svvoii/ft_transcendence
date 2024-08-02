@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<div>
+	<img src="{{ form.initial.profile_image.url }}" alt="profile_image" width="128" height="128">
+</div>
+<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+
+	<input type="file" name="profile_image">
+
+	<h6>Username</h6>
+	<input type="text" name="username" placeholder="Username" required value="{{ form.initial.username }}">
+
+	<h6>Email</h6>
+	<input type="email" name="email" placeholder="Email address" required autofocus value={{ form.initial.email }}> 
+	<label>
+		<input type="checkbox" name="hide_email"
+			{% if form.initial.hide_email %}
+				checked
+			{% endif %}
+		>
+		Hide Email
+	</label>
+
+	{% for field in form %}
+		<p>
+			{% for error in field.errors %}
+				<p style="color: red">{{ error }}</p>
+			{% endfor %}
+		</p>
+	{% endfor %}
+
+	{% if form.non_field_errors %}
+		<div style="color: red">
+			<p>{{ form.non_field_errors }}</p>
+		</div>
+
+	{% endif %}
+
+	<button type="submit">Save</button>
+	
+</form>
+
+{% endblock content %}

@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block content %}
+
+	<h1>Registration</h1>
+
+	<form method="POST">
+		{% csrf_token %}
+
+		<img src="{% static 'images/smile_32-32.png' %}" alt="LOGO" width="40" height="40"></br>
+
+		<input type="email" name="email" placeholder="Email address" required autofocus></br>
+		<input type="text" name="username" placeholder="Username" required></br>
+		<input type="password" name="password1" placeholder="Password" required></br>
+		<input type="password" name="password2" placeholder="Confirm password" required></br>
+
+		{% for field in registration_form %}
+			{% for error in field.errors %}
+				<div style="color: red;"> 
+					<p> {{ error }} </p> 
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		{% if registration_form.non_field_errors %}
+			<div style="color: red;"> 
+				<p> {{ registration_form.non_field_errors }} </p>
+			</div>
+		{% endif %}
+
+		<button type="submit">Register</button>
+	</form>
+
+{% endblock content %}

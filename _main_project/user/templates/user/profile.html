@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% comment %}
+<h1>Logged in as: {{ request.user.username }}</h1>
+<a href="{% url 'account_logout' %}">Logout</a>
+{% endcomment %}
+
+{% block content %}
+
+{% if messages %}
+	{% for message in messages %}
+		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+			{{ message }}
+		</li>
+	{% endfor %}
+{% endif %}
+
+<img src="{{ request.user.profile_image.url }}" alt="Profile Image" width="64" height="64">
+<p>Email</p>
+{%  if is_self %}
+	<h5>{{ email }}</h5>
+{% else %}
+	{% if hide_email %}
+		<h5>**********</h5>
+	{% else %}
+		<h5>{{ email }}</h5>
+	{% endif %}
+{% endif %}
+<p>Username</p>
+<h5>{{ username }}</h5>
+
+<!-- If Auth user is viewing their own profile -->
+{% if is_self %}
+	<a href="{% url 'user:edit' user_id=id %}">Edit Profile</a></br>
+	<a href="{% url 'password_change' %}">Change password</a></br>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+	<!-- THEM sent to YOU -->
+	{% if request_sent == 2 %}
+		<a href="#">Accept Friend Request (debug placeholder)</a>
+{% comment %} 
+		<form method="POST" action="{% url 'friends:accept_friend_request' %}">
+			{% csrf_token %}
+			<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
+			<input type="submit" value="Accept Friend Request">
+		</form>
+		<form method="POST" action="{% url 'friends:decline_friend_request' %}">
+			{% csrf_token %}
+			<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
+			<input type="submit" value="Decline Friend Request">
+		</form>
+{% endcomment %}
+		<a href="#">Decline Friend Request (debug placeholder)</a>
+	{% endif %}
+
+	<!-- Cancel Friend Request / Send Friend Request / Remove Friend -->
+	{% if is_friend == False and is_self == False %}
+		<!-- You sent them a request -->
+		{% if request_sent == 1 %}
+			<a href="#">Cancel Friend Request (debug placeholder)</a>
+{% comment %} 
+			<form method="POST" action="{% url 'friends:cancel_friend_request' %}">
+				{% csrf_token %}
+				<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
+				<input type="submit" value="Cancel Friend Request">
+			</form>
+{% endcomment %}
+		{% endif %}
+
+		<!-- No requests have been sent -->
+		{% if request_sent == 0 %}
+			<a href="#">Send Friend Request (debug placeholder)</a>
+{% comment %} 
+			<form method="POST" action="{% url 'friends:send_friend_request' %}">
+				{% csrf_token %}
+				<input type="hidden" name="receiver_id" value="{{ id }}">
+				<input type="submit" value="Send Friend Request">
+			</form>
+{% endcomment %}
+		{% endif %}
+	{% endif %}
+		
+	{% if is_friend %}
+		<a href="#">Unfriend (debug placeholder)</a>
+{% comment %} 
+		<form method="POST" action="{% url 'friends:remove_friend' %}">
+			{% csrf_token %}
+			<input type="hidden" name="friend_id" value="{{ id }}">
+			<input type="submit" value="Unfriend">
+		</form>
+{% endcomment %}
+	{% endif %}
+	
+	{% if friend_request %}
+	<!-- Friend requests -->
+		<a href"#"> Check friend requests sent to you (debug placeholder)</a></br>
+{% comment %} 
+		<a href="{% url 'friends:friend_requests' user_id=id %}">
+			<span> Friend Requests ({{ friend_request|length }}) </span></br>
+		</a>
+{% endcomment %}
+	{% endif %}
+
+	<!-- Friend list link --><br>
+	<a href="#">See Friends (debug placeholder)</a></br>
+{% comment %} 
+	<a href="#">
+		<span> Friends ({{ friends|length }}) </span></br>
+	</a>
+{% endcomment %}
+
+	{% if is_friend %}
+		<a href="#"> Message (debug placeholder)</a></br>
+	{% endif %}
+
+{% endif %}
+	
+{% endblock content %}

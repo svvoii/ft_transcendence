@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% load allauth account socialaccount %}
+
+{% block content %}
+
+{% comment %}
+{% endcomment %}
+
+	<h1>Login</h1>
+
+	<form method="POST">
+		{% csrf_token %}
+
+		<img src="{% static 'images/smile_32-32.png' %}" alt="LOGO" width="40" height="40"></br>
+
+		<input type="email" name="email" placeholder="Email address" required autofocus></br>
+		<input type="password" name="password" placeholder="Password" required></br>
+
+		{% for field in login_form %}
+			{% for error in field.errors %}
+				<div style="color: red;"> 
+					<p> {{ error }} </p> 
+				</div>
+			{% endfor %}
+		{% endfor %}
+
+		{% if login_form.non_field_errors %}
+			<div style="color: red;"> 
+				<p> {{ login_form.non_field_errors }} </p>
+			</div>
+		{% endif %}
+
+		<button type="submit">Login</button>
+	</form>
+
+	<div>
+		<a href="{% url 'password_reset' %}">Reset password?</a>
+	</div>
+
+{% comment %}
+	SOCIALACCOUNT_ENABLED: {{ SOCIALACCOUNT_ENABLED }} 
+	{% if SOCIALACCOUNT_ENABLED %}
+		{% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+	{% endif %}
+{% endcomment %}
+	{% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+
+
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if accounts %}
+
+	{% for user in accounts %}
+		<a href="{% url 'user:profile' user_id=user.0.id %}">
+			<img src="{{ user.0.profile_image.url }}" alt="profile_image">
+		</a>
+
+		<a href="{% url 'user:profile' user_id=user.0.id %}">
+			<h4>{{ user.0.username }}</h4>
+			{% if user.1 %}
+				<a href="#">Send a Message</a>
+			{% endif %}
+		</a>
+
+		{% if user.1 %} <!-- If friends -->
+			<p> Friends </p>
+		{% else %}
+			{% if user.0 !=  request.user %} <!-- If not friends -->
+				<p> Not Friends </p>
+			{% endif %}
+		{% endif %}
+
+		{% if user.0 == request.user %} <!-- If you -->
+			<p> This is you </p>
+		{% endif %}
+
+	{% if forloop.counter|divisibleby:2 %} <!-- If even.. `forloop.counter` - to access the index -->
+		<!-- <br> -->
+	{% endif %}
+	
+	{% endfor %}
+	
+	{% else %} <!-- If no friends -->
+		<p> No results </p>
+{% endif %}
+
+{% endblock content %}

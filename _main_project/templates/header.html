@@ -1,0 +1,45 @@
+{% load static %}
+
+<style type="text/css">
+
+	nav {
+		display: flex;
+		justify-content: space-between;
+		background-color: lightgray;
+		padding: 10px;
+		border-bottom: 1px solid black;
+	}
+
+	nav a {
+		margin-right: 20px;
+		color: darkblue;
+		text-decoration: none;
+	}
+
+</style>
+
+<nav>
+
+	<a href="/" title="HOME"> <span class="material-symbols-outlined">home</span></a>
+
+	<form action="{% url 'search' %}" method="get">
+		<input type="text" name="q" id="id_q_large" placeholder="Search...">
+		<input type="submit" value="Search">
+	</form>
+{% comment %}
+	<a href="/profile" title="PROFILE"> <img src="{% static 'images/smile_32-32.png' %}"></a>
+{% endcomment %}
+
+	{% if request.user.is_authenticated %}
+		<a href="{% url 'user:profile' user_id=request.user.id %}" title="PROFILE"> 
+			<img src="{{ request.user.profile_image.url }}" alt="LOGO" width="40" height="40">
+			{{ request.user.username }}
+		</a>
+
+		<a href="{% url 'logout' %}" title="LOGOUT"> <span class="material-symbols-outlined">logout</span>Logout</a>
+	{% else %}
+		<a href="{% url 'login' %}" title="LOGIN"> <span class="material-symbols-outlined">login</span>Login</a>
+		<a href="{% url 'register' %}" title="REGISTER"> <span class="material-symbols-outlined">person_add</span>Register</a>
+	{% endif %}
+
+</nav>
