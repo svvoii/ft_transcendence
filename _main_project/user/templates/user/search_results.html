@@ -3,40 +3,64 @@
 
 {% block content %}
 
+<style>
+	.card {
+		border: 1px solid #ccc;
+		border-radius: 8px;
+		padding: 16px;
+		margin: 16px 0;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	.card img {
+		max-width: 100px;
+		border-radius: 50%;
+	}
+	.card h4 {
+		margin: 8px 0;
+	}
+	.card p {
+		margin: 4px 0;
+	}
+	.card a {
+		text-decoration: none;
+		color: #007bff;
+	}
+	.card a:hover {
+		text-decoration: underline;
+	}
+</style>
+
 {% if accounts %}
 
-	{% for user in accounts %}
-		<a href="{% url 'user:profile' user_id=user.0.id %}">
-			<img src="{{ user.0.profile_image.url }}" alt="profile_image">
-		</a>
+	{% for account in accounts %}
+		<div class="card">
+			<a href="{% url 'user:profile' user_id=account.0.id %}">
+				<img src="{{ account.0.profile_image.url }}" alt="profile_image">
+			</a>
 
-		<a href="{% url 'user:profile' user_id=user.0.id %}">
-			<h4>{{ user.0.username }}</h4>
-			{% if user.1 %}
-				<a href="#">Send a Message</a>
+			<a href="{% url 'user:profile' user_id=account.0.id %}">
+				<h4>{{ account.0.username }}</h4>
+				{% if account.1 %}
+					<a href="#">Send a Message (debug.. future functionality)</a>
+				{% endif %}
+			</a>
+
+			{% if account.1 %} <!-- If friends -->
+				<p> Friends </p>
+			{% else %}
+				{% if account.0 != request.user %} <!-- If not friends -->
+					<p> Not Friends </p>
+				{% endif %}
 			{% endif %}
-		</a>
 
-		{% if user.1 %} <!-- If friends -->
-			<p> Friends </p>
-		{% else %}
-			{% if user.0 !=  request.user %} <!-- If not friends -->
-				<p> Not Friends </p>
+			{% if account.0 == request.user %} <!-- If you -->
+				<p> This is you </p>
 			{% endif %}
-		{% endif %}
-
-		{% if user.0 == request.user %} <!-- If you -->
-			<p> This is you </p>
-		{% endif %}
-
-	{% if forloop.counter|divisibleby:2 %} <!-- If even.. `forloop.counter` - to access the index -->
-		<!-- <br> -->
-	{% endif %}
-	
+		</div>
 	{% endfor %}
 	
-	{% else %} <!-- If no friends -->
-		<p> No results </p>
+{% else %} <!-- If no friends -->
+	<p> No results </p>
 {% endif %}
 
 {% endblock content %}

@@ -5,6 +5,9 @@ from django.conf import settings
 
 from user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
 from user.models import Account
+from friends.models import FriendList, FriendRequest
+from friends.utils import get_friend_request_or_false
+from friends.friend_request_status import FriendRequestStatus
 
 
 
@@ -81,16 +84,8 @@ def det_redirect_if_exists(request):
 	return redirect
 
 
-# def custom_login(request, account_id):
-# 	return render(request, 'account/login.html', {'account_id': account_id})
-
-
-# def profile(request):
-# 	return render(request, 'user/profile.html')
-
-
 def profile_view(request, *args, **kwargs):
-	content = {}
+	context = {}
 	user_id = kwargs.get('user_id')
 
 	try:
@@ -99,25 +94,69 @@ def profile_view(request, *args, **kwargs):
 		return HttpResponse("User not found.")
 
 	if account:
-		content['id'] = account.id
-		content['email'] = account.email
-		content['username'] = account.username
-		content['profile_image'] = account.profile_image
-		content['hide_email'] = account.hide_email
+		context['id'] = account.id
+		context['email'] = account.email
+		context['username'] = account.username
+		context['profile_image'] = account.profile_image
+		context['hide_email'] = account.hide_email
+
+		# determine the relationship status between the logged-in user and the user whose profile is being viewed
+		try:
+			friend_list = FriendList.objects.get(user=account)
+		except FriendList.DoesNotExist:
+			friend_list = FriendList(user=account)
+			friend_list.save()
+		friends = friend_list.friends.all()
+		context['friends'] = friends
 
 		is_self = True
 		is_friend = False
 		user = request.user
+		request_sent = FriendRequestStatus.NO_REQUEST_SENT.value
+		friend_request = None
+		
+		# This check says : `If you are not looking at your own profile, then..`
 		if user.is_authenticated and user != account:
 			is_self = False
+			if friends.filter(pk=user.id):
+				is_friend = True
+			else:
+				is_friend = False
+				# case 1: the user is not a friend and request status = `THEY_SENT_YOU`
+				pending_friend_request = get_friend_request_or_false(sender=account, receiver=user) 
+				if pending_friend_request:
+					request_sent = FriendRequestStatus.THEY_SENT_TO_YOU.value
+					context['pending_friend_request_id'] = pending_friend_request.id
+
+				# case 2: the user is not a friend and request status = `YOU_SENT_TO_THEM`	
+				elif get_friend_request_or_false(sender=user, receiver=account) is not False:
+					pending_friend_request = get_friend_request_or_false(sender=user, receiver=account)
+					if pending_friend_request:
+						request_sent = FriendRequestStatus.SENT_BY_YOU.value
+						context['pending_friend_request_id'] = pending_friend_request.id
+
+				# case 3: the user is not a friend and request status = `NO_REQUEST_SENT`
+				else:
+					request_sent = FriendRequestStatus.NO_REQUEST_SENT.value
+
+		# This check means : `If you are not logged in, then..`
 		elif not user.is_authenticated:
 			is_self = False
+		
+		# This check means : `If you are looking at your own profile, then..`
+		else:
+			try:
+				friend_request = FriendRequest.objects.filter(receiver=user, is_active=True)
+			except:
+				friend_request = None
 
-		content['is_self'] = is_self
-		content['is_friend'] = is_friend
-		content['BASE_URL'] = settings.BASE_URL
+		context['is_self'] = is_self
+		context['is_friend'] = is_friend
+		context['BASE_URL'] = settings.BASE_URL
+		context['request_sent'] = request_sent
+		context['friend_request'] = friend_request
 
-	return render(request, 'user/profile.html', content)
+	return render(request, 'user/profile.html', context)
 
 
 def edit_profile_view(request, *args, **kwargs):
@@ -168,20 +207,25 @@ def edit_profile_view(request, *args, **kwargs):
 
 	return render(request, 'user/edit_profile.html', context)
 
-
 def account_search_view(request, *args, **kwargs):
 	context = {}
 
 	if request.method == 'GET':
-		search_query = request.GET.get('q', '') # ..getting the search query from the URL (will default to an empty string if none)
+		search_query = request.GET.get('q')
 		if len(search_query) > 0:
 			# the following query will return all the accounts whose email or username contains the search query
 			search_results = Account.objects.filter(email__icontains=search_query).filter(username__icontains=search_query).distinct()
 			user = request.user
 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
-			for account in search_results:
-				accounts.append((account, False)) # False for indicating that the user is not a friend
-			context['accounts'] = accounts
+
+			if user.is_authenticated:
+				user_friend_list = FriendList.objects.get(user=user)
+				for account in search_results:
+					accounts.append((account, user_friend_list.is_mutual_friend(account)))
+				context['accounts'] = accounts
+			else:
+				for account in search_results:
+					accounts.append((account, False)) # False for indicating that the user is not a friend
+				context['accounts'] = accounts
 
 	return render(request, 'user/search_results.html', context)
-

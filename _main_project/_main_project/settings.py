@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 
+	'friends',
 	'homepage',
 	'oauth2_provider_42',
 	'user',

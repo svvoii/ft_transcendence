@@ -1,0 +1,84 @@
+<style>
+	/* Style for the friend list, example */
+	.friend-card {
+		border: 1px solid #ccc;
+		border-radius: 8px;
+		padding: 16px;
+		margin: 16px 0;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		display: flex;
+		align-items: center;
+	}
+
+	.friend-card img {
+		border-radius: 50%;
+		margin-right: 16px;
+		width: 50px;
+		height: 50px;
+	}
+
+	.friend-card h4 {
+		margin: 0;
+		font-size: 1.2em;
+	}
+
+	.friend-card p {
+		margin: 8px 0 0;
+		font-size: 0.9em;
+		color: #666;
+	}
+
+	.friend-card a {
+		text-decoration: none;
+		color: #007bff;
+	}
+
+	.friend-card a:hover {
+		text-decoration: underline;
+	}
+</style>
+
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if friends %}
+	{% for friend in friends %}
+		<div class="friend-card">
+			<a href="{% url 'user:profile' user_id=friend.0.pk %}">
+				<img src="{{ friend.0.profile_image.url }}" alt="profile_image">
+			</a>
+			
+			<div>
+				<a href="{% url 'user:profile' user_id=friend.0.pk %}">
+					<h4>{{ friend.0.username|truncatechars:50 }}</h4>
+				</a>
+
+				{% if friend.1 %}
+					<a href="#">Send a Message (debug.. future functionality..)</a>
+				{% endif %}
+					
+				{% if friend.1 %}
+					<p> FRIENDS </p>
+					<span> check_their_friends (Debug.. placeholder) </span></br>
+				{% else %}
+					{% if friend.0 !=  request.user %}
+						<p> Not Friends </p>
+						<span>cancel (debug.. placeholder)</span></br>
+					{% endif %}
+				{% endif %}
+
+				{% if friend.0 == request.user %}
+					<p> This is you </p>
+					<span> person_pin (debug.. placeholder) </span></br>
+				{% endif %}
+			</div>
+		</div>
+	{% endfor %}
+	
+{% else %} <!-- If no friends -->
+	<p>No friends.</p>
+{% endif %}
+	
+{% endblock content %}
