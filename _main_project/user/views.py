@@ -219,9 +219,13 @@ def account_search_view(request, *args, **kwargs):
 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
 
 			if user.is_authenticated:
-				user_friend_list = FriendList.objects.get(user=user)
-				for account in search_results:
-					accounts.append((account, user_friend_list.is_mutual_friend(account)))
+				try:
+					user_friend_list = FriendList.objects.get(user=user)
+					for account in search_results:
+						accounts.append((account, user_friend_list.is_mutual_friend(account)))
+				except FriendList.DoesNotExist:
+					for account in search_results:
+						accounts.append((account, False))
 				context['accounts'] = accounts
 			else:
 				for account in search_results:
