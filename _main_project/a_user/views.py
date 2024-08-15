@@ -3,11 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.conf import settings
 
-from user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
-from user.models import Account
-from friends.models import FriendList, FriendRequest
-from friends.utils import get_friend_request_or_false
-from friends.friend_request_status import FriendRequestStatus
+from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
+from a_user.models import Account
+from a_friends.models import FriendList, FriendRequest
+from a_friends.utils import get_friend_request_or_false
+from a_friends.friend_request_status import FriendRequestStatus
 
 
 
@@ -35,7 +35,7 @@ def register_view(request, *args, **kwargs):
 		else:
 			context['registration_form'] = form # this will pass any error message related to the form fields
 
-	return render(request, 'user/register.html', context)
+	return render(request, 'a_user/register.html', context)
 
 
 def det_redirect_if_exists(request):
@@ -74,7 +74,7 @@ def login_view(request, *args, **kwargs):
 		else:
 			context['login_form'] = form
 
-	return render(request, 'user/login.html', context)
+	return render(request, 'a_user/login.html', context)
 
 def det_redirect_if_exists(request):
 	redirect = None
@@ -156,7 +156,7 @@ def profile_view(request, *args, **kwargs):
 		context['request_sent'] = request_sent
 		context['friend_request'] = friend_request
 
-	return render(request, 'user/profile.html', context)
+	return render(request, 'a_user/profile.html', context)
 
 
 def edit_profile_view(request, *args, **kwargs):
@@ -178,7 +178,7 @@ def edit_profile_view(request, *args, **kwargs):
 		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
 		if form.is_valid():
 			form.save()
-			return redirect('account:profile', user_id=account.pk)
+			return redirect('a_user:profile', user_id=account.pk)
 		else:
 			form = AccountUpdateForm(
 				request.POST,
@@ -205,7 +205,7 @@ def edit_profile_view(request, *args, **kwargs):
 	context['form'] = form
 	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
 
-	return render(request, 'user/edit_profile.html', context)
+	return render(request, 'a_user/edit_profile.html', context)
 
 def account_search_view(request, *args, **kwargs):
 	context = {}
@@ -232,4 +232,4 @@ def account_search_view(request, *args, **kwargs):
 					accounts.append((account, False)) # False for indicating that the user is not a friend
 				context['accounts'] = accounts
 
-	return render(request, 'user/search_results.html', context)
+	return render(request, 'a_user/search_results.html', context)

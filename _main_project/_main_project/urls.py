@@ -20,19 +20,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-from homepage.views import home_view
-from user.views import register_view, login_view, logout_view, account_search_view
+from a_homepage.views import home_view
+from a_user.views import register_view, login_view, logout_view, account_search_view
 
 
 urlpatterns = [
 	path('', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
-	path('friends/', include('friends.urls', namespace='friends')),
+	path('friends/', include('a_friends.urls', namespace='friends')),
 	path('register/', register_view, name='register'),
 	path('login/', login_view, name='login'),
 	path('logout/', logout_view, name='logout'),
-	path('user/', include('user.urls', namespace='user')),
+	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
 
 	# Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)

@@ -1,5 +1,5 @@
 from django import forms
-from friends.models import FriendRequest
+from a_friends.models import FriendRequest
 from django.contrib.auth import get_user_model
 
 

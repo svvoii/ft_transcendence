@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
 
-from user.models import Account
+from a_user.models import Account
 
 class RegistrationForm(UserCreationForm):
 

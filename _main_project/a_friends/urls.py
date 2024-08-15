@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = 'friends'
+app_name = 'a_friends'
 
 urlpatterns = [
 	path('send-friend-request/', views.send_friend_request_view, name='send_friend_request'),

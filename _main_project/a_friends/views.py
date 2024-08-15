@@ -3,9 +3,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 
-from friends.forms import SendFriendRequestForm, HandleFriendRequestForm, RemoveFriendForm
-from friends.models import FriendRequest, FriendList
-from user.models import Account
+from a_friends.forms import SendFriendRequestForm, HandleFriendRequestForm, RemoveFriendForm
+from a_friends.models import FriendRequest, FriendList
+from a_user.models import Account
 
 
 def send_friend_request_view(request):
@@ -15,12 +15,12 @@ def send_friend_request_view(request):
 			receiver = form.cleaned_data.get('receiver_id')
 			FriendRequest.objects.create(sender=request.user, receiver=receiver)
 			messages.success(request, f'Friend request sent to {receiver.username}')
-			return redirect('user:profile', user_id=receiver.id)
+			return redirect('a_user:profile', user_id=receiver.id)
 		else:
 			return HttpResponse('Invalid form data')
 	else:
 		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('user:profile', user_id=request.user.id)
+		return redirect('a_user:profile', user_id=request.user.id)
 
 
 def friend_requests_view(request, *args, **kwargs):
@@ -36,7 +36,7 @@ def friend_requests_view(request, *args, **kwargs):
 			return HttpResponse("You can't view another user's friend requests.")
 	else:
 		redirect('login')		
-	return render(request, 'friends/friend_requests.html', context)
+	return render(request, 'a_friends/friend_requests.html', context)
 
 
 def cancel_friend_request_view(request):
@@ -49,13 +49,13 @@ def cancel_friend_request_view(request):
 			friend_request_id = form.cleaned_data.get('friend_request_id')
 			friend_request_id.cancel()
 			messages.success(request, f'Friend request cancelled')
-			return redirect('user:profile', user_id=friend_request_id.receiver.id)
+			return redirect('a_user:profile', user_id=friend_request_id.receiver.id)
 		else:
 			# print(form.errors)
 			return HttpResponse('Invalid form data.. (Debug: cancel_friend_request_view)')
 	else:
 		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('user:profile', user_id=request.user.id)
+		return redirect('a_user:profile', user_id=request.user.id)
 
 
 def accept_friend_request_view(request):
@@ -65,12 +65,12 @@ def accept_friend_request_view(request):
 			friend_request_id = form.cleaned_data.get('friend_request_id')
 			friend_request_id.accept()
 			messages.success(request, f'You are now friends with {friend_request_id.sender.username}')
-			return redirect('user:profile', user_id=request.user.id)
+			return redirect('a_user:profile', user_id=request.user.id)
 		else:
 			return HttpResponse('Invalid form data.. (Debug: accept_friend_request_view)')
 	else:
 		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('user:profile', user_id=request.user.id)
+		return redirect('a_user:profile', user_id=request.user.id)
 
 
 def decline_friend_request_view(request):
@@ -86,12 +86,12 @@ def decline_friend_request_view(request):
 			friend_request_id.decline()
 			messages.success(request, f'Friend request declined')
 			# return redirect('account:profile', user_id=friend_request_id.sender.id) # Redirect to the profile of the user who sent the request
-			return redirect('user:profile', user_id=request.user.id) # Redirect to the user's profile
+			return redirect('a_user:profile', user_id=request.user.id) # Redirect to the user's profile
 		else:
 			return HttpResponse('Invalid form data.. (Debug: decline_friend_request_view)')
 	else:
 		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('user:profile', user_id=request.user.id)
+		return redirect('a_user:profile', user_id=request.user.id)
 
 
 def remove_friend_view(request):
@@ -112,11 +112,11 @@ def remove_friend_view(request):
 				friend_list = FriendList.objects.get(user=user)
 			except ObjectDoesNotExist:
 				messages.error(request, 'Invalid user id or FriendList not found')
-				return redirect('user:profile', user_id=user.id)
+				return redirect('a_user:profile', user_id=user.id)
 
 			friend_list.unfriend(to_be_removed_user)
 			messages.success(request, f'Friend removed')
-			return redirect('user:profile', user_id=to_be_removed_user.id)
+			return redirect('a_user:profile', user_id=to_be_removed_user.id)
 		else:
 			# DEBUG #
 			print(form.errors)
@@ -124,7 +124,7 @@ def remove_friend_view(request):
 	
 	else: # Never happens..
 		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('user:profile', user_id=user.id)
+		return redirect('a_user:profile', user_id=user.id)
 
 
 def friend_list_view(request, *args, **kwargs):
@@ -161,4 +161,4 @@ def friend_list_view(request, *args, **kwargs):
 			friends.append((friend, user_friend_list.is_mutual_friend(friend)))
 		context['friends'] = friends
 
-	return render(request, 'friends/friend_list.html', context)
+	return render(request, 'a_friends/friend_list.html', context)

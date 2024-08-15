@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class HomepageConfig(AppConfig):
+class AOauth2Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'homepage'
+    name = 'a_oauth2'

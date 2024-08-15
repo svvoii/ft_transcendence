@@ -1,4 +1,4 @@
-from friends.models import FriendRequest
+from a_friends.models import FriendRequest
 
 def get_friend_request_or_false(sender, receiver):
 	try:

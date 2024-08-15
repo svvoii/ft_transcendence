@@ -55,10 +55,10 @@ INSTALLED_APPS = [
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 
-	'friends',
-	'homepage',
-	'oauth2_provider_42',
-	'user',
+	'a_friends',
+	'a_homepage',
+	'a_oauth2',
+	'a_user',
 ]
 
 MIDDLEWARE = [
@@ -137,7 +137,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-AUTH_USER_MODEL = 'user.Account'
+AUTH_USER_MODEL = 'a_user.Account'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -166,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.AllowAllUsersModelBackend',
-	'user.backends.CaseInsensitiveModelBackend',
+	'a_user.backends.CaseInsensitiveModelBackend',
 	'django.contrib.auth.backends.ModelBackend',
 	'allauth.account.auth_backends.AuthenticationBackend',
 ]
