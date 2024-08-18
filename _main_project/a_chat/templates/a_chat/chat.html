@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<style>
+	.chat-container {
+		border: 1px solid #ccc;
+        padding: 10px;
+        height: 500px;
+        overflow-y: scroll;
+        background-color: lightblue;
+	}
+
+	.chat-container div {
+		margin-bottom: 6px;
+        border-radius: 5px;
+        background-color: lightyellow;
+	}
+</style>
+
+<wrapper>
+    <div id="chat_window">
+        <div>
+            <span id="online-count"></span>online
+        </div>
+        <div id='chat_container' class="chat-container">
+			{% for message in chat_messages reversed %}
+				{% include 'a_chat/partials/chat_message_p.html' with message=message %}
+{% comment %}
+{% endcomment %}
+			{% endfor %}
+        </div>
+        <div class="">
+            <div class="">
+                <form id="chat_message_form" class=""
+					hx-post="{% url 'a_chat:chat' %}"
+					hx-target="#chat_container"
+					hx-swap="beforeend"
+					_="on htmx:afterRequest reset() me"
+				>
+					{% csrf_token %}
+					{{ form }}
+                </form>
+            </div>
+        </div>
+    </div>
+</wrapper>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+	function scroll_to_bottom() {
+		const container = document.getElementById('chat_container');
+		container.scrollTop = container.scrollHeight;
+	}
+	scroll_to_bottom();
+
+</script>
+
+{% endblock %}

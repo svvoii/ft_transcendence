@@ -1,0 +1,10 @@
+{% if message.author == user %}	
+	<div class="">
+		<span><strong>me: {{ message.msg_content }}</strong></span>
+	</div>
+{% else %}
+	<div class="">
+		<span>{{ message.author.username }}: </span> 
+		<span>{{ message.msg_content }}</span> 
+	</div>
+{% endif %}

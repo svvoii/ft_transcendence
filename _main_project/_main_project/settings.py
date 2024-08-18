@@ -49,12 +49,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	# adding `sites` app to manage multiple sites and authentication
 	'django.contrib.sites',
+	'django_htmx',
 
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 
+	'a_chat',
 	'a_friends',
 	'a_homepage',
 	'a_oauth2',
@@ -62,6 +64,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+	'django_htmx.middleware.HtmxMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

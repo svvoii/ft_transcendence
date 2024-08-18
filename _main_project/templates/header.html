@@ -36,6 +36,10 @@
 			{{ request.user.username }}
 		</a>
 
+		<a href="{% url 'chat:chat' %}" title="CHAT">
+			<span class="material-symbols-outlined">chat</span> Chat
+		</a>
+
 		<a href="{% url 'logout' %}" title="LOGOUT"> <span class="material-symbols-outlined">logout</span>Logout</a>
 	{% else %}
 		<a href="{% url 'login' %}" title="LOGIN"> <span class="material-symbols-outlined">login</span>Login</a>
