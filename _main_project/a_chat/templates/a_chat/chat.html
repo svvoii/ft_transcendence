@@ -11,7 +11,7 @@
 	}
 
 	.chat-container div {
-		margin-bottom: 6px;
+		margin-bottom: 8px;
         border-radius: 5px;
         background-color: lightyellow;
 	}
@@ -32,10 +32,10 @@
         <div class="">
             <div class="">
                 <form id="chat_message_form" class=""
-					hx-post="{% url 'a_chat:chat' %}"
-					hx-target="#chat_container"
-					hx-swap="beforeend"
-					_="on htmx:afterRequest reset() me"
+					hx-ext="ws"
+					ws-connect="/ws/chatroom/public-chat/"
+					ws-send
+					_="on htmx:wsAfterSend reset() me"
 				>
 					{% csrf_token %}
 					{{ form }}

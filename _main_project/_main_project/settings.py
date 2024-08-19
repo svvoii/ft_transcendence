@@ -41,6 +41,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -94,8 +95,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = '_main_project.wsgi.application'
+# WSGI_APPLICATION = '_main_project.wsgi.application'
 
+ASGI_APPLICATION = '_main_project.asgi.application'
+
+# this will ensure the real-time messages update for all the users in the chatroom
+CHANNEL_LAYERS = {
+	'default': {
+		'BACKEND': 'channels.layers.InMemoryChannelLayer'
+	}
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
