@@ -101,9 +101,13 @@ ASGI_APPLICATION = '_main_project.asgi.application'
 
 # this will ensure the real-time messages update for all the users in the chatroom
 CHANNEL_LAYERS = {
-	'default': {
-		'BACKEND': 'channels.layers.InMemoryChannelLayer'
-	}
+	"default": {
+		# 'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6380)],
+        },
+    },
 }
 
 # Database

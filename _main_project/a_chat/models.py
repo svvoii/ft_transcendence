@@ -1,11 +1,11 @@
 from django.db import models
-# from a_user.models import Account
+from a_user.models import Account
 
 
 # The following model / db table will be storing chatrooms.
 class ChatRoom(models.Model):
 	room_name = models.CharField(max_length=128, unique=True)
-	# users = models.ManyToManyField('a_user.Account', related_name='chat_rooms')
+	users_online = models.ManyToManyField(Account, related_name='online_in_rooms', blank=True)
 	# messages = models.ManyToManyField('a_chat.Message', related_name='chat_room')
 
 	def __str__(self):

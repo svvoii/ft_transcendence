@@ -21,6 +21,10 @@ up-db:
 	@echo "${GREEN}Starting container with database only...${NC}"
 	docker-compose up -d db
 
+up-redis:
+	@echo "${GREEN}Starting container with redis only...${NC}"
+	docker-compose up -d redis
+
 down:
 	@echo "${RED}Stopping the project...${NC}"
 	docker stop $$(docker ps -a -q) 2>/dev/null || true

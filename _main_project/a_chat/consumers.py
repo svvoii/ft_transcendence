@@ -20,6 +20,11 @@ class ChatConsumer(WebsocketConsumer):
 			self.channel_name,
 		)
 
+		# Online user tracking
+		if self.user not in self.room.users_online.all():
+			self.room.users_online.add(self.user)
+			self.updata_online_count()
+
 		self.accept()
 
 
@@ -28,6 +33,11 @@ class ChatConsumer(WebsocketConsumer):
 			self.room_name,
 			self.channel_name,
 		)
+
+		# Online user tracking
+		if self.user in self.room.users_online.all():
+			self.room.users_online.remove(self.user)
+			self.updata_online_count()
 
 
 	def receive(self, text_data):
@@ -63,3 +73,27 @@ class ChatConsumer(WebsocketConsumer):
 		self.send(text_data=html)
 
 
+
+	def updata_online_count(self):
+		online_count = self.room.users_online.count() - 1
+
+		event = {
+			'type': 'online_count_handler',
+			'online_count': online_count,
+		}
+
+		async_to_sync(self.channel_layer.group_send)(
+			self.room_name,
+			event
+		)
+
+
+	def online_count_handler(self, event):
+		online_count = event['online_count']
+
+		context = {
+			'online_count': online_count,
+		}
+		# html = render_to_string('a_chat/partials/online_count_p.html', context=context)
+		html = render_to_string('a_chat/partials/online_count.html', context=context)
+		self.send(text_data=html)
