@@ -9,6 +9,7 @@ from .models import ChatRoom, Message
 
 
 class ChatConsumer(WebsocketConsumer):
+
 	def connect(self):
 		self.user = self.scope['user']
 		self.room_name = self.scope['url_route']['kwargs']['room_name']

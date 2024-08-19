@@ -9,8 +9,13 @@ class ChatMessageCreateForm(ModelForm):
 		model = Message
 		fields = ['msg_content']
 		widgets = {
-			'msg_content': forms.TextInput(attrs={'placeholder': 'Type your message here...', 'maxlength': '512', 'autofocus': True}),
+			'msg_content': forms.TextInput(attrs={
+    			'placeholder': 'Type your message here...', 
+       			'maxlength': '512',
+        		'autofocus': True,
+				'style': 'width: 400px;'
+        	}),
 		}
 		labels = {
-			'msg_content': '...',
+			'msg_content': '',
 		}

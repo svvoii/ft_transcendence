@@ -27,6 +27,7 @@ def chat_view(request):
 				'user': request.user,
 			}
 			return render(request, 'a_chat/partials/chat_message_p.html', context)
+			# return render(request, 'a_chat/chat_message.html', context)
 
 	context = {
 		'chat_room': chat_room,
