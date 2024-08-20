@@ -1,12 +1,14 @@
 from django.db import models
 from a_user.models import Account
+import shortuuid
 
 
 # The following model / db table will be storing chatrooms.
 class ChatRoom(models.Model):
-	room_name = models.CharField(max_length=128, unique=True)
+	room_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
 	users_online = models.ManyToManyField(Account, related_name='online_in_rooms', blank=True)
-	# messages = models.ManyToManyField('a_chat.Message', related_name='chat_room')
+	members = models.ManyToManyField(Account, related_name='chat_rooms', blank=True) 
+	is_private = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.room_name

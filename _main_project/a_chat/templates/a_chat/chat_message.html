@@ -1,35 +1,14 @@
 {% if message.author == user %}	
 	<div class="">
-		<span><strong>me: {{ message.msg_content }}</strong></span>
+		<a href="{% url 'a_user:profile' user_id=message.author.id %}"><strong>me</strong></a>
+		<span>: {{ message.msg_content }}</span>
 	</div>
 {% else %}
 	<div class="">
-		<span>{{ message.author.username }}: </span> 
-		<span>{{ message.msg_content }}</span> 
+		<a href="{% url 'a_user:profile' user_id=message.author.id %}">{{ message.author.username }}</a>
+		<span>: {{ message.msg_content }}</span>
 	</div>
 {% endif %}
 
 {% comment %}
-<div class="fade-in-up">
-</div>
-
-<style>
-	@keyframes fadeInAndUp {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-	.fade-in-up {
-		animation: fadeInAndUp 0.6s ease-out;
-	}
-</style>
-
-
-<script> scroll_to_bottom(); </script>
-
 {% endcomment %}

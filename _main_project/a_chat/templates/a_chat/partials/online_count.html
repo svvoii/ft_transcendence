@@ -1,3 +1,9 @@
+{% comment %}
+This partial shall be used to display the small green / grey circle that in the upper left corner of the chat window. 
+The purpose is to indicate if al least one user is online in the PUBLIC-CHAT room.
+Or if OTHER_USER is online in the PRIVATE-CHAT room.
+{% endcomment %}
+
 <span id="online-count" hx-swap-oob="outerHTML" class="fade-in-scale">
 	{{ online_count }}
 
@@ -13,8 +19,8 @@
 </span>
 
 {% if online_count %}
-	<div id="online-icon" class="green"></div>
+	<div id="online-icon" class="to-do-green-if-online"></div>
 {% else %}
-	<div id="online-icon" class="grey"></div>
+	<div id="online-icon" class="to-do-grey-if-non-online"></div>
 {% endif %}
 

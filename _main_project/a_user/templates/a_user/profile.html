@@ -94,8 +94,11 @@
 		<span> Friends ({{ friends|length }}) </span></br>
 	</a>
 
+{% comment %}
+{% endcomment %}
+
 	{% if is_friend %}
-		<a href="#"> Message (debug placeholder)</a></br>
+		<a class="" href="{% url 'a_chat:start-chat' username %}">Send Private Message (debug placeholder)</a></br>
 	{% endif %}
 
 {% endif %}

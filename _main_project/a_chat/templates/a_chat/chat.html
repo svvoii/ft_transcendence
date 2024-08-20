@@ -34,21 +34,30 @@
 <wrapper>
     <div id="chat_window">
         <div>
-			<div id="online-icon" class=""></div>
-            <span id="online-count"></span>online
+			{% if other_user %}
+				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
+				<a href="{% url 'a_user:profile' other_user.id %}">
+					<div>
+						<span class="">Private Chat with {{ other_user.username }}</span>
+					</div>
+				</a>
+			{% else %}
+				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
+				<span id="online-count"></span>online
+			{% endif %}
         </div>
         <div id='chat_container' class="chat-container">
-			<ul id='chat_messages'>
+			<div id='chat_messages'>
 				{% for message in chat_messages reversed %}
 					{% include 'a_chat/chat_message.html' %}
 				{% endfor %}
-			</ul>
+			</div>
         </div>
         <div class="">
             <div class="">
                 <form id="chat_message_form" class="chat-input"
 					hx-ext="ws"
-					ws-connect="/ws/chatroom/public-chat/"
+					ws-connect="/ws/chatroom/{{ chat_room.room_name }}/"
 					ws-send
 					_="on htmx:wsAfterSend reset() me"
 				>
