@@ -33,6 +33,16 @@
 
 <wrapper>
     <div id="chat_window">
+	{% if chat_room.groupchat_name %}
+		<h3>{{ chat_room.groupchat_name }}</h3>
+
+		{% if user == chat_room.admin %}
+			<a href="{% url 'a_chat:edit-chatroom' chat_room.room_name %}">
+				<span class="material-symbols-outlined">edit</span>
+				Edit
+			</a>
+		{% endif %}
+	{% endif %}
         <div>
 			{% if other_user %}
 				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
@@ -41,6 +51,19 @@
 						<span class="">Private Chat with {{ other_user.username }}</span>
 					</div>
 				</a>
+			
+			{% elif chat_room.groupchat_name %}
+				<ul id="groupchat-members">
+					{% for member in chat_room.members.all %}
+						<li>
+							<a href="{% url 'a_user:profile' member.id %}">
+								<img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+								{{ member.username | slice:":10" }}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+
 			{% else %}
 				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
 				<span id="online-count"></span>online
@@ -67,6 +90,13 @@
             </div>
         </div>
     </div>
+
+	<div>
+		{% if chat_room.members.exists %}
+			<a href="{% url 'a_chat:leave-chatroom' chat_room.room_name %}">Leave Chatroom</a>
+		{% endif %}
+	</div>
+
 </wrapper>
 
 {% endblock content %}

@@ -93,6 +93,7 @@ class ChatConsumer(WebsocketConsumer):
 
 		context = {
 			'online_count': online_count,
+			'chat_room': self.room,
 		}
 		# html = render_to_string('a_chat/partials/online_count_p.html', context=context)
 		html = render_to_string('a_chat/partials/online_count.html', context=context)

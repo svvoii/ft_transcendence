@@ -33,20 +33,20 @@
 
 <!-- If Auth user is viewing their own profile -->
 {% if is_self %}
-	<a href="{% url 'user:edit' user_id=id %}">Edit Profile</a></br>
+	<a href="{% url 'a_user:edit' user_id=id %}">Edit Profile</a></br>
 	<a href="{% url 'password_change' %}">Change password</a></br>
 {% endif %}
 
 {% if request.user.is_authenticated %}
 	<!-- THEM sent to YOU -->
 	{% if request_sent == 2 %}
-		<form method="POST" action="{% url 'friends:accept_friend_request' %}">
+		<form method="POST" action="{% url 'a_friends:accept_friend_request' %}">
 			{% csrf_token %}
 			<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
 			<input type="submit" value="Accept Friend Request">
 		</form>
 
-		<form method="POST" action="{% url 'friends:decline_friend_request' %}">
+		<form method="POST" action="{% url 'a_friends:decline_friend_request' %}">
 			{% csrf_token %}
 			<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
 			<input type="submit" value="Decline Friend Request">
@@ -57,7 +57,7 @@
 	{% if is_friend == False and is_self == False %}
 		<!-- You sent them a request -->
 		{% if request_sent == 1 %}
-			<form method="POST" action="{% url 'friends:cancel_friend_request' %}">
+			<form method="POST" action="{% url 'a_friends:cancel_friend_request' %}">
 				{% csrf_token %}
 				<input type="hidden" name="friend_request_id" value="{{ pending_friend_request_id }}">
 				<input type="submit" value="Cancel Friend Request">
@@ -66,7 +66,7 @@
 
 		<!-- No requests have been sent -->
 		{% if request_sent == 0 %}
-			<form method="POST" action="{% url 'friends:send_friend_request' %}">
+			<form method="POST" action="{% url 'a_friends:send_friend_request' %}">
 				{% csrf_token %}
 				<input type="hidden" name="receiver_id" value="{{ id }}">
 				<input type="submit" value="Send Friend Request">
@@ -75,7 +75,7 @@
 	{% endif %}
 		
 	{% if is_friend %}
-		<form method="POST" action="{% url 'friends:remove_friend' %}">
+		<form method="POST" action="{% url 'a_friends:remove_friend' %}">
 			{% csrf_token %}
 			<input type="hidden" name="friend_id" value="{{ id }}">
 			<input type="submit" value="Unfriend">
@@ -84,13 +84,13 @@
 	
 	{% if friend_request %}
 	<!-- Friend requests -->
-		<a href="{% url 'friends:friend_requests' user_id=id %}">
+		<a href="{% url 'a_friends:friend_requests' user_id=id %}">
 			<span> Friend Requests ({{ friend_request|length }}) </span></br>
 		</a>
 	{% endif %}
 
 	<!-- Friend list link --><br>
-	<a href="{% url 'friends:friend_list' user_id=id %}">
+	<a href="{% url 'a_friends:friend_list' user_id=id %}">
 		<span> Friends ({{ friends|length }}) </span></br>
 	</a>
 

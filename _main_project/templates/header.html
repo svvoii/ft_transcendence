@@ -26,16 +26,12 @@
 		<input type="text" name="q" id="id_q_large" placeholder="Search...">
 		<input type="submit" value="Search">
 	</form>
-{% comment %}
-	<a href="/profile" title="PROFILE"> <img src="{% static 'images/smile_32-32.png' %}"></a>
-{% endcomment %}
 
 	{% if request.user.is_authenticated %}
-		<a href="{% url 'user:profile' user_id=request.user.id %}" title="PROFILE"> 
-			<img src="{{ request.user.profile_image.url }}" alt="LOGO" width="40" height="40">
-			{{ request.user.username }}
-		</a>
 
+	{% comment %}
+CHAT DROPDOWN
+	{% endcomment %}
 		<div x-data="{ dropdownChatOpen: false }" class="">
 			<a href="#" @click="dropdownChatOpen = !dropdownChatOpen" @click.away="dropdownChatOpen = false" title="CHAT">
 				Chat <span class="material-symbols-outlined">chat</span>
@@ -45,23 +41,54 @@
 				x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
 				x-transition:enter-end="opacity-100 translate-y-0 scale-100">
 				<ul class="">
-					<li><a href="{% url 'chat:chat' %}">Public Chat</a></li>
+					<li><a href="{% url 'a_chat:chat' %}">Public Chat</a></li>
+
 					{% for chatroom in request.user.chat_rooms.all  %}
+						{% if chatroom.groupchat_name %}
+							<li>
+								<a href="{% url 'a_chat:chat-room' chatroom.room_name %}">
+									{{ chatroom.groupchat_name }}
+								</a>
+							</li>
+						{% endif %}
+
 						{% if chatroom.is_private %}
 							{% for member in chatroom.members.all %}
 								{% if member != user %}
-									<li><a href="{% url 'chat:chat_room' chatroom.room_name %}">{{ member.username }}</a></li>
+									<li><a href="{% url 'a_chat:chat-room' chatroom.room_name %}">{{ member.username | slice:":10" }}</a></li>
 								{% endif %}
 							{% endfor %}
 						{% endif %}
 					{% endfor %}
+
+					<li><a href="{% url 'a_chat:new-groupchat' %}">Create Group Chat</a></li>
+				</ul>
+			</div>
+		</div>
+
+	{% comment %}
+PROFILE DROPDOWN
+	{% endcomment %}
+		<div x-data="{ dropdownOpen: false }" class="">
+			<a href="#" @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" title="PROFILE">
+				<img src="{{ request.user.profile_image.url }}" alt="LOGO" width="40" height="40">
+			</br>({{ request.user.username }})
+			</a>
+			<div x-show="dropdownOpen" x-cloak class=""
+				x-transition:enter="duration-300 ease-out"
+				x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
+				x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+			>
+				<ul class="">
+					<li><a href="{% url 'a_user:profile' user_id=request.user.id %}" title="PROFILE"> 
+						My profile ({{ request.user.username }})
+					</a></li>
+					<li><a href="{% url 'a_user:edit' user_id=request.user.id %}">Edit Profile</a></li>
+					<li><a href="{% url 'password_change' %}">Change password</a></li>
 				</ul>
 			</div>
 		</div>
 {% comment %}
-		<a href="{% url 'chat:chat' %}" title="CHAT">
-			<span class="material-symbols-outlined">chat</span> Chat
-		</a>
 {% endcomment %}
 
 		<a href="{% url 'logout' %}" title="LOGOUT"> <span class="material-symbols-outlined">logout</span>Logout</a>

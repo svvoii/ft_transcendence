@@ -5,10 +5,10 @@
 
 {% if friend_requests_count %}
 	{% for request in friend_requests_count %}
-		<a href="{% url 'user:profile' user_id=request.sender.id %}">
+		<a href="{% url 'a_user:profile' user_id=request.sender.id %}">
 			<img src="{{request.sender.profile_image.url}}" alt="">
 		</a>
-		<a href="{% url 'user:profile' user_id=request.sender.id %}">
+		<a href="{% url 'a_user:profile' user_id=request.sender.id %}">
 			<h4>{{request.sender.username}}</h4>
 		</a>
 	{% endfor %}

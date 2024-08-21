@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1>Delete this chatroom ?</h1>
+
+<h2>"{{ chat_room.groupchat_name }}"</h2>
+
+<form method="POST">
+	{% csrf_token %}
+
+	<button type="submit">Yes, delete</button>
+	</br>
+	<a href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+</form>
+
+{% endblock %}

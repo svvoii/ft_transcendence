@@ -19,8 +19,27 @@ Or if OTHER_USER is online in the PRIVATE-CHAT room.
 </span>
 
 {% if online_count %}
-	<div id="online-icon" class="to-do-green-if-online"></div>
+	<div id="online-icon" class="to-do-green-if-online">(online)</div>
 {% else %}
-	<div id="online-icon" class="to-do-grey-if-non-online"></div>
+	<div id="online-icon" class="to-do-grey-if-non-online">(offline)</div>
 {% endif %}
+
+<ul id="groupchat-members">
+	{% for member in chat_room.members.all %}
+		<li>
+			<a href="{% url 'a_user:profile' member.id %}">
+				<img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+				{{ member.username | slice:":10" }}
+			</a>
+				{% if member in chat_room.users_online.all %}
+					(online)
+					<div class="to-do-GREEN-icon-if-online"></div>
+				{% else %}
+					(offline)
+					<div class="to-do-GREY-icon-if-online"></div>
+				{% endif %}
+		</li>
+	{% endfor %}
+</ul>
+
 

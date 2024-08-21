@@ -6,6 +6,8 @@ import shortuuid
 # The following model / db table will be storing chatrooms.
 class ChatRoom(models.Model):
 	room_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+	groupchat_name = models.CharField(max_length=128, null=True, blank=True)
+	admin = models.ForeignKey(Account, related_name='group_chats', blank=True, null=True, on_delete=models.SET_NULL)
 	users_online = models.ManyToManyField(Account, related_name='online_in_rooms', blank=True)
 	members = models.ManyToManyField(Account, related_name='chat_rooms', blank=True) 
 	is_private = models.BooleanField(default=False)
