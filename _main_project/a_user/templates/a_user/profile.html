@@ -2,12 +2,10 @@
 
 {% load static %}
 
+{% block content %}
 {% comment %}
 <h1>Logged in as: {{ request.user.username }}</h1>
 <a href="{% url 'account_logout' %}">Logout</a>
-{% endcomment %}
-
-{% block content %}
 
 {% if messages %}
 	{% for message in messages %}
@@ -16,6 +14,7 @@
 		</li>
 	{% endfor %}
 {% endif %}
+{% endcomment %}
 
 <img src="{{ request.user.profile_image.url }}" alt="Profile Image" width="64" height="64">
 <p>Email</p>
@@ -95,10 +94,28 @@
 	</a>
 
 {% comment %}
+	{% if is_friend %}
 {% endcomment %}
 
-	{% if is_friend %}
-		<a class="" href="{% url 'a_chat:start-chat' username %}">Send Private Message (debug placeholder)</a></br>
+	{% if not is_self %}
+		<a class="" href="{% url 'a_chat:start-chat' username %}">Send Private Message</a></br>
+	{% endif %}
+
+{% comment %}  
+Block / Unblock logic:
+{% endcomment %}
+	{% if is_self == False %}
+		{% if is_blocked %}
+			<form method="POST" action="{% url 'a_user:unblock-user' user_id=id %}">
+				{% csrf_token %}
+				<input type="submit" value="Unblock User">
+			</form>
+		{% else %}
+			<form method="POST" action="{% url 'a_user:block-user' user_id=id %}">
+				{% csrf_token %}
+				<input type="submit" value="Block User">
+			</form>
+		{% endif %}
 	{% endif %}
 
 {% endif %}

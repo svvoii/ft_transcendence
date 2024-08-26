@@ -19,6 +19,14 @@ The following script tag is for Alpine.js (used in the frontend chat dropdown fu
 <body>
 	{% include 'header.html' %}
 
+	{% if messages %}
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+				{{ message }}
+			</li>
+		{% endfor %}
+	{% endif %}
+
 	<div>
 		{% block content %}
 

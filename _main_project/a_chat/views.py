@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from .models import ChatRoom, Message
 from .forms import ChatMessageCreateForm, NewGroupChatForm, ChatRoomEditForm
-from a_user.models import Account
+from a_user.models import Account, BlockedUser
 
 
 @login_required
@@ -13,19 +13,26 @@ def chat_view(request, room_name='public-chat'):
 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
 	chat_messages = chat_room.chat_messages.all()[:20]
 	form = ChatMessageCreateForm()
+	other_user = None
 
-	otehr_user = None
+	# Check if the user is blocked by any of the members of the chat room.
+	for member in chat_room.members.all():
+		if BlockedUser.objects.filter(user=member, blocked_user=request.user).exists():
+			other_user = member
+			messages.warning(request, 'You are blocked by this user and cannot send messages.')
+			return redirect('a_user:profile', user_id=other_user.id)
+
 	if chat_room.is_private:
 		if request.user not in chat_room.members.all():
 			raise Http404()
 		for member in chat_room.members.all():
 			if member != request.user:
-				otehr_user = member
+				other_user = member
 				break
 	
 	if chat_room.groupchat_name:
 		if request.user not in chat_room.members.all():
-				chat_room.members.add(request.user)
+			chat_room.members.add(request.user)
 
 			# The following logic requires the email verification feature to be implemented...
 			# if request.user.emailaddress_set.filter(verified=True).exists():
@@ -34,8 +41,6 @@ def chat_view(request, room_name='public-chat'):
 			# 	messages.warning(request, 'You need to verify your email address to join this group chat.')
 			# 	return redirect('a_user:profile')
 
-	# if request.method == 'POST': # same as below
-	# if request.headers.get('HX-Request') == 'true': # same as below
 	if request.htmx:
 		form = ChatMessageCreateForm(request.POST)
 		if form.is_valid():
@@ -56,7 +61,7 @@ def chat_view(request, room_name='public-chat'):
 		'chat_room': chat_room,
 		'chat_messages': chat_messages,
 		'form': form,
-		'other_user': otehr_user,
+		'other_user': other_user,
 	}
 
 	return render(request, 'a_chat/chat.html', context)
@@ -68,6 +73,12 @@ def get_or_create_chatroom(request, username):
 		return redirect('home')
 
 	other_user = Account.objects.get(username=username)
+
+	# Check if the user is blocked by any of the members of the chat room.
+	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
+		messages.warning(request, 'You are blocked by this user and cannot send messages.')
+		return redirect('a_user:profile', user_id=other_user.id)
+
 	my_chatrooms = request.user.chat_rooms.filter(is_private=True)
 
 	if my_chatrooms.exists():
@@ -163,4 +174,3 @@ def chatroom_leave_view(request, room_name):
 		'chat_room': chat_room,
 	}
 	return render(request, 'a_chat/chatroom_leave.html', context)
-
