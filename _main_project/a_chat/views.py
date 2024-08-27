@@ -16,11 +16,11 @@ def chat_view(request, room_name='public-chat'):
 	other_user = None
 
 	# Check if the user is blocked by any of the members of the chat room.
-	for member in chat_room.members.all():
-		if BlockedUser.objects.filter(user=member, blocked_user=request.user).exists():
-			other_user = member
-			messages.warning(request, 'You are blocked by this user and cannot send messages.')
-			return redirect('a_user:profile', user_id=other_user.id)
+	# for member in chat_room.members.all():
+	# 	if BlockedUser.objects.filter(user=member, blocked_user=request.user).exists():
+	# 		other_user = member
+	# 		messages.warning(request, 'You are blocked by this user and cannot send messages.')
+	# 		return redirect('a_user:profile', user_id=other_user.id)
 
 	if chat_room.is_private:
 		if request.user not in chat_room.members.all():
