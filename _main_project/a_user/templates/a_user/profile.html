@@ -53,7 +53,7 @@
 	{% endif %}
 
 	<!-- Cancel Friend Request / Send Friend Request / Remove Friend -->
-	{% if is_friend == False and is_self == False %}
+	{% if is_friend == False and is_self == False and is_blocked == False %}
 		<!-- You sent them a request -->
 		{% if request_sent == 1 %}
 			<form method="POST" action="{% url 'a_friends:cancel_friend_request' %}">
@@ -65,7 +65,7 @@
 
 		<!-- No requests have been sent -->
 		{% if request_sent == 0 %}
-			<form method="POST" action="{% url 'a_friends:send_friend_request' %}">
+			<form method="POST" action="{% url 'a_friends:send_friend_request' username=username %}">
 				{% csrf_token %}
 				<input type="hidden" name="receiver_id" value="{{ id }}">
 				<input type="submit" value="Send Friend Request">
@@ -97,14 +97,15 @@
 	{% if is_friend %}
 {% endcomment %}
 
-	{% if not is_self %}
+	{% if not is_self and not is_blocked %}
 		<a class="" href="{% url 'a_chat:start-chat' username %}">Send Private Message</a></br>
 	{% endif %}
 
 {% comment %}  
 Block / Unblock logic:
 {% endcomment %}
-	{% if is_self == False %}
+	</br>
+	{% if is_self == False and not is_friend %}
 		{% if is_blocked %}
 			<form method="POST" action="{% url 'a_user:unblock-user' user_id=id %}">
 				{% csrf_token %}

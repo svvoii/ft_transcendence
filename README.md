@@ -24,15 +24,15 @@
 
 ## **TO RUN THE PROJECT FROM THIS REPOSITORY**
 
-***1. Create virtual environment.***  
+***1. Create the `.env` file.***  
 
-*After cloning the repository, the virtual environment should be created and activated. I was using `pipenv` (for setup see the beginning of README file from any of the above repositories).*  
+*`.env` file should be created in the root directory of this repository (for more about the content of .env go to : [postgresql_django_docker](https://github.com/svvoii/postgresql_django_docker) repository).*
 
 <br><br>
 
-***2. Create the `.env` file.***  
+***2. Create virtual environment.***  
 
-*`.env` file should be created in the root directory of this repository (for more about the content of .env go to : [postgresql_django_docker](https://github.com/svvoii/postgresql_django_docker) repository).*
+*After cloning the repository, the virtual environment should be created and activated. I was using `pipenv` (for setup see the beginning of README file from any of the above repositories).*  
 
 <br><br>
 
@@ -142,6 +142,40 @@ python manage.py runserver
 
 *For detailed instructions refer to the step 12 in the [django_oauth_42api](https://github.com/svvoii/django_oauth_42api.git) repository.*  
 
+<br><br>
+
+
+## **LIVE CHAT**
+
+*The loffowing module is available on the separate branch `public_chat` :*
+
+### Gameplay and user experience
+- (Major module): Live chat. 
+
+*So, the available functionality is the following :*  
+- *There is a `Puplic Chat` room available for all users.*
+- *The users can initiate a private chat with any other user, regardless of being friends or not.*
+- *The users can create a group chat with multiple users. To join the group chat, the link should be shared with the respective users.*
+- *The admin of the group chat can remove users from the group chat and delete the group chat.*
+- *The users can block other users, which will prevent the exchange of private messages between the users, as well as sending friend request.*
+- *To block a user, the unfriend action should be taken first (the button `Block` is available if user is not a friend).*
+
+***To implement the live chat functionality, the following concepts were used :***
+- *Django Channels (Websockets)*
+- *ASGI (Asynchronous Server Gateway Interface) with Daphne server (pipenv install 'channels[daphne]'). In `settings.py` changed the `WSGI_APPLICATION` to `ASGI_APPLICATION'.*
+- *Channels layer (Redis server) for handling the messages between the users. (There is another container in the docker-compose file for the Redis server).*
+- *HTMX (Hypertext Markup eXtension) for the frontend part of the chat application. (this allows to send the messages without refreshing the page).*
+
+*This allows to have asynchronous experience in the chat application when the messages are sent and received in real time.*
+
+### Additional packages for this module
+```bash
+pipenv install channels-redis
+pipenv install django-htmx
+pipenv install 'channels[daphne]'
+pipenv install shortuuid
+```
+**NOTE:** *`sotruuid` is used to generate unique ids for the chat rooms.*  
 
 
 **That should be it, so far.**  
