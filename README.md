@@ -147,7 +147,7 @@ python manage.py runserver
 
 ## **LIVE CHAT**
 
-*The loffowing module is available on the separate branch `public_chat` :*
+*Additional module is available on the branch `public_chat` :*
 
 ### Gameplay and user experience
 - (Major module): Live chat. 
@@ -157,13 +157,13 @@ python manage.py runserver
 - *The users can initiate a private chat with any other user, regardless of being friends or not.*
 - *The users can create a group chat with multiple users. To join the group chat, the link should be shared with the respective users.*
 - *The admin of the group chat can remove users from the group chat and delete the group chat.*
-- *The users can block other users, which will prevent the exchange of private messages between the users, as well as sending friend request.*
-- *To block a user, the unfriend action should be taken first (the button `Block` is available if user is not a friend).*
+- *The users can block other users, this will prevent the exchange of private messages, as well as sending friend request.*
+- *To block a user, the unfriend action should be taken first (the button `Block` is available if viewed user is not a friend).*
 
 ***To implement the live chat functionality, the following concepts were used :***
 - *Django Channels (Websockets)*
-- *ASGI (Asynchronous Server Gateway Interface) with Daphne server (pipenv install 'channels[daphne]'). In `settings.py` changed the `WSGI_APPLICATION` to `ASGI_APPLICATION'.*
-- *Channels layer (Redis server) for handling the messages between the users. (There is another container in the docker-compose file for the Redis server).*
+- *ASGI (Asynchronous Server Gateway Interface) with Daphne server (pipenv install 'channels[daphne]'). In `settings.py` changed the `WSGI_APPLICATION` to `ASGI_APPLICATION`.*
+- *Redis is used for handling the upload of messages between the users. (There is another container in the docker-compose file for the Redis server).*
 - *HTMX (Hypertext Markup eXtension) for the frontend part of the chat application. (this allows to send the messages without refreshing the page).*
 
 *This allows to have asynchronous experience in the chat application when the messages are sent and received in real time.*
