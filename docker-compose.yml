@@ -10,6 +10,9 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+    depends_on:
+      - db
+      - redis
     
   db:
     image: postgres:latest
