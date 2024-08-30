@@ -178,6 +178,38 @@ pipenv install shortuuid
 **NOTE:** *`sotruuid` is used to generate unique ids for the chat rooms.*  
 
 
+### SUPERUSER FOR DJANGO ADMIN PANEL
+
+*I have added some script to the `entrypoint.sh` file to create a superuser for the admin panel.*  
+*This will require the following environment variables to be set in the `.env` file (DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_PASSWORD).*  
+
+*This is an example of the `.env` :*  
+```
+# python:
+PYTHONUNBUFFERED=1 # Prevents Python from writing pyc files to disc (equivalent to python -B option)
+PYTHONDONTWRITEBYTECODE=1 # Prevents Python from buffering stdout and stderr (equivalent to python -u option)
+
+# django:
+DEBUG=True
+SECRET_KEY='some_secret_words'
+ALLOWED_HOSTS=*
+DJANGO_SUPERUSER_EMAIL=admin@gmail.com
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_PASSWORD=qetwry135246
+
+# for PostgreSQL as well as Django in separate docker containers:
+DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+
+# for PostgreSQL in a container and Django on the host:
+# DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+
+```
+
+
 **That should be it, so far.**  
 
 *I might have missed somethings, so please just ask if anything from the above is not clear.*  

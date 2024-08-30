@@ -43,6 +43,10 @@ ls:
 	@echo -e "${MAGENTA}-> Docker containers:${NC}" && docker ps -a
 	@echo -e "${MAGENTA}-> Docker volumes:${NC}" && docker volume ls
 
+clean-migrations:
+	@echo -e "${RED}Cleaning migration files...${NC}"
+	find . -path "*/migrations/*.py" ! -name "__init__.py" -delete
+
 clean:
 	@echo -e "${RED}Cleaning all...${NC}"
 	make down
