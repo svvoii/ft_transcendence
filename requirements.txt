@@ -1,14 +1,13 @@
-# Once the environment is activated with `pipenv shell` 
-# copy the following to the Pipfile under the [packages] section and run `pipenv install` and `pipenv lock` to update the Pipfile.lock:
-django = "*"
-pillow = "*"
-django-environ = "*"
-psycopg2 = "*"
-django-allauth = "*"
-requests = "*"
-pyjwt = "*"
-cryptography = "*"
-channels-redis = "*"
-django-htmx = "*"
-channels = {extras = ["daphne"], version = "*"}
-shortuuid = "*"
+# ..to be installed with pip
+django
+pillow
+django-environ
+psycopg2
+django-allauth
+requests
+pyjwt
+cryptography
+channels-redis
+django-htmx
+channels[daphne]
+shortuuid
