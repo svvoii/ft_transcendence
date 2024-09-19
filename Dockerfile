@@ -10,9 +10,10 @@ RUN apt-get update && apt-get install -y \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Installing dependencies for the project:
-RUN pip install --upgrade pip pipenv
-COPY Pipfile ./
-RUN pipenv install --system --skip-lock
+COPY requirements.txt ./
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the working directory:
 COPY . .
