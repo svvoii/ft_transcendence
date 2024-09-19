@@ -1,0 +1,118 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<style>
+	.chat-container {
+        margin: 0 auto 8px auto;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        border: 2px solid #ccc;
+        padding: 10px;
+        height: 300px;
+        width: 100%;
+        max-width: 500px;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+	#chat_window {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+	.chat-input {
+		padding: 10px;
+		border-radius: 5px;
+		border: 2px solid #ccc;
+		box-sizing: border-box;
+	}
+</style>
+{% comment %}
+{% endcomment %}
+
+<wrapper>
+    <div id="chat_window">
+	{% if chat_room.groupchat_name %}
+		<h3>{{ chat_room.groupchat_name }}</h3>
+
+		{% if user == chat_room.admin %}
+			<a href="{% url 'a_chat:edit-chatroom' chat_room.room_name %}">
+				<span class="material-symbols-outlined">edit</span>
+				Edit
+			</a>
+		{% endif %}
+	{% endif %}
+        <div>
+			{% if other_user %}
+				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
+				<a href="{% url 'a_user:profile' other_user.id %}">
+					<div>
+						<span class="">Private Chat with {{ other_user.username }}</span>
+					</div>
+				</a>
+			
+			{% elif chat_room.groupchat_name %}
+				<ul id="groupchat-members">
+					{% for member in chat_room.members.all %}
+						<li>
+							<a href="{% url 'a_user:profile' member.id %}">
+								<img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+								{{ member.username | slice:":10" }}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+
+			{% else %}
+				<div id="online-icon" class="...this-is-updated-with-htmx-in-partials/online_count.html-to-do"></div>
+				<span id="online-count"></span>online
+			{% endif %}
+        </div>
+        <div id='chat_container' class="chat-container">
+			<div id='chat_messages'>
+				{% for message in chat_messages reversed %}
+					{% include 'a_chat/chat_message.html' %}
+				{% endfor %}
+			</div>
+        </div>
+        <div class="">
+            <div class="">
+                <form id="chat_message_form" class="chat-input"
+					hx-ext="ws"
+					ws-connect="/ws/chatroom/{{ chat_room.room_name }}/"
+					ws-send
+					_="on htmx:wsAfterSend reset() me"
+				>
+					{% csrf_token %}
+					{{ form }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+	<div>
+		{% if chat_room.members.exists %}
+			<a href="{% url 'a_chat:leave-chatroom' chat_room.room_name %}">Leave Chatroom</a>
+		{% endif %}
+	</div>
+
+</wrapper>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+	function scrollToBottom(time=0) {
+        setTimeout(function() {
+            const container = document.getElementById('chat_container');
+            container.scrollTop = container.scrollHeight;
+        }, time);
+    }
+    scrollToBottom()
+
+</script>
+
+{% endblock scripts %}

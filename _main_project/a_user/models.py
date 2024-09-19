@@ -72,3 +72,15 @@ class Account(AbstractBaseUser):
 
 	def has_module_perms(self, app_label):
 		return True
+
+
+# The following model / db table will store the blocked users relationship.
+class BlockedUser(models.Model):
+	user = models.ForeignKey(Account, related_name='blocked_users', on_delete=models.CASCADE)
+	blocked_user = models.ForeignKey(Account, related_name='blocked_by', on_delete=models.CASCADE)
+
+	class Meta:
+		unique_together = ('user', 'blocked_user')
+	
+	def __str__(self):
+		return f'{self.user.username} blocked {self.blocked_user.username}'

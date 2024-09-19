@@ -1,0 +1,14 @@
+{% if message.author == user %}	
+	<div class="">
+		<a href="{% url 'a_user:profile' user_id=message.author.id %}"><strong>me</strong></a>
+		<span>: {{ message.msg_content }}</span>
+	</div>
+{% else %}
+	<div class="">
+		<a href="{% url 'a_user:profile' user_id=message.author.id %}">{{ message.author.username }}</a>
+		<span>: {{ message.msg_content }}</span>
+	</div>
+{% endif %}
+
+{% comment %}
+{% endcomment %}

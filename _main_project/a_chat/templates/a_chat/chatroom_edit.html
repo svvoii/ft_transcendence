@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>Edit Chatroom</h1>
+
+<form method="POST">
+	{% csrf_token %}
+	{{ form }}
+
+	<h2>Members</h2>
+	{% for member in chat_room.members.all %}
+		<li>
+			<img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+			{{ member.username | slice:":10" }}
+
+			{% if member != chat_room.admin %}
+				<input type="checkbox" name="remove_members" value="{{ member.id }}"/>
+			{% endif %}
+		</li>
+
+	{% endfor %}
+
+	<button type="submit">Update</button>
+</form>
+
+<a href="{% url 'a_chat:delete-chatroom' chat_room.room_name %}">Delete Chatroom</a>
+
+{% comment %}
+{% endcomment %}
+
+{% endblock %}

@@ -46,12 +46,12 @@
 {% if friends %}
 	{% for friend in friends %}
 		<div class="friend-card">
-			<a href="{% url 'user:profile' user_id=friend.0.pk %}">
+			<a href="{% url 'a_user:profile' user_id=friend.0.pk %}">
 				<img src="{{ friend.0.profile_image.url }}" alt="profile_image">
 			</a>
 			
 			<div>
-				<a href="{% url 'user:profile' user_id=friend.0.pk %}">
+				<a href="{% url 'a_user:profile' user_id=friend.0.pk %}">
 					<h4>{{ friend.0.username|truncatechars:50 }}</h4>
 				</a>
 

@@ -34,11 +34,11 @@
 
 	{% for account in accounts %}
 		<div class="card">
-			<a href="{% url 'user:profile' user_id=account.0.id %}">
+			<a href="{% url 'a_user:profile' user_id=account.0.id %}">
 				<img src="{{ account.0.profile_image.url }}" alt="profile_image">
 			</a>
 
-			<a href="{% url 'user:profile' user_id=account.0.id %}">
+			<a href="{% url 'a_user:profile' user_id=account.0.id %}">
 				<h4>{{ account.0.username }}</h4>
 				{% if account.1 %}
 					<a href="#">Send a Message (debug.. future functionality)</a>

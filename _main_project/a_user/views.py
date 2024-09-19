@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.conf import settings
+from django.contrib import messages
+
+from django.contrib.auth.decorators import login_required
 
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
-from a_user.models import Account
+from a_user.models import Account, BlockedUser
 from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
@@ -114,6 +117,7 @@ def profile_view(request, *args, **kwargs):
 		user = request.user
 		request_sent = FriendRequestStatus.NO_REQUEST_SENT.value
 		friend_request = None
+		is_blocked = False
 		
 		# This check says : `If you are not looking at your own profile, then..`
 		if user.is_authenticated and user != account:
@@ -138,6 +142,8 @@ def profile_view(request, *args, **kwargs):
 				# case 3: the user is not a friend and request status = `NO_REQUEST_SENT`
 				else:
 					request_sent = FriendRequestStatus.NO_REQUEST_SENT.value
+			
+			is_blocked = BlockedUser.objects.filter(user=user, blocked_user=account).exists()
 
 		# This check means : `If you are not logged in, then..`
 		elif not user.is_authenticated:
@@ -155,6 +161,7 @@ def profile_view(request, *args, **kwargs):
 		context['BASE_URL'] = settings.BASE_URL
 		context['request_sent'] = request_sent
 		context['friend_request'] = friend_request
+		context['is_blocked'] = is_blocked
 
 	return render(request, 'a_user/profile.html', context)
 
@@ -233,3 +240,19 @@ def account_search_view(request, *args, **kwargs):
 				context['accounts'] = accounts
 
 	return render(request, 'a_user/search_results.html', context)
+
+
+@login_required
+def block_user_view(request, user_id):
+	user_to_block = get_object_or_404(Account, id=user_id)
+	BlockedUser.objects.get_or_create(user=request.user, blocked_user=user_to_block)
+	messages.success(request, f'You have blocked {user_to_block.username}.')
+	return redirect('a_user:profile', user_id=user_id)
+
+
+@login_required
+def unblock_user_view(request, user_id):
+	user_to_unblock = get_object_or_404(Account, id=user_id)
+	BlockedUser.objects.filter(user=request.user, blocked_user=user_to_unblock).delete()
+	messages.success(request, f'You have unblocked {user_to_unblock.username}.')
+	return redirect('a_user:profile', user_id=user_id)

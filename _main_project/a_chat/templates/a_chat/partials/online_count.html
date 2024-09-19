@@ -1,0 +1,45 @@
+{% comment %}
+This partial shall be used to display the small green / grey circle that in the upper left corner of the chat window. 
+The purpose is to indicate if al least one user is online in the PUBLIC-CHAT room.
+Or if OTHER_USER is online in the PRIVATE-CHAT room.
+{% endcomment %}
+
+<span id="online-count" hx-swap-oob="outerHTML" class="fade-in-scale">
+	{{ online_count }}
+
+	<style>
+		@keyframes fadeInScale {
+			from { opacity: 0; transform: scale(4); }
+			to { opacity: 1; transform: scale(1); }
+		}
+		.fade-in-scale {
+			animation: fadeInScale 0.6s ease-in-out;
+		}
+	</style>
+</span>
+
+{% if online_count %}
+	<div id="online-icon" class="to-do-green-if-online">(online)</div>
+{% else %}
+	<div id="online-icon" class="to-do-grey-if-non-online">(offline)</div>
+{% endif %}
+
+<ul id="groupchat-members">
+	{% for member in chat_room.members.all %}
+		<li>
+			<a href="{% url 'a_user:profile' member.id %}">
+				<img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+				{{ member.username | slice:":10" }}
+			</a>
+				{% if member in chat_room.users_online.all %}
+					(online)
+					<div class="to-do-GREEN-icon-if-online"></div>
+				{% else %}
+					(offline)
+					<div class="to-do-GREY-icon-if-online"></div>
+				{% endif %}
+		</li>
+	{% endfor %}
+</ul>
+
+

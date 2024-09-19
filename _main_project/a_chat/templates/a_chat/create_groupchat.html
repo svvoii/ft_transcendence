@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+
+<style>
+	.button {
+		padding: 10px;
+		border-radius: 5px;
+		background-color: lightgreen;
+		border: 2px solid #ccc;
+		box-sizing: border-box;
+	}
+
+	.input-field {
+		padding: 10px;
+		border-radius: 5px;
+		border: 2px solid #ccc;
+		box-sizing: border-box;
+	}
+</style>
+
+<h1>Create New Group Chat</h1>
+
+<form class="input-field" method="POST">
+	{% csrf_token %}
+	{{ form }}
+
+	<button class="button" type="submit">Create new chat room</button>
+</form>
+
+
+{% endblock %}

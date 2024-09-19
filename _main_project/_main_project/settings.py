@@ -41,6 +41,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,12 +50,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	# adding `sites` app to manage multiple sites and authentication
 	'django.contrib.sites',
+	'django_htmx',
 
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 
+	'a_chat',
 	'a_friends',
 	'a_homepage',
 	'a_oauth2',
@@ -62,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+	'django_htmx.middleware.HtmxMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -91,8 +95,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = '_main_project.wsgi.application'
+# WSGI_APPLICATION = '_main_project.wsgi.application'
 
+ASGI_APPLICATION = '_main_project.asgi.application'
+
+# this will ensure the real-time messages update for all the users in the chatroom
+CHANNEL_LAYERS = {
+	"default": {
+		# 'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6380)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

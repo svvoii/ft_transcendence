@@ -5,10 +5,17 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from a_friends.forms import SendFriendRequestForm, HandleFriendRequestForm, RemoveFriendForm
 from a_friends.models import FriendRequest, FriendList
-from a_user.models import Account
+from a_user.models import Account, BlockedUser
 
 
-def send_friend_request_view(request):
+def send_friend_request_view(request, username):
+
+	# Check if the user is blocked by any of the members of the chat room.
+	other_user = Account.objects.get(username=username)
+	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
+		messages.warning(request, 'You are blocked by this user and cannot send friend request (sad face)')
+		return redirect('a_user:profile', user_id=other_user.id)
+
 	if request.method == 'POST':
 		form = SendFriendRequestForm(request.POST)
 		if form.is_valid():

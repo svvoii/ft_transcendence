@@ -28,6 +28,7 @@ urlpatterns = [
 	path('', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
+	path('chat/', include('a_chat.urls', namespace='chat')),
 	path('friends/', include('a_friends.urls', namespace='friends')),
 	path('register/', register_view, name='register'),
 	path('login/', login_view, name='login'),
