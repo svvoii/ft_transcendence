@@ -13,5 +13,9 @@ python _main_project/manage.py create_superuser
 echo "Creating social applications..."
 python _main_project/manage.py create_social_apps
 
+# Creating public caht room (this set up as a command in the _commands app)
+echo "Creating public chat room..."
+python _main_project/manage.py create_public_chatroom
+
 # Starting the server
 python _main_project/manage.py runserver 0.0.0.0:8000

@@ -15,13 +15,6 @@ def chat_view(request, room_name='public-chat'):
 	form = ChatMessageCreateForm()
 	other_user = None
 
-	# Check if the user is blocked by any of the members of the chat room.
-	# for member in chat_room.members.all():
-	# 	if BlockedUser.objects.filter(user=member, blocked_user=request.user).exists():
-	# 		other_user = member
-	# 		messages.warning(request, 'You are blocked by this user and cannot send messages.')
-	# 		return redirect('a_user:profile', user_id=other_user.id)
-
 	if chat_room.is_private:
 		if request.user not in chat_room.members.all():
 			raise Http404()
@@ -33,13 +26,6 @@ def chat_view(request, room_name='public-chat'):
 	if chat_room.groupchat_name:
 		if request.user not in chat_room.members.all():
 			chat_room.members.add(request.user)
-
-			# The following logic requires the email verification feature to be implemented...
-			# if request.user.emailaddress_set.filter(verified=True).exists():
-			# 	chat_room.members.add(request.user)
-			# else:
-			# 	messages.warning(request, 'You need to verify your email address to join this group chat.')
-			# 	return redirect('a_user:profile')
 
 	if request.htmx:
 		form = ChatMessageCreateForm(request.POST)
@@ -55,7 +41,6 @@ def chat_view(request, room_name='public-chat'):
 				'user': request.user,
 			}
 			return render(request, 'a_chat/partials/chat_message_p.html', context)
-			# return render(request, 'a_chat/chat_message.html', context)
 
 	context = {
 		'chat_room': chat_room,
