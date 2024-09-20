@@ -10,6 +10,8 @@
 
 *Each repository above is a tutorial on its own. So, feel free to check them out if needed.*   
 
+- additionally the `live chat` has been added to the project as `a_chat` app in the `_main_project` directory. (no separate repository for this one).  
+
 *To compare against the subject requirements this project includes the following, so far :*  
 
 ### Web
@@ -20,66 +22,77 @@
 - (Major module): Standard user management, authentication, ... *(Covered in the custom user model repository.)*
 - (Major module): Implementing a remote authentication. *(Covered in the 42 API repository.)*  
 
+### Gameplay and user experience
+- (Major module): Live chat. *(No separate repository for this one.)* 
+
 <br><br>
 
-## **TO RUN THE PROJECT FROM THIS REPOSITORY**
+## **TO RUN THE PROJECT**
+
+<br>
+
+***0. Clone the repository.***  
+
+*not gonna tell you how :D*
+
+<br>
 
 ***1. Create the `.env` file.***  
 
-*`.env` file should be created in the root directory of this repository (for more about the content of .env go to : [postgresql_django_docker](https://github.com/svvoii/postgresql_django_docker) repository).*
+*This one is important since the project depends on the environment variables to set up all the business for different purposes..*  
 
-<br><br>
+*So, `.env` file should be created in the root directory of this repository.. here is the example (just copy-paste):*
 
-***2. Create virtual environment.***  
-
-*After cloning the repository, the virtual environment should be created and activated. I was using `pipenv` (for setup see the beginning of README file from any of the above repositories).*  
-
-<br><br>
-
-***3. Dependencies.***  
-
-*The necessary dependencies in the virtual environment should be installed to tun the project. Should be a combination of the dependencies from the above repositories.* 
-
-For using the django framework (custom user model):  
 ```bash
-pipenv install django
-pipenv install pillow
+# = = = = = = =
+# PYTHON:
+# = = = = = = =
+PYTHONUNBUFFERED=1 # Prevents Python from writing pyc files to disc (equivalent to python -B option)
+PYTHONDONTWRITEBYTECODE=1 # Prevents Python from buffering stdout and stderr (equivalent to python -u option)
+
+# = = = = = = =
+# DJANGO:
+# = = = = = = =
+DEBUG=True
+SECRET_KEY='some_secret_words'
+ALLOWED_HOSTS=*
+DJANGO_SUPERUSER_EMAIL=admin@gmail.com
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_PASSWORD=qetwry135246
+
+# sosial accounts settings for django-allauth
+GOOGLE_CLIENT_ID='see-the-NOTE-below'
+GOOGLE_SECRET='see-the-NOTE-below'
+
+42_CLIENT_ID='see-the-NOTE-below'
+42_SECRET='see-the-NOTE-below'
+
+# = = = = = = =
+# POSTGRES:
+# = = = = = = =
+# for PostgreSQL as well as Django in separate docker containers:
+DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+
 ```
 
-For using postgresql database and `.env` file:  
-```bash
-pipenv install django-environ
-pipenv install psycopg2
-```
 **NOTE:**  
-- *If you are on the school's computer, use `psycopg2-binary` instead of `psycopg2`.*
-- *This package is needed for postgresql to work with django.* 
-- *`psychopg2` requires some pre-installed packages which are not available on the school's computers and requires `sudo` rights.*    
+- *Regarding the `GOOGLE_CLIENT_ID` and `GOOGLE_SECRET` refer to [this repo](https://github.com/svvoii/django_oauth_google) to set up your own Google API credentials. (See point 9 in the README)*
+- *Regarding the `42_CLIENT_ID` and `42_SECRET` refer to [this repo](https://github.com/svvoii/django_oauth_42api.git) to set up your own 42 API credentials. (See point 12 in the README)*  
+- *If you dont want to do that.. just ask me for my credentials..*  
 
-For setting up the 42 API:  
-```bash
-pipenv install django-allauth
-pipenv install requests
-pipenv install pyjwt
-pipenv install cryptography
-```
+<br>
 
-<br><br>
+***2. RUN the project.***  
 
-***4. Use the Makefile to run the database.***
+*Once the `.env` file is created and filled all the variables listed above, the project can be run.*  
 
-- *The setting in this repo will allow to run the django server in the docker container OR on the local machine (tiny change in `.env` file is needed to swich between two options).* 
-- *The database will be running in the docker container.*   
+*The setup of this repository is set up to run the project completely in the docker containers with the ability to make changes to the code on the local machine.*  
 
-*From the root directory, same level as the `Makefile` file:*  
-
-```bash
-make up-db
-```
-
-*This will spin up only the postgresql database in the docker container.*  
-
-*To check the status of the docker containers, images and volumes use : `make ls`*  
+*Also, the Makefile is available to run docker and docker compose commands to make it easier to manage the containers.*  
 
 All `make` commands:  
 ```bash
@@ -92,65 +105,44 @@ make rmi
 make rmvol
 make ls
 make clean
+make re
 ```
 
-<br><br>
+- *`make up` command will build the images, create the containers and run the project.*  
+- *`make re` command will remove the containers, volumes, rebuild the images and run the project.*  
 
-***5. Migrate the database.***
-
-*Once the database is running (it will be empty), the migrations should be applied to the database before running the django server.*  
-
-*From the `_main_project` directory (sama level as `manage.py` file):*  
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-*Once this done all the tables, models from the project will be created in the database.*  
 
 <br><br>
 
-***6. Create a superuser.***  
+## **ADDITIONAL INFO**
 
-*To access the admin panel of the django project, the superuser should be created.*  
+<br>
 
-*From the `_main_project` directory (sama level as `manage.py` file):*  
+**1.** *All the requirements for the project are listed in the `requirements.txt` file. Those are installed in the docker container when the image is built with Dockerfile.*
 
-```bash
-python manage.py createsuperuser
-```
+<br>
 
-*Follow the instructions in the terminal to create the superuser.*   
-*Once the superuser is created, the admin panel can be accessed via : `http://127.0.0.1:8000/admin/` in the browser, once the server is running.*  
+**2.** *There is a `entrypoint.sh` file in the root directory of the repo. This file is used to run some additional commands when the container is created. This makes the setup of the project easier.*  
+
+*For example:*  
+- *The migrations are applied to the database when the container is created.*
+- *The superuser is created for the admin panel once the migrations are applied.*
+- *The social accounts are set up in the admin panel to use the 3rd party authentication to sign in with 42 API, Google, etc.*  
+- *The is a public chat room available for all users, as soon as they sign in. The `public_chat` chat room is created in the database once the container is up.*
+- *The last thing is the `entrypoint.sh` file is used to run the Django (Daphne) server.*
+
+**NOTE**: *The logic in the `entrypoint.sh` setting up all the above as if those are python commands. Those custom commands are defined in the `_main_project/_commands/management/commands/` directory (should be like this). Feel free to check them out if curious.*  
+
+<br>
+
+**3.** *It is not possible to push any changes to the `main` branch of this repo. All the changes shall be made in the separate branches and then merged with the `main` branch via pull request.*  
+
 
 <br><br>
 
-***7. Run the server.***  
+## **LIVE CHAT FUNCTIONSLITY**
 
-*From the `_main_project` directory (sama level as `manage.py` file):*  
-
-```bash
-python manage.py runserver
-```
-
-<br><br>
-
-***8. Activate 3rd party authentication.***  
-
-*The use of 42 API to authenticate users as well as athentication with Google (more social platforms can be added), there are some additional steps to be taken in the admin panel.*  
-
-*For detailed instructions refer to the step 12 in the [django_oauth_42api](https://github.com/svvoii/django_oauth_42api.git) repository.*  
-
-<br><br>
-
-
-## **LIVE CHAT**
-
-*Additional module is available on the branch `public_chat` :*
-
-### Gameplay and user experience
-- (Major module): Live chat. 
+*The project is set up to run the Django server with the Daphne server. This is done to use the Django Channels for the live chat functionality.*
 
 *So, the available functionality is the following :*  
 - *There is a `Puplic Chat` room available for all users.*
@@ -168,50 +160,6 @@ python manage.py runserver
 
 *This allows to have asynchronous experience in the chat application when the messages are sent and received in real time.*
 
-### Additional packages for this module
-```bash
-pipenv install channels-redis
-pipenv install django-htmx
-pipenv install 'channels[daphne]'
-pipenv install shortuuid
-```
-**NOTE:** *`sotruuid` is used to generate unique ids for the chat rooms.*  
-
-
-### SUPERUSER FOR DJANGO ADMIN PANEL
-
-*I have added some script to the `entrypoint.sh` file to create a superuser for the admin panel.*  
-*This will require the following environment variables to be set in the `.env` file (DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_PASSWORD).*  
-
-*This is an example of the `.env` :*  
-```
-# python:
-PYTHONUNBUFFERED=1 # Prevents Python from writing pyc files to disc (equivalent to python -B option)
-PYTHONDONTWRITEBYTECODE=1 # Prevents Python from buffering stdout and stderr (equivalent to python -u option)
-
-# django:
-DEBUG=True
-SECRET_KEY='some_secret_words'
-ALLOWED_HOSTS=*
-DJANGO_SUPERUSER_EMAIL=admin@gmail.com
-DJANGO_SUPERUSER_USERNAME=admin
-DJANGO_SUPERUSER_PASSWORD=qetwry135246
-
-# for PostgreSQL as well as Django in separate docker containers:
-DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-
-# for PostgreSQL in a container and Django on the host:
-# DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
-
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=postgres
-
-```
-
 
 **That should be it, so far.**  
-
-*I might have missed somethings, so please just ask if anything from the above is not clear.*  
-
 
