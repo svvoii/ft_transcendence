@@ -13,7 +13,7 @@ build-no-cache:
 	@echo -e "${RED}Building the project without cache...${NC}"
 	docker-compose build --no-cache
 
-up:
+up: build
 	@echo -e "${GREEN}Starting the project...${NC}"
 	docker-compose up
 
@@ -53,3 +53,4 @@ clean:
 	make rmi
 	make rmvol
 
+re: clean up
