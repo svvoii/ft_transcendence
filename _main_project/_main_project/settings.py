@@ -57,11 +57,12 @@ INSTALLED_APPS = [
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 
+	'_commands',
 	'a_chat',
 	'a_friends',
 	'a_homepage',
-	'a_oauth2',
 	'a_user',
+	'a_oauth2',
 ]
 
 MIDDLEWARE = [
@@ -192,12 +193,43 @@ SITE_ID = 1
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 # SOCIALACCOUNT_ENABLED = True
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
+# Social account settings
+SOCIALACCOUNT_PROVIDERS = {
+	'google': {
+		'SCOPE': [
+			'profile',
+			'email',
+		],
+		'AUTH_PARAMS': {
+			'access_type': 'online',
+		},
+		'METHOD': 'oauth2',
+		'VERIFIED_EMAIL': False,
+		'CLIENT_ID': env('GOOGLE_CLIENT_ID'),
+		'SECRET': env('GOOGLE_SECRET'),
+	},
+	'42': {
+		# 'SCOPE': [
+		# 	'profile',
+		# 	'email',
+		# ],
+		# 'AUTH_PARAMS': {
+		# 	'access_type': 'online',
+		# },
+		'METHOD': 'oauth2',
+		'VERIFIED_EMAIL': False,
+		'CLIENT_ID': env('42_CLIENT_ID'),
+		'SECRET': env('42_SECRET'),
+	},
+}
 
 
 if DEBUG:
 	EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-

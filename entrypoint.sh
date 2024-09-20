@@ -1,26 +1,17 @@
 #!/bin/bash
 
 # Creating the database tables
+echo "Applying database migrations..."
 python _main_project/manage.py makemigrations
 python _main_project/manage.py migrate
 
-# Creating a superuser
-python _main_project/manage.py shell << EOF
-import os
-from django.contrib.auth import get_user_model
+# Creating a superuser (this set up as a command in the _commands app)
+echo "Creating superuser..."
+python _main_project/manage.py create_superuser
 
-User = get_user_model()
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
-
-if not User.objects.filter(email=email).exists():
-	User.objects.create_superuser(email=email, username=username, password=password)
-	print('Superuser created.')
-else:
-	print('Superuser already exists.')
-
-EOF
+# Creating social applications (this set up as a command in the _commands app)
+echo "Creating social applications..."
+python _main_project/manage.py create_social_apps
 
 # Starting the server
 python _main_project/manage.py runserver 0.0.0.0:8000
