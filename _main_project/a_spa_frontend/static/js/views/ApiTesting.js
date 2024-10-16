@@ -23,7 +23,7 @@ export default class extends AbstractView {
     const testJson = document.getElementById("test-json");
 
     testHttp.addEventListener('click', async () => {
-      const response = await fetch('http://localhost:5000/api/api_http_test_func');
+      const response = await fetch('http://localhost:8000/api/api_http_test_func');
       const text = await response.text();
 
       const responseContainer = document.getElementById("response-html");
@@ -31,7 +31,7 @@ export default class extends AbstractView {
     });
 
     testJson.addEventListener('click', async () => {
-      const response = await fetch('http://localhost:5000/api/api_json_test_func');
+      const response = await fetch('http://localhost:8000/api/api_json_test_func');
       const data = await response.json();
 
       const responseContainer = document.getElementById("response-json");

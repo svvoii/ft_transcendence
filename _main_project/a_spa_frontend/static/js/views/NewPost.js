@@ -28,7 +28,7 @@ export default class extends AbstractView {
       userContent = document.getElementById("userContent").value;
 
       // Send a POST request to the backend to save in the database
-      fetch("http://localhost:5000/api/blogposts/", {
+      fetch("http://localhost:8000/api/blogposts/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

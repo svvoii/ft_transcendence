@@ -60,3 +60,6 @@ re: clean up
 
 enter-web-app:
 	docker exec -it web-app bash
+
+status:
+	docker ps -a && docker images && docker volume ls && docker network ls

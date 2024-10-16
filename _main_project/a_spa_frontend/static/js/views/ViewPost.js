@@ -7,7 +7,7 @@ export default class extends AbstractView {
   }
 
   async getHtml() {
-    const response = await fetch(`http://localhost:5000/api/blogposts/${this.params.id}`);
+    const response = await fetch(`http://localhost:8000/api/blogposts/${this.params.id}`);
     const data = await response.json();
 
     if (data.title === undefined)

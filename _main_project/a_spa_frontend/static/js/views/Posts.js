@@ -9,7 +9,7 @@ export default class extends AbstractView {
 
   async getHtml() {
 
-    const response = await fetch('http://localhost:5000/api/blogposts');
+    const response = await fetch('http://localhost:8000/api/blogposts');
     const data = await response.json();
 
     let content = `
@@ -33,7 +33,7 @@ export default class extends AbstractView {
     const createPost = document.getElementById("createPost");
 
     createPost.addEventListener('click', () => {
-      navigateTo('http://localhost:5000/posts/new_post');
+      navigateTo('http://localhost:8000/posts/new_post');
       // console.log('create post');
     });
   }
