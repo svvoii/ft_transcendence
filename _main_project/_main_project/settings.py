@@ -172,7 +172,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
 
 TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')
 
-BASE_URL = 'http://127.0.0.1:8000'
+# BASE_URL = 'http://127.0.0.1:8000'
+BASE_URL = 'http://localhost:8000'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -194,7 +195,7 @@ SITE_ID = 1
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-# SOCIALACCOUNT_ENABLED = True
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -203,30 +204,18 @@ LOGOUT_REDIRECT_URL = '/'
 # Social account settings
 SOCIALACCOUNT_PROVIDERS = {
 	'google': {
-		'SCOPE': [
-			'profile',
-			'email',
-		],
-		'AUTH_PARAMS': {
-			'access_type': 'online',
-		},
-		'METHOD': 'oauth2',
-		'VERIFIED_EMAIL': False,
 		'CLIENT_ID': env('GOOGLE_CLIENT_ID'),
 		'SECRET': env('GOOGLE_SECRET'),
+		'METHOD': 'oauth2',
+		'VERIFIED_EMAIL': True,
+		'SCOPE': [ 'profile', 'email', ],
+		'AUTH_PARAMS': { 'access_type': 'online', },
 	},
 	'42': {
-		# 'SCOPE': [
-		# 	'profile',
-		# 	'email',
-		# ],
-		# 'AUTH_PARAMS': {
-		# 	'access_type': 'online',
-		# },
-		'METHOD': 'oauth2',
-		'VERIFIED_EMAIL': False,
 		'CLIENT_ID': env('42_CLIENT_ID'),
 		'SECRET': env('42_SECRET'),
+		'METHOD': 'oauth2',
+		'VERIFIED_EMAIL': True,
 	},
 }
 
