@@ -13,8 +13,8 @@ class Command(BaseCommand):
 			{
 				'provider': '42',
 				'name': '42',
-				'client_id': settings.SOCIALACCOUNT_PROVIDERS['google']['CLIENT_ID'],
-				'secret': settings.SOCIALACCOUNT_PROVIDERS['google']['SECRET'],
+				'client_id': settings.SOCIALACCOUNT_PROVIDERS['42']['CLIENT_ID'],
+				'secret': settings.SOCIALACCOUNT_PROVIDERS['42']['SECRET'],
 			},
 			{
 				'provider': 'google',
