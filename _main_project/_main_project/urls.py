@@ -15,17 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 from a_homepage.views import home_view
 from a_user.views import register_view, login_view, logout_view, account_search_view
+from a_spa_frontend.views import index
 
 
 urlpatterns = [
-	path('', home_view, name='home'),
+    path('', index, name='js_home'),
+    path('api/', include('a_api.urls'), name='api'),
+	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
@@ -35,6 +38,7 @@ urlpatterns = [
 	path('logout/', logout_view, name='logout'),
 	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
+    re_path(r'^.*/', include('a_spa_frontend.urls')),
 
 	# Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='password_reset/password_change_done.html'), name='password_change_done'),

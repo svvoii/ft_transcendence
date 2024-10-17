@@ -1,5 +1,7 @@
 # ..to be installed with pip
 django
+djangorestframework
+environs
 pillow
 django-environ
 psycopg2

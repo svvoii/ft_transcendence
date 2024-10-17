@@ -15,7 +15,7 @@ build-no-cache:
 
 up: build
 	@echo -e "${GREEN}Starting the project...${NC}"
-	docker-compose up
+	docker-compose up -d
 
 up-db:
 	@echo -e  "${GREEN}Starting container with database only...${NC}"
@@ -43,14 +43,20 @@ ls:
 	@echo -e "${MAGENTA}-> Docker containers:${NC}" && docker ps -a
 	@echo -e "${MAGENTA}-> Docker volumes:${NC}" && docker volume ls
 
+logs:
+	docker compose logs -f
+
 clean-migrations:
 	@echo -e "${RED}Cleaning migration files...${NC}"
 	find . -path "*/migrations/*.py" ! -name "__init__.py" -delete
 
-clean:
+clean: down rmi rmvol
 	@echo -e "${RED}Cleaning all...${NC}"
-	make down
-	make rmi
-	make rmvol
 
 re: clean up
+
+enter-web-app:
+	docker exec -it web-app bash
+
+status:
+	docker ps -a && docker images && docker volume ls && docker network ls
