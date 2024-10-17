@@ -26,6 +26,6 @@ def api_http_test_func(request):
 @api_view(["GET"])
 def api_json_test_func(request):
   p = 100
-  print("Value of p:", p)
+  # print("Value of p:", p)
   data = { "Value of p": p }
   return Response(data)

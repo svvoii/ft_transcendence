@@ -9,7 +9,7 @@ export default class extends AbstractView {
 
   async getHtml() {
 
-    const response = await fetch('http://localhost:8000/api/blogposts');
+    const response = await fetch('http://localhost:8000/api/blogposts/');
     const data = await response.json();
 
     let content = `

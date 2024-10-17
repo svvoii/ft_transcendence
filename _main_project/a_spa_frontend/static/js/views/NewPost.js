@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -23,12 +24,12 @@ export default class extends AbstractView {
     let userTitle;
     let userContent;
 
-    document.getElementById("submitPost").onclick = function() {
+    document.getElementById("submitPost").onclick = async () => {
       userTitle = document.getElementById("userTitle").value;
       userContent = document.getElementById("userContent").value;
 
       // Send a POST request to the backend to save in the database
-      fetch("http://localhost:8000/api/blogposts/", {
+      const response = await fetch("http://localhost:8000/api/blogposts/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -37,7 +38,14 @@ export default class extends AbstractView {
           title: userTitle,
           content: userContent
         })
-      })
+      });
+
+      if (response.ok) {
+        navigateTo("/posts");
+      } else {
+        alert("There was an error with your submission. Please try again.");
+      }
+
     };
   }
 }

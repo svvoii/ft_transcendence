@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import RegisterForm from "./RegisterForm.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -12,16 +13,32 @@ export default class extends AbstractView {
         You are viewing the register page!
       </p>
 
-      <button id="register-button">Register</button>
+      <button id="registerButton">Register</button>
     `;
   }
 
   async afterRender() {
-    const registerButton = document.getElementById("register-button");
-
+    const registerButton = document.getElementById("registerButton");
+    const modal = document.getElementById("modalWindow");
+    
     registerButton.addEventListener('click', async () => {
-      console.log("Register button pressed");
+      modal.style.display = "block";
+      
+      const registerForm = new RegisterForm();
+      document.querySelector('#modalWindow').innerHTML = await registerForm.getHtml();
+      
+      // Define the behavior of the close button after it is in the DOM.
+      const span = document.getElementsByClassName("close")[0];
+      span.addEventListener('click', () => {
+        modal.style.display = "none";
+      });
     });
-
+    
+    
+    window.onclick = event => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
   }
 }
