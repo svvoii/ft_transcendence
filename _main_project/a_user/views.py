@@ -34,7 +34,7 @@ def register_view(request, *args, **kwargs):
 			if destination:
 				return redirect(destination)
 			else:
-				return redirect('home') # `home` is the name of the URL pattern in the `main/urls.py` file
+				return redirect('js_home') # `home` is the name of the URL pattern in the `main/urls.py` file
 		else:
 			context['registration_form'] = form # this will pass any error message related to the form fields
 

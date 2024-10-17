@@ -22,10 +22,11 @@ from django.contrib.auth import views as auth_views
 
 from a_homepage.views import home_view
 from a_user.views import register_view, login_view, logout_view, account_search_view
+from a_spa_frontend.views import index
 
 
 urlpatterns = [
-    path('', include('a_spa_frontend.urls'), name='js_home'),
+    path('', index, name='js_home'),
     path('api/', include('a_api.urls'), name='api'),
 	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
