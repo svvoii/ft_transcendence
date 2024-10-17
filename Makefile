@@ -50,11 +50,8 @@ clean-migrations:
 	@echo -e "${RED}Cleaning migration files...${NC}"
 	find . -path "*/migrations/*.py" ! -name "__init__.py" -delete
 
-clean:
+clean: down rmi rmvol
 	@echo -e "${RED}Cleaning all...${NC}"
-	make down
-	make rmi
-	make rmvol
 
 re: clean up
 

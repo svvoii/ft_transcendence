@@ -25,9 +25,9 @@ from a_user.views import register_view, login_view, logout_view, account_search_
 
 
 urlpatterns = [
-    path('', include('a_spa_frontend.urls'), name='home'),
+    path('', include('a_spa_frontend.urls'), name='js_home'),
     path('api/', include('a_api.urls'), name='api'),
-	path('home/', home_view, name='old_home'),
+	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
