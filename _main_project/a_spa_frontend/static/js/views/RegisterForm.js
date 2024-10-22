@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { navigateTo } from "../index.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -27,6 +28,8 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
+    const modal = document.getElementById("modalWindow");
+
     document.getElementById('registrationForm').addEventListener('submit', async(event) => {
       // Create form 
       const form = event.target;
@@ -54,7 +57,8 @@ export default class extends AbstractView {
         if (response.ok) {
           messageDiv.textContent = result.message;
           if (result.redirect) {
-            window.location.href = result.redirect;
+            modal.style.display = "none";
+            navigateTo(result.redirect);
           }
         } else {
           messageDiv.textContent = JSON.stringify(result.errors);

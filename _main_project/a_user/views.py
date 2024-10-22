@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
 from a_user.models import Account, BlockedUser
@@ -13,6 +14,7 @@ from a_friends.friend_request_status import FriendRequestStatus
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 
 @api_view(["GET", "POST"])
@@ -32,7 +34,8 @@ def register_view(request, *args, **kwargs):
 			login(request, account)
 		else:
 			return Response({"message": "Registration Form not valid."})
-	return Response({"message": "Registration Successful."})
+	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
+	# return redirect('js_home')
 
 
 def det_redirect_if_exists(request):
