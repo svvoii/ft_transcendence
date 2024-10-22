@@ -84,6 +84,22 @@ pre {
   cursor: pointer;
 }
 
+.nav__button {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: #eeeeee;
+  background: #222222;
+  /* font-weight: 500; */
+  border: none;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+}
+
+.nav__button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 #app {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
@@ -99,4 +115,12 @@ pre {
   padding: 0;
   text-align: left;
   vertical-align: top;
+}
+
+#registerForm {
+  display: block;
+}
+
+#logout {
+  display: block;
 }

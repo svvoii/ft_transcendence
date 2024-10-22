@@ -7,6 +7,7 @@ import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
 import Register from "./views/Register.js";
+import RegisterForm from "./views/RegisterForm.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -84,4 +85,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   router();
+});
+
+const modal = document.getElementById("modalWindow");
+
+document.getElementById('logout').addEventListener('click', async(event) => {
+  console.log('logout');
+});
+
+document.getElementById('registerForm').addEventListener('click', async(event) => {
+  console.log('registerForm');
+
+  modal.style.display = "block";
+  
+  const registerForm = new RegisterForm();
+  document.querySelector('#modalWindow').innerHTML = await registerForm.getHtml();
+  registerForm.afterRender();
+  
+  // Define the behavior of the close button after it is in the DOM.
+  const span = document.getElementsByClassName("close")[0];
+  span.addEventListener('click', () => {
+    modal.style.display = "none";
+  });
 });
