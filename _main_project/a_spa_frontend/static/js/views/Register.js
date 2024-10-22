@@ -26,6 +26,7 @@ export default class extends AbstractView {
       
       const registerForm = new RegisterForm();
       document.querySelector('#modalWindow').innerHTML = await registerForm.getHtml();
+      registerForm.afterRender();
       
       // Define the behavior of the close button after it is in the DOM.
       const span = document.getElementsByClassName("close")[0];

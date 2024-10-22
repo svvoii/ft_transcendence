@@ -24,6 +24,7 @@ export default class extends AbstractView {
 
     testHttp.addEventListener('click', async () => {
       const response = await fetch('http://localhost:8000/api/api_http_test_func/');
+      // const response = await fetch('http://localhost:8000/register/');
       const text = await response.text();
 
       const responseContainer = document.getElementById("responseHtml");

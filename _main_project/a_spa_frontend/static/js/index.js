@@ -34,12 +34,12 @@ const router = async () => {
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
-    { path: '/posts', view: Posts },
+    { path: '/posts/', view: Posts },
     { path: '/posts/new_post', view: NewPost },
     { path: '/posts/:id', view: ViewPost },
-    { path: '/api_testing', view: ApiTesting },
-    { path: '/register', view: Register },
-    { path: '/settings', view: Settings },
+    { path: '/api_testing/', view: ApiTesting },
+    { path: '/register_page/', view: Register },
+    { path: '/settings/', view: Settings },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
