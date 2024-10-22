@@ -1,5 +1,6 @@
 body {
-  --nav-width: 200px;
+  /* --nav-width: 200px; */
+  --nav-height: 60px;
   margin: 0 0 0 var(--nav-width);
   font-family: 'Quicksand', sans-serif;
   font-size: 18px;
@@ -17,9 +18,13 @@ pre {
   position: fixed;
   top: 0;
   left: 0;
-  width: var(--nav-width);
-  height: 100vh;
+  /* width: var(--nav-width); */
+  /* height: 100vh; */
+  width: 100%;
+  height: var(--nav-height);
   background: #222222;
+  display: flex;
+  align-items: center;
 }
 
 .nav__link {
@@ -81,6 +86,8 @@ pre {
 
 #app {
   margin: 2em;
+  margin-top: var(--nav-height); /* overwrites only the margin top attribute */
+  /* margin: var(--nav-height) 2em 2em 2em; top right bottom left */
   line-height: 1.5;
   font-weight: 500;
 }
