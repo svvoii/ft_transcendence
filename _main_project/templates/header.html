@@ -21,6 +21,7 @@
 <nav>
 
 	<a href="/" title="HOME"> <span class="material-symbols-outlined">home</span></a>
+	<a href="/home/" title="OLD_HOME"> <span class="material-symbols-outlined">other_houses</span> </a>
 
 	<form action="{% url 'search' %}" method="get">
 		<input type="text" name="q" id="id_q_large" placeholder="Search...">
@@ -94,7 +95,17 @@ PROFILE DROPDOWN
 		<a href="{% url 'logout' %}" title="LOGOUT"> <span class="material-symbols-outlined">logout</span>Logout</a>
 	{% else %}
 		<a href="{% url 'login' %}" title="LOGIN"> <span class="material-symbols-outlined">login</span>Login</a>
-		<a href="{% url 'register' %}" title="REGISTER"> <span class="material-symbols-outlined">person_add</span>Register</a>
+		{% comment %} 
+		<a href="{% url 'register' %}" title="REGISTER"> <span class="material-symbols-outlined">person_add</span>Register</a> 
+
+		<a href="" title="REGISTER" id="registerButton"> <span class="material-symbols-outlined">person_add</span>Register</a>
+
+	<div id="registerFormContainer"></div>
+
+		{% endcomment %}
+
+		<button id="registerButton">Register_JS</button>
 	{% endif %}
+
 
 </nav>

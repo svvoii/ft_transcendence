@@ -14,10 +14,14 @@ The following script tag is for Alpine.js (used in the frontend chat dropdown fu
 {% endcomment %}
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+	<script src="{% static 'js/register.js' %}" defer></script>
+
 </head>
 
 <body>
 	{% include 'header.html' %}
+
+	<div id="registerFormContainer"></div>
 
 	{% if messages %}
 		{% for message in messages %}

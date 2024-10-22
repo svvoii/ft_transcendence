@@ -12,33 +12,54 @@ from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from django.urls import reverse
 
 
-def register_view(request, *args, **kwargs):
-	user = request.user
-	if user.is_authenticated:
-		return HttpResponse(f"You are already authenticated as {user.email}.")
+@api_view(['POST'])
+def api_register_view(request):
+	form = RegistrationForm(request.data)
+	if form.is_valid():
+		form.save()
+		email = form.cleaned_data.get('email')
+		raw_password = form.cleaned_data.get('password1')
+		account = authenticate(email=email, password=raw_password)
+		login(request, account)
+		return Response({'redirect_url': reverse('home')}, status=status.HTTP_201_CREATED)
+	else:
+		return Response({'error': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-	context = {}
-	if request.POST:
-		form = RegistrationForm(request.POST) # this will create a form object with the data passed from the `register.html`
-		if form.is_valid(): # this will validate the form data (all the fields of the form are valid)
-			form.save() # this will trigger the `clean_email` and `clean_username` methods of the `RegistrationForm` class
-			email = form.cleaned_data.get('email')
-			raw_password = form.cleaned_data.get('password1')
-			account = authenticate(email=email, password=raw_password)
-			login(request, account)
 
-			destination = det_redirect_if_exists(request) # this is created in the (Login, Logout) step
-			# destination = kwargs.get('next')
-			if destination:
-				return redirect(destination)
-			else:
-				return redirect('js_home') # `home` is the name of the URL pattern in the `main/urls.py` file
-		else:
-			context['registration_form'] = form # this will pass any error message related to the form fields
+# def register_view(request):
+#     return render(request, 'a_user/register.html')
 
-	return render(request, 'a_user/register.html', context)
+# def register_view(request, *args, **kwargs):
+# 	user = request.user
+# 	if user.is_authenticated:
+# 		return HttpResponse(f"You are already authenticated as {user.email}.")
+
+# 	context = {}
+# 	if request.POST:
+# 		form = RegistrationForm(request.POST) # this will create a form object with the data passed from the `register.html`
+# 		if form.is_valid(): # this will validate the form data (all the fields of the form are valid)
+# 			form.save() # this will trigger the `clean_email` and `clean_username` methods of the `RegistrationForm` class
+# 			email = form.cleaned_data.get('email')
+# 			raw_password = form.cleaned_data.get('password1')
+# 			account = authenticate(email=email, password=raw_password)
+# 			login(request, account)
+
+# 			destination = det_redirect_if_exists(request) # this is created in the (Login, Logout) step
+# 			# destination = kwargs.get('next')
+# 			if destination:
+# 				return redirect(destination)
+# 			else:
+# 				return redirect('js_home') # `home` is the name of the URL pattern in the `main/urls.py` file
+# 		else:
+# 			context['registration_form'] = form # this will pass any error message related to the form fields
+
+# 	return render(request, 'a_user/register.html', context)
 
 
 def det_redirect_if_exists(request):
