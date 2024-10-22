@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -19,39 +19,20 @@ from rest_framework.response import Response
 def register_view(request, *args, **kwargs):
 	user = request.user
 	if user.is_authenticated:
-		# return Response({"message": f"You are already authenticated as {user.email}."})
-		print("doin it 1");
 		return Response({"message": f"You are already authenticated as {user.email}."})
-
-	context = {}
-
 	if request.method == 'GET':
 		return redirect('register_page')
 	if request.method == 'POST':
-		form = RegistrationForm(request.POST) # this will create a form object with the data passed from the `register.html`
-		if form.is_valid(): # this will validate the form data (all the fields of the form are valid)
-			form.save() # this will trigger the `clean_email` and `clean_username` methods of the `RegistrationForm` class
+		form = RegistrationForm(request.data)
+		if form.is_valid():
+			form.save()
 			email = form.cleaned_data.get('email')
 			raw_password = form.cleaned_data.get('password1')
 			account = authenticate(email=email, password=raw_password)
 			login(request, account)
-
-			destination = det_redirect_if_exists(request) # this is created in the (Login, Logout) step
-			# destination = kwargs.get('next')
-			if destination:
-				print("doin it 2");
-				return redirect(destination)
-			else:
-				print("doin it 3");
-				return redirect('js_home') # `home` is the name of the URL pattern in the `main/urls.py` file
 		else:
-			context['registration_form'] = form # this will pass any error message related to the form fields
-	else:
-		return Response({"message": "Post was not valid."})
-
-	print("doin it 4");
-	return Response(context)
-	# return render(request, 'a_user/register.html', context)
+			return Response({"message": "Registration Form not valid."})
+	return Response({"message": "Registration Successful."})
 
 
 def det_redirect_if_exists(request):
