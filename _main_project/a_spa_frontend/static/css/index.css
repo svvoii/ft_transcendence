@@ -117,14 +117,18 @@ pre {
   vertical-align: top;
 }
 
-#registerForm {
+#registerBtn {
   display: block;
 }
 
-#login {
+#loginBtn {
   display: block;
 }
 
-#logout {
+#logoutBtn {
+  display: none;
+}
+
+#userBtn {
   display: none;
 }

@@ -6,7 +6,6 @@ import ViewPost from "./views/ViewPost.js";
 import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
-// import Register from "./views/Register.js";
 import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
 
 // Create a regex to replace the path with something.
@@ -88,4 +87,5 @@ document.addEventListener('DOMContentLoaded', () => {
   router();
 });
 
+// Adds functionality for the navbar buttons 
 navBarButtons();

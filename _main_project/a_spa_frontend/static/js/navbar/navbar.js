@@ -2,19 +2,22 @@ import RegisterForm from "../views/RegisterForm.js";
 import LoginForm from "../views/LoginForm.js";
 
 export const updateNavBar = function () {
-  const login = document.getElementById("login");
-  const logout = document.getElementById("logout");
-  const register = document.getElementById("registerForm");
+  const login = document.getElementById("loginBtn");
+  const register = document.getElementById("registerBtn");
+  const logout = document.getElementById("logoutBtn");
+  const user = document.getElementById("userBtn");
 
   if (localStorage.getItem('isLoggedIn') == 'true') {
-    console.log('logged in');
+    // console.log('logged in');
     login.style.display = "none";
     register.style.display = "none";
+    user.style.display = "block";
     logout.style.display = "block";
   } else {
-    console.log('not logged in');
+    // console.log('not logged in');
     login.style.display = "block";
     register.style.display = "block";
+    user.style.display = "none";
     logout.style.display = "none";
   }
 }
@@ -22,8 +25,9 @@ export const updateNavBar = function () {
 export const navBarButtons = function () {
   const modal = document.getElementById("modalWindow");
 
-  document.getElementById('login').addEventListener('click', async(event) => {
-    console.log('loginForm');
+  // Login Button
+  document.getElementById('loginBtn').addEventListener('click', async(event) => {
+    // console.log('loginForm');
 
     modal.style.display = "block";
     
@@ -44,16 +48,9 @@ export const navBarButtons = function () {
     };
   });
 
-  document.getElementById('logout').addEventListener('click', async(event) => {
-    console.log('logout');
-
-    await fetch('/logout');
-    localStorage.removeItem('isLoggedIn');
-    updateNavBar();
-  });
-
-  document.getElementById('registerForm').addEventListener('click', async(event) => {
-    console.log('registerForm');
+  // Register Button
+  document.getElementById('registerBtn').addEventListener('click', async(event) => {
+    // console.log('registerForm');
 
     modal.style.display = "block";
     
@@ -72,5 +69,19 @@ export const navBarButtons = function () {
         modal.style.display = "none";
       }
     };
+  });
+
+  // Logout Button
+  document.getElementById('logoutBtn').addEventListener('click', async(event) => {
+    // console.log('logout');
+
+    await fetch('/logout');
+    localStorage.removeItem('isLoggedIn');
+    updateNavBar();
+  });
+
+  // User Button
+  document.getElementById('userBtn').addEventListener('click', async(event) => {
+    console.log('user');
   });
 };
