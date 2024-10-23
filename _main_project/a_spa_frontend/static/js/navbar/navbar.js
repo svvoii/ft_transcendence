@@ -1,5 +1,6 @@
 import RegisterForm from "../views/RegisterForm.js";
 import LoginForm from "../views/LoginForm.js";
+import { navigateTo } from "../index.js";
 
 export const updateNavBar = function () {
   const login = document.getElementById("loginBtn");
@@ -75,9 +76,9 @@ export const navBarButtons = function () {
   document.getElementById('logoutBtn').addEventListener('click', async(event) => {
     // console.log('logout');
 
-    await fetch('/logout');
+    await fetch('/logout/');
     localStorage.removeItem('isLoggedIn');
-    updateNavBar();
+    navigateTo('/');
   });
 
   // User Button
