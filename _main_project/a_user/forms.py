@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
@@ -29,6 +31,18 @@ class RegistrationForm(UserCreationForm):
 			return username
 		raise forms.ValidationError(f'Username {username} is already in use.')
 
+	def getErrors(self):
+		'''
+		This method is used to get the error message from the form in a text format
+		'''
+		text_errors = ''
+		errors = json.loads(self.errors.as_json())
+		for field, message in errors.items():
+			if (text_errors != ''):
+				text_errors += '\n'
+			text_errors += message[0]['message']
+		return text_errors
+
 
 class AccountAuthenticationForm(forms.ModelForm):
 
@@ -44,6 +58,16 @@ class AccountAuthenticationForm(forms.ModelForm):
 			password = self.cleaned_data['password']
 			if not authenticate(email=email, password=password):
 				raise forms.ValidationError('Invalid login')
+	
+	def getErrors(self):
+		'''
+		This method is used to get the error message from the form in a text format
+		'''
+		try:
+			text_errors = json.loads(self.errors.as_json())['__all__'][0]['message']
+		except Exception as e:
+			print('Error finding error message from froms.ModelForm')
+		return text_errors
 
 
 class AccountUpdateForm(forms.ModelForm):

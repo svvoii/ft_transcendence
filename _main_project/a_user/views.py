@@ -33,7 +33,7 @@ def register_view(request, *args, **kwargs):
 			account = authenticate(email=email, password=raw_password)
 			login(request, account)
 		else:
-			return Response({"message": "Registration Form not valid."})
+			return Response({"message": form.getErrors()})
 	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
 
 
@@ -70,8 +70,8 @@ def login_view(request, *args, **kwargs):
 			else:
 				return Response({"message": "Invalid login credentials."})
 		else:
-			return Response({"message": "Login Form not valid."})
-	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
+			return Response({"message": form.getErrors()})
+	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_200_OK)
 
 
 def det_redirect_if_exists(request):
