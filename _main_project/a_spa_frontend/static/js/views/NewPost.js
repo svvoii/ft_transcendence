@@ -32,7 +32,8 @@ export default class extends AbstractView {
       const response = await fetch("http://localhost:8000/api/blogposts/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-CSRFToken": this.getCookie("csrftoken")
         },
         body: JSON.stringify({
           title: userTitle,
@@ -41,7 +42,7 @@ export default class extends AbstractView {
       });
 
       if (response.ok) {
-        navigateTo("/posts");
+        navigateTo("/posts/");
       } else {
         alert("There was an error with your submission. Please try again.");
       }

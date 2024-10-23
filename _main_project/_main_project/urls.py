@@ -33,6 +33,7 @@ urlpatterns = [
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
 	path('friends/', include('a_friends.urls', namespace='friends')),
+    path('register_page/', index, name='register_page'),
 	path('register/', register_view, name='register'),
 	path('login/', login_view, name='login'),
 	path('logout/', logout_view, name='logout'),

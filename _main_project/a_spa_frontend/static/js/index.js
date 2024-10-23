@@ -6,7 +6,7 @@ import ViewPost from "./views/ViewPost.js";
 import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
-import Register from "./views/Register.js";
+import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -34,12 +34,12 @@ const router = async () => {
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
-    { path: '/posts', view: Posts },
+    { path: '/posts/', view: Posts },
     { path: '/posts/new_post', view: NewPost },
     { path: '/posts/:id', view: ViewPost },
-    { path: '/api_testing', view: ApiTesting },
-    { path: '/register', view: Register },
-    { path: '/settings', view: Settings },
+    { path: '/api_testing/', view: ApiTesting },
+    { path: '/settings/', view: Settings },
+    // { path: '/register_page/', view: Register },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
@@ -67,6 +67,7 @@ const router = async () => {
   // Uses the view instance we just created to render the view
   document.querySelector('#app').innerHTML = await view.getHtml();
   await view.afterRender();
+  updateNavBar();
 };
 
 // This event listener listens for a popstate event and calls the router function
@@ -85,3 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   router();
 });
+
+// Adds functionality for the navbar buttons 
+navBarButtons();

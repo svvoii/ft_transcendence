@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
 from a_user.models import Account, BlockedUser
@@ -12,33 +12,29 @@ from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 
+@api_view(["GET", "POST"])
 def register_view(request, *args, **kwargs):
 	user = request.user
 	if user.is_authenticated:
-		return HttpResponse(f"You are already authenticated as {user.email}.")
-
-	context = {}
-	if request.POST:
-		form = RegistrationForm(request.POST) # this will create a form object with the data passed from the `register.html`
-		if form.is_valid(): # this will validate the form data (all the fields of the form are valid)
-			form.save() # this will trigger the `clean_email` and `clean_username` methods of the `RegistrationForm` class
+		return Response({"message": f"You are already authenticated as {user.email}."})
+	if request.method == 'GET':
+		return redirect('js_home')
+	if request.method == 'POST':
+		form = RegistrationForm(request.data)
+		if form.is_valid():
+			form.save()
 			email = form.cleaned_data.get('email')
 			raw_password = form.cleaned_data.get('password1')
 			account = authenticate(email=email, password=raw_password)
 			login(request, account)
-
-			destination = det_redirect_if_exists(request) # this is created in the (Login, Logout) step
-			# destination = kwargs.get('next')
-			if destination:
-				return redirect(destination)
-			else:
-				return redirect('js_home') # `home` is the name of the URL pattern in the `main/urls.py` file
 		else:
-			context['registration_form'] = form # this will pass any error message related to the form fields
-
-	return render(request, 'a_user/register.html', context)
+			return Response({"message": "Registration Form not valid."})
+	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
 
 
 def det_redirect_if_exists(request):
@@ -49,35 +45,34 @@ def det_redirect_if_exists(request):
 	return redirect
 
 
+@api_view(["GET"])
 def logout_view(request):
 	logout(request)
-	return redirect('home')
+	return Response({"message": "You have been logged out."})
+	# return redirect('home')
 
+
+@api_view(["POST"])
 def login_view(request, *args, **kwargs):
 	context = {}
-	# context['SOCIALACCOUNT_ENABLED'] = settings.SOCIALACCOUNT_ENABLED
-
 	user = request.user
-	if user.is_authenticated:
-		return redirect('home')
-	
-	if request.POST:
-		form = AccountAuthenticationForm(request.POST)
-		if form.is_valid():
-			email = request.POST['email']
-			password = request.POST['password']
-			user = authenticate(email=email, password=password)
 
+	if user.is_authenticated:
+		return Response({"message": f"You are already authenticated as {user.email}."})
+	if request.method == 'POST':
+		form = AccountAuthenticationForm(request.data)
+		if form.is_valid():
+			email = form.cleaned_data.get('email')
+			password = form.cleaned_data.get('password')
+			user = authenticate(email=email, password=password)
 			if user:
 				login(request, user)
-				destination = det_redirect_if_exists(request)
-				if destination:
-					return redirect(destination)
-				return redirect('home')
+			else:
+				return Response({"message": "Invalid login credentials."})
 		else:
-			context['login_form'] = form
+			return Response({"message": "Login Form not valid."})
+	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
 
-	return render(request, 'a_user/login.html', context)
 
 def det_redirect_if_exists(request):
 	redirect = None
