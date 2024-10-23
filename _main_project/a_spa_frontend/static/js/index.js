@@ -6,8 +6,8 @@ import ViewPost from "./views/ViewPost.js";
 import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
-import Register from "./views/Register.js";
-import RegisterForm from "./views/RegisterForm.js";
+// import Register from "./views/Register.js";
+import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -39,8 +39,8 @@ const router = async () => {
     { path: '/posts/new_post', view: NewPost },
     { path: '/posts/:id', view: ViewPost },
     { path: '/api_testing/', view: ApiTesting },
-    { path: '/register_page/', view: Register },
     { path: '/settings/', view: Settings },
+    // { path: '/register_page/', view: Register },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
@@ -68,6 +68,7 @@ const router = async () => {
   // Uses the view instance we just created to render the view
   document.querySelector('#app').innerHTML = await view.getHtml();
   await view.afterRender();
+  updateNavBar();
 };
 
 // This event listener listens for a popstate event and calls the router function
@@ -87,24 +88,4 @@ document.addEventListener('DOMContentLoaded', () => {
   router();
 });
 
-const modal = document.getElementById("modalWindow");
-
-document.getElementById('logout').addEventListener('click', async(event) => {
-  console.log('logout');
-});
-
-document.getElementById('registerForm').addEventListener('click', async(event) => {
-  console.log('registerForm');
-
-  modal.style.display = "block";
-  
-  const registerForm = new RegisterForm();
-  document.querySelector('#modalWindow').innerHTML = await registerForm.getHtml();
-  registerForm.afterRender();
-  
-  // Define the behavior of the close button after it is in the DOM.
-  const span = document.getElementsByClassName("close")[0];
-  span.addEventListener('click', () => {
-    modal.style.display = "none";
-  });
-});
+navBarButtons();

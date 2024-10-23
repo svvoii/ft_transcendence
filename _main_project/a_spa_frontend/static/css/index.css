@@ -121,6 +121,10 @@ pre {
   display: block;
 }
 
-#logout {
+#login {
   display: block;
+}
+
+#logout {
+  display: none;
 }

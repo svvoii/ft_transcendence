@@ -23,7 +23,7 @@ def register_view(request, *args, **kwargs):
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
 	if request.method == 'GET':
-		return redirect('register_page')
+		return redirect('js_home')
 	if request.method == 'POST':
 		form = RegistrationForm(request.data)
 		if form.is_valid():
@@ -35,7 +35,6 @@ def register_view(request, *args, **kwargs):
 		else:
 			return Response({"message": "Registration Form not valid."})
 	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
-	# return redirect('js_home')
 
 
 def det_redirect_if_exists(request):
@@ -46,35 +45,34 @@ def det_redirect_if_exists(request):
 	return redirect
 
 
+@api_view(["GET"])
 def logout_view(request):
 	logout(request)
-	return redirect('home')
+	return Response({"message": "You have been logged out."})
+	# return redirect('home')
 
+
+@api_view(["POST"])
 def login_view(request, *args, **kwargs):
 	context = {}
-	# context['SOCIALACCOUNT_ENABLED'] = settings.SOCIALACCOUNT_ENABLED
-
 	user = request.user
-	if user.is_authenticated:
-		return redirect('home')
-	
-	if request.POST:
-		form = AccountAuthenticationForm(request.POST)
-		if form.is_valid():
-			email = request.POST['email']
-			password = request.POST['password']
-			user = authenticate(email=email, password=password)
 
+	if user.is_authenticated:
+		return Response({"message": f"You are already authenticated as {user.email}."})
+	if request.method == 'POST':
+		form = AccountAuthenticationForm(request.data)
+		if form.is_valid():
+			email = form.cleaned_data.get('email')
+			password = form.cleaned_data.get('password')
+			user = authenticate(email=email, password=password)
 			if user:
 				login(request, user)
-				destination = det_redirect_if_exists(request)
-				if destination:
-					return redirect(destination)
-				return redirect('home')
+			else:
+				return Response({"message": "Invalid login credentials."})
 		else:
-			context['login_form'] = form
+			return Response({"message": "Login Form not valid."})
+	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
 
-	return render(request, 'a_user/login.html', context)
 
 def det_redirect_if_exists(request):
 	redirect = None
