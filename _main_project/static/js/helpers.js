@@ -1,0 +1,79 @@
+// Function to show a pop-up message
+function showPopupMessage(message, type) {
+	const popup = document.createElement('div');
+	popup.className = `popup-message ${type}`;
+	popup.innerHTML = `
+		<div class="popup-content">
+			<span class="close-popup">&times;</span>
+			<p>${message}</p>
+		</div>
+	`;
+	document.body.appendChild(popup);
+
+	popup.querySelector('.close-popup').addEventListener('click', function() {
+		popup.remove();
+	});
+
+	setTimeout(function() {
+		popup.remove();
+	}, 3000);
+}
+
+// CSS style for popup message
+const style = document.createElement('style');
+style.innerHTML = `
+	.popup-message {
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 20px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .popup-message.success {
+        border-color: green;
+        color: green;
+    }
+    .popup-message.error {
+        border-color: red;
+        color: red;
+    }
+    .popup-message.info {
+        border-color: blue;
+        color: blue;
+    }
+    .popup-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .close-popup {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+document.head.appendChild(style);
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

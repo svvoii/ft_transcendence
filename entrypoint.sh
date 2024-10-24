@@ -18,6 +18,6 @@ echo "Creating public chat room..."
 python _main_project/manage.py create_public_chatroom
 
 
-python _main_project/manage.py collectstatic --noinput
+# python _main_project/manage.py collectstatic --noinput
 # Starting the server
 python _main_project/manage.py runserver 0.0.0.0:8000

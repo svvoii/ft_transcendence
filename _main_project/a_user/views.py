@@ -27,10 +27,19 @@ def api_register_view(request):
 		raw_password = form.cleaned_data.get('password1')
 		account = authenticate(email=email, password=raw_password)
 		login(request, account)
-		return Response({'redirect_url': reverse('home')}, status=status.HTTP_201_CREATED)
+		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		return Response({
+    		'redirect_url': reverse('home'),
+			'username': account.username,
+			'profile_image_url': profile_image_url,
+    	}, status=status.HTTP_201_CREATED)
 	else:
 		return Response({'error': form.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def api_logout_view(request):
+	logout(request)
+	return Response(status=status.HTTP_204_NO_CONTENT)
 
 # def register_view(request):
 #     return render(request, 'a_user/register.html')
@@ -50,7 +59,7 @@ def api_register_view(request):
 # 			account = authenticate(email=email, password=raw_password)
 # 			login(request, account)
 
-# 			destination = det_redirect_if_exists(request) # this is created in the (Login, Logout) step
+# 			destination = get_redirect_if_exists(request) # this is created in the (Login, Logout) step
 # 			# destination = kwargs.get('next')
 # 			if destination:
 # 				return redirect(destination)
@@ -62,17 +71,17 @@ def api_register_view(request):
 # 	return render(request, 'a_user/register.html', context)
 
 
-def det_redirect_if_exists(request):
-	redirect = None
-	if request.GET:
-		if request.GET.get('next'):
-			redirect = str(request.GET.get('next'))
-	return redirect
+# def get_redirect_if_exists(request):
+# 	redirect = None
+# 	if request.GET:
+# 		if request.GET.get('next'):
+# 			redirect = str(request.GET.get('next'))
+# 	return redirect
 
 
-def logout_view(request):
-	logout(request)
-	return redirect('home')
+# def logout_view(request):
+# 	logout(request)
+# 	return redirect('home')
 
 def login_view(request, *args, **kwargs):
 	context = {}

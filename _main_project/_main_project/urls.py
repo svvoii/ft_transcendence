@@ -21,8 +21,8 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 from a_homepage.views import home_view
-from a_user.views import login_view, logout_view, account_search_view
-from a_user.views import api_register_view
+from a_user.views import login_view, account_search_view
+from a_user.views import api_register_view, api_logout_view
 from a_spa_frontend.views import index
 
 
@@ -35,10 +35,11 @@ urlpatterns = [
 	path('chat/', include('a_chat.urls', namespace='chat')),
 	path('friends/', include('a_friends.urls', namespace='friends')),
 	# path('register/', register_view, name='register'),
-	path('api/register/', api_register_view, name='api_register'),
+	path('register/', api_register_view, name='api_register'),
 
 	path('login/', login_view, name='login'),
-	path('logout/', logout_view, name='logout'),
+	path('logout/', api_logout_view, name='logout'),
+	# path('logout/', logout_view, name='logout'),
 	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
     re_path(r'^.*/', include('a_spa_frontend.urls')),
