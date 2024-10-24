@@ -60,6 +60,15 @@ export default class extends AbstractView {
             localStorage.setItem('isLoggedIn', true);
             navigateTo(result.redirect);
           }
+          // Update user profile image
+          if (result.profile_image_url) {
+            const userPic = document.getElementById('userPic');
+            userPic.src = result.profile_image_url;
+            localStorage.setItem('profile_image_url', result.profile_image_url);
+          }
+          if (result.username) {
+            localStorage.setItem('profile_username', result.username);
+          }
         } else {
           messageDiv.textContent = JSON.stringify(result.errors);
         }

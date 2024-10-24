@@ -12,8 +12,9 @@ export const updateNavBar = function () {
     // console.log('logged in');
     login.style.display = "none";
     register.style.display = "none";
-    user.style.display = "block";
+    user.style.display = "flex";
     logout.style.display = "block";
+    getProfileInfo();
   } else {
     // console.log('not logged in');
     login.style.display = "block";
@@ -78,17 +79,33 @@ export const navBarButtons = function () {
 
     await fetch('/logout/');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('profile_image_url');
+    localStorage.removeItem('profile_username');
     navigateTo('/');
   });
 
   // User Button
   document.getElementById('userBtn').addEventListener('click', async(event) => {
-    const userBtn = document.getElementById('userBtn')
+    const userBtn = document.getElementById('userName')
 
     console.log('user');
     userBtn.textContent = 'Clicked!';
     setTimeout(() => {
-      userBtn.textContent = 'User';
+      userBtn.textContent = localStorage.getItem('profile_username');
     }, 2000);
   });
+};
+
+export const getProfileInfo = function () {
+  const profileImage = localStorage.getItem('profile_image_url');
+  const profileName = localStorage.getItem('profile_username');
+
+  if (profileImage !== null) {
+    const userPic = document.getElementById('userPic');
+    userPic.src = profileImage;
+  }  
+  if (profileName !== null) {
+    const userName = document.getElementById('userName');
+    userName.innerHTML = profileName;
+  }  
 };

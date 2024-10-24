@@ -17,24 +17,27 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 def register_view(request, *args, **kwargs):
 	user = request.user
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
-	if request.method == 'GET':
-		return redirect('js_home')
-	if request.method == 'POST':
-		form = RegistrationForm(request.data)
-		if form.is_valid():
-			form.save()
-			email = form.cleaned_data.get('email')
-			raw_password = form.cleaned_data.get('password1')
-			account = authenticate(email=email, password=raw_password)
-			login(request, account)
-		else:
-			return Response({"message": form.getErrors()})
-	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
+	form = RegistrationForm(request.data)
+	if form.is_valid():
+		form.save()
+		email = form.cleaned_data.get('email')
+		raw_password = form.cleaned_data.get('password1')
+		account = authenticate(email=email, password=raw_password)
+		login(request, account)
+		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		return Response({
+			"message": "Registration Successful", 
+			"redirect": reverse('js_home'),
+			"profile_image_url": profile_image_url,
+			"username": account.username,
+		}, status=status.HTTP_201_CREATED)
+	else:
+		return Response({"message": form.getErrors()})
 
 
 def det_redirect_if_exists(request):
@@ -59,19 +62,24 @@ def login_view(request, *args, **kwargs):
 
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
-	if request.method == 'POST':
-		form = AccountAuthenticationForm(request.data)
-		if form.is_valid():
-			email = form.cleaned_data.get('email')
-			password = form.cleaned_data.get('password')
-			user = authenticate(email=email, password=password)
-			if user:
-				login(request, user)
-			else:
-				return Response({"message": "Invalid login credentials."})
+	form = AccountAuthenticationForm(request.data)
+	if form.is_valid():
+		email = form.cleaned_data.get('email')
+		password = form.cleaned_data.get('password')
+		account = authenticate(email=email, password=password)
+		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		if account:
+			login(request, account)
+			return Response({
+				"message": "Login Successful", 
+				"redirect": reverse('js_home'),
+				"profile_image_url": profile_image_url,
+				"username": account.username,
+			}, status=status.HTTP_200_OK)
 		else:
-			return Response({"message": form.getErrors()})
-	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_200_OK)
+			return Response({"message": "Invalid login credentials."})
+	else:
+		return Response({"message": form.getErrors()})
 
 
 def det_redirect_if_exists(request):

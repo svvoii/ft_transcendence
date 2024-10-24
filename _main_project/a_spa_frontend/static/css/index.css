@@ -85,7 +85,8 @@ pre {
 }
 
 .nav__button {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 12px 18px;
   text-decoration: none;
   color: #eeeeee;
@@ -98,6 +99,10 @@ pre {
 
 .nav__button:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.nav__button img {
+  margin-right: 10px;
 }
 
 #app {
