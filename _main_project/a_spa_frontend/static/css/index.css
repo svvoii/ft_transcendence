@@ -59,6 +59,17 @@ pre {
   background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
 }
 
+.modal-game {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: var(--nav-height); /* 60px */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+}
+
 /* Modal Content */
 .modal-content {
   background-color: white;
