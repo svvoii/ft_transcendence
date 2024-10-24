@@ -83,6 +83,12 @@ export const navBarButtons = function () {
 
   // User Button
   document.getElementById('userBtn').addEventListener('click', async(event) => {
+    const userBtn = document.getElementById('userBtn')
+
     console.log('user');
+    userBtn.textContent = 'Clicked!';
+    setTimeout(() => {
+      userBtn.textContent = 'User';
+    }, 2000);
   });
 };
