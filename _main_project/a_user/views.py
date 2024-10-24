@@ -41,6 +41,45 @@ def api_logout_view(request):
 	logout(request)
 	return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['POST'])
+def api_login_view(request):
+	context = {}
+	user = request.user
+ 
+	if user.is_authenticated:
+		return Response({'redirect_url': reverse('home')}, status=status.HTTP_200_OK)
+	
+	form = AccountAuthenticationForm(request.data)
+	if form.is_valid():
+		email = form.cleaned_data.get('email')
+		password = form.cleaned_data.get('password')
+		user = authenticate(email=email, password=password)
+
+		if user:
+			login(request, user)
+			profile_image_url = user.profile_image.url if user.profile_image else get_default_profile_image()
+			destination = get_redirect_if_exists(request) if get_redirect_if_exists(request) else reverse('home')
+			context = {
+				'redirect_url': destination,
+				'username': user.username,
+				'profile_image_url': profile_image_url,
+			}
+			return Response(context, status=status.HTTP_200_OK)
+
+	return Response({'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def api_logged_in_user_view(request):
+	user = request.user
+	if user.is_authenticated:
+		profile_image_url = user.profile_image.url if user.profile_image else get_default_profile_image()
+		return Response({
+			'username': user.username,
+			'profile_image_url': profile_image_url,
+		}, status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 # def register_view(request):
 #     return render(request, 'a_user/register.html')
 
@@ -71,43 +110,43 @@ def api_logout_view(request):
 # 	return render(request, 'a_user/register.html', context)
 
 
-# def get_redirect_if_exists(request):
-# 	redirect = None
-# 	if request.GET:
-# 		if request.GET.get('next'):
-# 			redirect = str(request.GET.get('next'))
-# 	return redirect
+def get_redirect_if_exists(request):
+	redirect = None
+	if request.GET:
+		if request.GET.get('next'):
+			redirect = str(request.GET.get('next'))
+	return redirect
 
 
 # def logout_view(request):
 # 	logout(request)
 # 	return redirect('home')
 
-def login_view(request, *args, **kwargs):
-	context = {}
-	# context['SOCIALACCOUNT_ENABLED'] = settings.SOCIALACCOUNT_ENABLED
+# def login_view(request, *args, **kwargs):
+# 	context = {}
+# 	# context['SOCIALACCOUNT_ENABLED'] = settings.SOCIALACCOUNT_ENABLED
 
-	user = request.user
-	if user.is_authenticated:
-		return redirect('home')
+# 	user = request.user
+# 	if user.is_authenticated:
+# 		return redirect('home')
 	
-	if request.POST:
-		form = AccountAuthenticationForm(request.POST)
-		if form.is_valid():
-			email = request.POST['email']
-			password = request.POST['password']
-			user = authenticate(email=email, password=password)
+# 	if request.POST:
+# 		form = AccountAuthenticationForm(request.POST)
+# 		if form.is_valid():
+# 			email = request.POST['email']
+# 			password = request.POST['password']
+# 			user = authenticate(email=email, password=password)
 
-			if user:
-				login(request, user)
-				destination = det_redirect_if_exists(request)
-				if destination:
-					return redirect(destination)
-				return redirect('home')
-		else:
-			context['login_form'] = form
+# 			if user:
+# 				login(request, user)
+# 				destination = det_redirect_if_exists(request)
+# 				if destination:
+# 					return redirect(destination)
+# 				return redirect('home')
+# 		else:
+# 			context['login_form'] = form
 
-	return render(request, 'a_user/login.html', context)
+# 	return render(request, 'a_user/login.html', context)
 
 def det_redirect_if_exists(request):
 	redirect = None

@@ -21,8 +21,8 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 from a_homepage.views import home_view
-from a_user.views import login_view, account_search_view
-from a_user.views import api_register_view, api_logout_view
+from a_user.views import account_search_view
+from a_user.views import api_register_view, api_logout_view, api_login_view, api_logged_in_user_view
 from a_spa_frontend.views import index
 
 
@@ -37,7 +37,8 @@ urlpatterns = [
 	# path('register/', register_view, name='register'),
 	path('register/', api_register_view, name='api_register'),
 
-	path('login/', login_view, name='login'),
+	path('logged_in_user/', api_logged_in_user_view, name='logged_in_user'),
+	path('login/', api_login_view, name='login'),
 	path('logout/', api_logout_view, name='logout'),
 	# path('logout/', logout_view, name='logout'),
 	path('user/', include('a_user.urls', namespace='user')),

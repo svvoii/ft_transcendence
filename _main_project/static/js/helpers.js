@@ -1,3 +1,76 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Add event listener to login button
+    const loginButton = document.getElementById('loginButton');
+    const loginFormContainer = document.getElementById('loginFormContainer');
+    if (loginButton) {
+        loginButton.addEventListener('click', function(event) {
+			event.preventDefault();
+			showLoginForm();
+		});
+	} else {
+        console.log('Login button not found');
+    }
+
+    // Add event listener to register button
+    const registerButton = document.getElementById('registerButton');
+    const registerFormContainer = document.getElementById('registerFormContainer');
+    if (registerButton) {
+        registerButton.addEventListener('click', renderRegisterForm);
+    } else {
+        console.log('Register button not found');
+    }
+
+    // Add event listener to logout button
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            handleLogout();
+        });
+    } else {
+		console.log('Logout button not found');
+	}
+});
+
+
+// Function to update the navbar for a logged-in user
+function updateNavbarForLoggedInUser(username, profileImageUrl) {
+
+    const chatDropdown = document.getElementById('chatDropdown');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const logoutButton = document.getElementById('logoutButton');
+    const loginButton = document.getElementById('loginButton');
+    const registerButton = document.getElementById('registerButton');
+
+    if (chatDropdown) chatDropdown.style.display = 'block';
+    if (profileDropdown) {
+        profileDropdown.style.display = 'block';
+        profileDropdown.querySelector('img').src = profileImageUrl;
+        profileDropdown.querySelector('button').innerHTML = `(${username})`;
+    }
+    if (logoutButton) logoutButton.style.display = 'inline';
+    if (loginButton) loginButton.style.display = 'none';
+    if (registerButton) registerButton.style.display = 'none';
+}
+
+// Function to update the navbar for a logged-out user
+function updateNavbarForLoggedOutUser() {
+    // const navbar = document.querySelector('nav');
+    const chatDropdown = document.getElementById('chatDropdown');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const logoutButton = document.getElementById('logoutButton');
+    const loginButton = document.getElementById('loginButton');
+    const registerButton = document.getElementById('registerButton');
+
+	if (chatDropdown) chatDropdown.style.display = 'none';
+    if (profileDropdown) profileDropdown.style.display = 'none';
+    if (logoutButton) logoutButton.style.display = 'none';
+    if (loginButton) loginButton.style.display = 'inline';
+    if (registerButton) registerButton.style.display = 'inline';
+}
+
 // Function to show a pop-up message
 function showPopupMessage(message, type) {
 	const popup = document.createElement('div');
@@ -16,7 +89,7 @@ function showPopupMessage(message, type) {
 
 	setTimeout(function() {
 		popup.remove();
-	}, 3000);
+	}, 50000);
 }
 
 // CSS style for popup message

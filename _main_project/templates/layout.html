@@ -14,16 +14,38 @@ The following script tag is for Alpine.js (used in the frontend chat dropdown fu
 {% endcomment %}
 	<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-	<script src="{% static 'js/register.js' %}" defer></script>
-	<script src="{% static 'js/logout.js' %}" defer></script>
+	<script src="{% static 'js/user_auth.js' %}" defer></script>
+{% comment %}
 	<script src="{% static 'js/helpers.js' %}" defer></script>
+	<script src="{% static 'js/register.js' %}" defer></script>
+	<script src="{% static 'js/login.js' %}" defer></script>
+	<script src="{% static 'js/logout.js' %}" defer></script>
+{% endcomment %}
 
 </head>
 
 <body>
 	{% include 'header.html' %}
 
-	<div id="registerFormContainer"></div>
+	<div id="registerFormContainer" style="display: none;">
+		<form id="registerForm">
+			{% csrf_token %}
+			<input type="email" id="email" placeholder="Email" required /><br>
+			<input type="text" id="username" placeholder="Username" required /><br>
+			<input type="password" id="password1" placeholder="Password" required /><br>
+			<input type="password" id="password2" placeholder="Confirm Password" required /><br>
+			<button type="submit">Register</button>
+		</form>
+	</div>
+	<div id="loginFormContainer" style="display: none;">
+		<form id="loginForm">
+			{% csrf_token %}
+			<input type="email" id="loginEmail" placeholder="Email" required /><br>
+			<input type="password" id="loginPassword" placeholder="Password" required /><br>
+			<button type="submit">Login</button>
+		</form>
+	</div>
+	<div id="errorMessages"></div>
 
 	{% if messages %}
 		{% for message in messages %}

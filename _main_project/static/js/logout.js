@@ -1,14 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Add event listener to logout button
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            handleLogout();
-        });
-    }
-});
-
 // Function to handle logout
 async function handleLogout() {
     try {
@@ -40,20 +29,4 @@ async function handleLogout() {
         console.error('Error:', error);
         showPopupMessage('An error occurred. Please try again.', 'error');
     }
-}
-
-// Function to update the navbar for a logged-out user
-function updateNavbarForLoggedOutUser() {
-    // const navbar = document.querySelector('nav');
-    const chatDropdown = document.getElementById('chatDropdown');
-    const profileDropdown = document.getElementById('profileDropdown');
-    const logoutButton = document.getElementById('logoutButton');
-    const loginButton = document.getElementById('loginButton');
-    const registerButton = document.getElementById('registerButton');
-
-	if (chatDropdown) chatDropdown.style.display = 'none';
-    if (profileDropdown) profileDropdown.style.display = 'none';
-    if (logoutButton) logoutButton.style.display = 'none';
-    if (loginButton) loginButton.style.display = 'inline';
-    if (registerButton) registerButton.style.display = 'inline';
 }

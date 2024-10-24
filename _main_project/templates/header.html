@@ -72,8 +72,8 @@ PROFILE DROPDOWN
 	{% endcomment %}
 		<div id="profileDropdown" x-data="{ dropdownOpen: false }" style="display: none;">
 			<button @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" title="PROFILE">
-				<img src="{{ request.user.profile_image.url }}" alt="LOGO" width="40" height="40">
-				</br>({{ request.user.username }})
+				<img id="profileImage" src="{{ request.user.profile_image.url }}" alt="LOGO" width="40" height="40">
+				</br>(<span id="profileUsername">{{ request.user.username }}</span>)
 			</button>
 			<div x-show="dropdownOpen" x-cloak class=""
 				x-transition:enter="duration-300 ease-out"
@@ -89,15 +89,17 @@ PROFILE DROPDOWN
 				</ul>
 			</div>
 		</div>
+
+		<button id="logoutButton" style="display: none;">Logout</a>
+		{% comment %} <a href="{% url 'login' %}" title="LOGIN"> <span class="material-symbols-outlined">login</span>Login</a> {% endcomment %}
+
+		<button id="loginButton">Login</button>
+
+		<button id="registerButton">Register</button>
+
 {% comment %}
 	{% else %}
 	{% endif %}
 {% endcomment %}
-
-		<button id="logoutButton" style="display: none;">Logout</a>
-		{% comment %} <a href="{% url 'login' %}" title="LOGIN"> <span class="material-symbols-outlined">login</span>Login</a> {% endcomment %}
-		<button id="loginButton">Login</button>
-
-		<button id="registerButton">Register</button>
 
 </nav>

@@ -1,15 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const registerButton = document.getElementById('registerButton');
-    const registerFormContainer = document.getElementById('registerFormContainer');
-
-    if (registerButton) {
-        registerButton.addEventListener('click', renderRegisterForm);
-    } else {
-        console.log('Register button not found');
-    }
-
-});
-
 // Function to render the registration form
 function renderRegisterForm() {
     const registerFormContainer = document.getElementById('registerFormContainer');
@@ -72,33 +60,4 @@ async function handleFormSubmission(event) {
         console.error('Error:', error);
         errorMessages.innerHTML = 'An error occurred. Please try again.';
     }
-}
-
-// Function to update the navbar for a logged-in user
-function updateNavbarForLoggedInUser(username, profileImageUrl) {
-	// DEBUG
-	// console.log('Updating navbar for logged in user: ', username, profileImageUrl);
-
-    const chatDropdown = document.getElementById('chatDropdown');
-    const profileDropdown = document.getElementById('profileDropdown');
-    const logoutButton = document.getElementById('logoutButton');
-    const loginButton = document.getElementById('loginButton');
-    const registerButton = document.getElementById('registerButton');
-
-	// DEBUG
-	// console.log('chatDropdown:', chatDropdown);
-	// console.log('profileDropdown:', profileDropdown);
-	// console.log('logoutButton:', logoutButton);
-	// console.log('loginButton:', loginButton);
-	// console.log('registerButton:', registerButton);
-
-    if (chatDropdown) chatDropdown.style.display = 'block';
-    if (profileDropdown) {
-        profileDropdown.style.display = 'block';
-        profileDropdown.querySelector('img').src = profileImageUrl;
-        profileDropdown.querySelector('button').innerHTML = `(${username})`;
-    }
-    if (logoutButton) logoutButton.style.display = 'inline';
-    if (loginButton) loginButton.style.display = 'none';
-    if (registerButton) registerButton.style.display = 'none';
 }
