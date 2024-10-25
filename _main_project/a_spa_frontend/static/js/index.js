@@ -29,8 +29,6 @@ export const navigateTo = url => {
 
 // This class handles routes for the single page application
 const router = async () => {
-  // console.log(pathToRegex('/posts/:id'));
-
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
@@ -39,7 +37,6 @@ const router = async () => {
     { path: '/posts/:id', view: ViewPost },
     { path: '/api_testing/', view: ApiTesting },
     { path: '/settings/', view: Settings },
-    // { path: '/register_page/', view: Register },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location

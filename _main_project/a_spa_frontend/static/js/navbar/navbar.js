@@ -2,6 +2,7 @@ import RegisterForm from "../views/RegisterForm.js";
 import LoginForm from "../views/LoginForm.js";
 import { navigateTo } from "../index.js";
 
+/* Changes the visibility of the navbar buttons based on the user's login status */
 export const updateNavBar = function () {
   const login = document.getElementById("loginBtn");
   const register = document.getElementById("registerBtn");
@@ -9,14 +10,12 @@ export const updateNavBar = function () {
   const user = document.getElementById("userBtn");
 
   if (localStorage.getItem('isLoggedIn') == 'true') {
-    // console.log('logged in');
     login.style.display = "none";
     register.style.display = "none";
     user.style.display = "flex";
     logout.style.display = "block";
     getProfileInfo();
   } else {
-    // console.log('not logged in');
     login.style.display = "block";
     register.style.display = "block";
     user.style.display = "none";
@@ -24,13 +23,12 @@ export const updateNavBar = function () {
   }
 }
 
+/* Adds functionality to the buttons in the navbar */
 export const navBarButtons = function () {
   const modal = document.getElementById("modalWindow");
 
   // Login Button
   document.getElementById('loginBtn').addEventListener('click', async(event) => {
-    // console.log('loginForm');
-
     modal.style.display = "block";
     
     const loginForm = new LoginForm();
@@ -52,8 +50,6 @@ export const navBarButtons = function () {
 
   // Register Button
   document.getElementById('registerBtn').addEventListener('click', async(event) => {
-    // console.log('registerForm');
-
     modal.style.display = "block";
     
     const registerForm = new RegisterForm();
@@ -75,8 +71,6 @@ export const navBarButtons = function () {
 
   // Logout Button
   document.getElementById('logoutBtn').addEventListener('click', async(event) => {
-    // console.log('logout');
-
     await fetch('/logout/');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('profile_image_url');
