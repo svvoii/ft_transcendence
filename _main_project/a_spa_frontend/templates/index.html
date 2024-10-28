@@ -3,7 +3,32 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          const main = document.querySelector('main');
+  
+          if (targetElement) {
+              main.scrollTo({
+                  top: targetElement.offsetTop - main.offsetTop,
+                  behavior: 'smooth'
+              });
+          }
+      });
+  }); -->
+  <!-- <div id="modalWindow" class="modal old-crt-monitor"> -->
+
     <title>Single Page Application</title>
+
+    <code>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    </code>
+
     <link rel="stylesheet" href="../static/css/index.css">
     <link rel="icon" href="../static/favicon.ico">
   </head>
@@ -23,4 +48,5 @@
     <div id="app"></div>
     <script type="module" src="../static/js/index.js"></script>
   </body>
+<!-- </div> -->
 </html>

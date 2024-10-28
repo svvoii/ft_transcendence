@@ -6,6 +6,7 @@ export default class extends AbstractView {
     this.setTitle("Dashboard");
   }
 
+
   async getHtml() {
     return `
       <h1>Welcome back to TranscenDANCE</h1>

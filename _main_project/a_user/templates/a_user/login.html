@@ -9,6 +9,24 @@
 {% comment %}
 {% endcomment %}
 
+<style>
+    /* Include the CSS for the blinking caret here if not in an external stylesheet */
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: black }
+    }
+
+    .blinking-caret::after {
+      content: '';
+      display: inline-block;
+      width: 1px;
+      height: 1em;
+      border-right: 2px solid black;
+      animation: blink-caret 0.75s step-end infinite;
+      vertical-align: middle;
+    }
+  </style>
+
 	<h1>Login</h1>
 
 	<form method="POST">
@@ -16,26 +34,30 @@
 
 		<img src="{% static 'images/smile_32-32.png' %}" alt="LOGO" width="40" height="40"></br>
 
-		<input type="email" name="email" placeholder="Email address" required autofocus></br>
-		<input type="password" name="password" placeholder="Password" required></br>
+			<!-- <div class="container"> -->
 
-		{% for field in login_form %}
+				<input class="inputEmail" type="email" name="email" placeholder="Email address" required autofocus></br>
+				<input type="password" name="password" placeholder="Password" required></br>
+			<!-- </div> -->
+
+				<div class="inputEmail">Alans-MBP:~ alandunning$ npm install -g foobar</div>
+
+			{% for field in login_form %}
 			{% for error in field.errors %}
-				<div style="color: red;"> 
-					<p> {{ error }} </p> 
-				</div>
+			<div style="color: red;"> 
+				<p> {{ error }} </p> 
+			</div>
 			{% endfor %}
-		{% endfor %}
-
-		{% if login_form.non_field_errors %}
+			{% endfor %}
+			
+			{% if login_form.non_field_errors %}
 			<div style="color: red;"> 
 				<p> {{ login_form.non_field_errors }} </p>
 			</div>
-		{% endif %}
-
-		<button type="submit">Login</button>
+			{% endif %}
+			
+			<button type="submit">Login</button>
 	</form>
-
 	<div>
 		<a href="{% url 'password_reset' %}">Reset password?</a>
 	</div>

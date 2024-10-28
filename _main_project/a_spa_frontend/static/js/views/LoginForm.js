@@ -12,7 +12,7 @@ export default class extends AbstractView {
     return `
       <div class="modal-content">
         <span class="close">&times;</span>
-        <p>This is the login modal!</p>
+        <p>Please enter email address</p>
 
         <form id="loginForm" onsubmit="event.preventDefault();" >
           <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
