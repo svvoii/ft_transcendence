@@ -18,7 +18,7 @@ from rest_framework import status
 
 
 @api_view(["POST"])
-def register_view(request, *args, **kwargs):
+def api_register_view(request, *args, **kwargs):
 	user = request.user
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
@@ -38,14 +38,6 @@ def register_view(request, *args, **kwargs):
 		}, status=status.HTTP_201_CREATED)
 	else:
 		return Response({"message": form.getErrors()})
-
-
-def det_redirect_if_exists(request):
-	redirect = None
-	if request.GET:
-		if request.GET.get('next'):
-			redirect = str(request.GET.get('next'))
-	return redirect
 
 
 @api_view(["GET"])
@@ -80,6 +72,18 @@ def login_view(request, *args, **kwargs):
 			return Response({"message": "Invalid login credentials."})
 	else:
 		return Response({"message": form.getErrors()})
+
+
+@api_view(['GET'])
+def api_logged_in_user_view(request):
+	user = request.user
+	if user.is_authenticated:
+		profile_image_url = user.profile_image.url if user.profile_image else get_default_profile_image()
+		return Response({
+			'username': user.username,
+			'profile_image_url': profile_image_url,
+		}, status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def det_redirect_if_exists(request):
