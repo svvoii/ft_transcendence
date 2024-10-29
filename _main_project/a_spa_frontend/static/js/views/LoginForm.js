@@ -27,7 +27,7 @@ export default class extends AbstractView {
 
   async afterRender() {
 
-    const modal = document.getElementById("modalWindow");
+    const modal = document.getElementById("formModal");
 
     document.getElementById('loginForm').addEventListener('submit', async(event) => {
       // Create form 

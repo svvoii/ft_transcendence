@@ -19,13 +19,13 @@ export default class extends AbstractView {
 
   async afterRender() {
     const registerButton = document.getElementById("registerButton");
-    const modal = document.getElementById("modalWindow");
+    const modal = document.getElementById("formModal");
     
     registerButton.addEventListener('click', async () => {
       modal.style.display = "block";
       
       const registerForm = new RegisterForm();
-      document.querySelector('#modalWindow').innerHTML = await registerForm.getHtml();
+      document.querySelector('#formModal').innerHTML = await registerForm.getHtml();
       registerForm.afterRender();
       
       // Define the behavior of the close button after it is in the DOM.
