@@ -8,7 +8,12 @@ export default class extends AbstractView {
 
   async getHtml() {
     return `
-      <p>This is the user settings!</p>
+      <p>User Settings</p>
+      <ul>
+        <a href=".">View Profile</a><br>
+        <a href=".">Edit Profile</a><br>
+        <a href=".">Change Password</a>
+      </ul>
     `;
   }
 }
