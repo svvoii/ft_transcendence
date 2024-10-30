@@ -41,14 +41,14 @@ def api_register_view(request, *args, **kwargs):
 
 
 @api_view(["GET"])
-def logout_view(request):
+def api_logout_view(request):
 	logout(request)
 	return Response({"message": "You have been logged out."})
 	# return redirect('home')
 
 
 @api_view(["POST"])
-def login_view(request, *args, **kwargs):
+def api_login_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
 
