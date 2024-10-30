@@ -93,21 +93,22 @@ def det_redirect_if_exists(request):
 			redirect = str(request.GET.get('next'))
 	return redirect
 
-
-def profile_view(request, *args, **kwargs):
+@api_view(['GET'])
+def api_profile_view(request, *args, **kwargs):
 	context = {}
 	user_id = kwargs.get('user_id')
 
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		return HttpResponse("User not found.")
+		# return HttpResponse("User not found.");
+		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
 
 	if account:
 		context['id'] = account.id
 		context['email'] = account.email
 		context['username'] = account.username
-		context['profile_image'] = account.profile_image
+		context['profile_image'] = account.profile_image.url if account.profile_image else None
 		context['hide_email'] = account.hide_email
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
@@ -170,7 +171,9 @@ def profile_view(request, *args, **kwargs):
 		context['friend_request'] = friend_request
 		context['is_blocked'] = is_blocked
 
-	return render(request, 'a_user/profile.html', context)
+	print("context: ", context)
+	return Response(context, status=status.HTTP_200_OK)
+	# return render(request, 'a_user/profile.html', context)
 
 
 def edit_profile_view(request, *args, **kwargs):
