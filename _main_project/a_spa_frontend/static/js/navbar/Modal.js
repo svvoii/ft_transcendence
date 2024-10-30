@@ -21,14 +21,12 @@ export class Modal {
   }
 
   async show(contentForm) {
-    console.log("showing modal");
     this.form.innerHTML = await contentForm.getHtml();
     contentForm.afterRender();
     this.modal.style.display = "block";
   }
 
   hide() {
-    console.log("hiding modal");
     this.modal.style.display = "none";
   }
 }
