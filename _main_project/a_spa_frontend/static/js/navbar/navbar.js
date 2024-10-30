@@ -29,9 +29,26 @@ export const updateNavBar = function () {
 /* Adds functionality to the buttons in the navbar */
 export const navBarButtons = function () {
   // Buttons with Modal Forms
-  new Modal('registerBtn', new RegisterForm());
-  new Modal('loginBtn', new LoginForm());
-  new Modal('userBtn', new UserForm());
+  const modal = new Modal('formModal', 'modalContent');
+
+  const registerForm = new RegisterForm();
+  const loginForm = new LoginForm();
+  const userForm = new UserForm();
+
+  // Register Button
+  document.getElementById('registerBtn').addEventListener('click', () => {
+    modal.show(registerForm);
+  });
+
+  // Login Button
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    modal.show(loginForm);
+  });
+
+  // User Button
+  document.getElementById('userBtn').addEventListener('click', () => {
+    modal.show(userForm);
+  });
 
   // Logout Button
   document.getElementById('logoutBtn').addEventListener('click', async(event) => {
