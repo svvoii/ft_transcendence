@@ -1,36 +1,32 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from "../views/AbstractView.js";
 import { navigateTo } from "../index.js";
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
-    this.setTitle("Register Form");
+    this.setTitle("Login Form");
   }
 
   async getHtml() {
     const csrfToken = this.getCookie('csrftoken');
     return `
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>This is the register modal!</p>
+      <p>This is the login modal!</p>
 
-        <form id="registrationForm" onsubmit="event.preventDefault();" >
-          <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-          <input type="email" name="email" placeholder="Email address" required autofocus></br>
-          <input type="text" name="username" placeholder="Username" required></br>
-          <input type="password" name="password1" placeholder="Password" required></br>
-          <input type="password" name="password2" placeholder="Confirm password" required></br>
-          <p><span id="message" style="color: red;"></span></p>
-          <button type="submit">Register</button>
-        </form>
-      </div>
+      <form id="loginForm" onsubmit="event.preventDefault();" >
+        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        <input type="email" name="email" placeholder="Email address" required autofocus></br>
+        <input type="password" name="password" placeholder="Password" required></br>
+        <p><span id="message" style="color: red;"></span></p>
+        <button type="submit">Login</button>
+      </form>
     `;
   }
 
   async afterRender() {
+
     const modal = document.getElementById("formModal");
 
-    document.getElementById('registrationForm').addEventListener('submit', async(event) => {
+    document.getElementById('loginForm').addEventListener('submit', async(event) => {
       // Create form 
       const form = event.target;
       const formData = new FormData(form);
@@ -50,7 +46,7 @@ export default class extends AbstractView {
       };
 
       try {
-        const response = await fetch("/register/", content);
+        const response = await fetch("/login/", content);
         const result = await response.json();
         const messageDiv = document.getElementById('message');
 
@@ -81,5 +77,4 @@ export default class extends AbstractView {
       }
     });
   }
-
 }

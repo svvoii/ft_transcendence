@@ -72,7 +72,7 @@ pre {
 }
 
 /* Modal Content Box inside the modal-forms */
-.modal-content {
+.modal-content-box {
   background-color: white;
   /* margin: 15% auto; 15% from the top and centered */
   margin: calc(5vw) calc(5vw);

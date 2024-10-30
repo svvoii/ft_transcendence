@@ -8,6 +8,7 @@
     <link rel="icon" href="../static/favicon.ico">
   </head>
   <body>
+    <!-- navbar -->
     <nav class="nav">
       <a href="/" class="nav__link" data-link>Dashboard</a>
       <a href="/posts/" class="nav__link" data-link>Posts</a>
@@ -21,8 +22,16 @@
       </button>
       <button class="nav__button" id="logoutBtn">Logout</button>
     </nav>
-    <div id="formModal" class="modal-forms"></div>
+    <!-- modal for forms -->
+    <div id="formModal" class="modal-forms">
+      <div class="modal-content-box">
+        <span class="close">&times;</span>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+    <!-- app -->
     <div id="app"></div>
+    <!-- game -->
     <div id="game" class="modal-game"></div>
     <script type="module" src="../static/js/index.js"></script>
   </body>
