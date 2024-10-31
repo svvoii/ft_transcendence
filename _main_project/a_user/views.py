@@ -80,6 +80,7 @@ def api_logged_in_user_view(request):
 	if user.is_authenticated:
 		profile_image_url = user.profile_image.url if user.profile_image else get_default_profile_image()
 		return Response({
+			'id': user.id,
 			'username': user.username,
 			'profile_image_url': profile_image_url,
 		}, status=status.HTTP_200_OK)

@@ -44,6 +44,7 @@ export class Modal {
 
     if (backSpan) {
       backSpan.addEventListener('click', async() => {
+        // find a way do check without calling loginCheck?
         if (await loginCheck()) {
           this.showForm('userForm');
         } else {

@@ -8,17 +8,18 @@ export default class extends AbstractModalView {
 
   async getHtml() {
     try {
-      // NOTE: need to find the user id number first. not just use 2
-      const response = await fetch("http://localhost:8000/user/2/");
-      const data = await response.json();
-      // console.log(data);
+      const loginResponse = await fetch('/login_check/');
+      const loginData = await loginResponse.json();
+      const userResponse = await fetch(`http://localhost:8000/user/${loginData.id}/`);
+      const userData = await userResponse.json();
       return `
-        <img src="${data.profile_image}" alt="user image" style="width: 100px; height: 100px;">
-        <h3>Username: ${data.username}</h3>
-        <p>Email: ${data.email}</p>
+        <img src="${userData.profile_image}" alt="user image" style="width: 100px; height: 100px;">
+        <h3>Username: ${userData.username}</h3>
+        <p>Email: ${userData.email}</p>
       `;
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      return "";
     }
   }
 }
