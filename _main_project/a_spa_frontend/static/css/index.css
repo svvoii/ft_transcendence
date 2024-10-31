@@ -89,9 +89,23 @@ pre {
   font-weight: bold;
 }
 
-/* When the cursor is hovering over the close button */
 .close:hover,
 .close:focus {
+  color: black;
+  cursor: pointer;
+}
+
+/* The Back Button */
+.back {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.back:hover,
+.back:focus {
   color: black;
   cursor: pointer;
 }

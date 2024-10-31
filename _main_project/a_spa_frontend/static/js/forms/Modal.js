@@ -32,10 +32,18 @@ export class Modal {
   }
 
   initEventListeners() {
-    const span = this.modal.querySelector('.close');
-    if (span) {
-      span.addEventListener('click', () => {
+    const closeSpan = this.modal.querySelector('.close');
+    const backSpan = this.modal.querySelector('.back');
+
+    if (closeSpan) {
+      closeSpan.addEventListener('click', () => {
         this.hide();
+      });
+    }
+
+    if (backSpan) {
+      backSpan.addEventListener('click', () => {
+        this.showForm('userForm');
       });
     }
 
@@ -52,10 +60,6 @@ export class Modal {
     this.modal.style.display = "block";
   }
 
-  hide() {
-    this.modal.style.display = "none";
-  }
-
   async showForm(formName) {
     const form = this.formMap[formName];
     if (form) {
@@ -64,5 +68,9 @@ export class Modal {
     } else {
       console.error(`form not found: ${formName}`);
     }
+  }
+
+  hide() {
+    this.modal.style.display = "none";
   }
 }
