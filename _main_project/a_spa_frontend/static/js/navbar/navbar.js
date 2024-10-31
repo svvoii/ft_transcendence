@@ -30,17 +30,17 @@ export const navBarButtons = function () {
 
   // Register Button
   document.getElementById('registerBtn').addEventListener('click', () => {
-    modal.showRegisterForm();
+    modal.showForm('registerForm');
   });
 
   // Login Button
   document.getElementById('loginBtn').addEventListener('click', () => {
-    modal.showLoginForm();
+    modal.showForm('loginForm');
   });
 
   // User Button
   document.getElementById('userBtn').addEventListener('click', () => {
-    modal.showUserForm();
+    modal.showForm('userForm');
   });
 
   // Logout Button

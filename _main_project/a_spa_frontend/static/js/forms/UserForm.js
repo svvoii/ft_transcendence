@@ -19,15 +19,15 @@ export default class extends AbstractModalView {
 
   async afterRender() {
     document.getElementById('userBtnView').addEventListener('click', async() => {
-      this.modal.showUserViewForm();
+      this.modal.showForm('userViewForm');
     });
 
     document.getElementById('userBtnEdit').addEventListener('click', async() => {
-      this.modal.showUserEditForm();
+      this.modal.showForm('userEditForm');
     });
 
     document.getElementById('userBtnChangePass').addEventListener('click', async() => {
-      this.modal.showUserChangePassForm();
+      this.modal.showForm('userChangePassForm');
     });
   }
 }

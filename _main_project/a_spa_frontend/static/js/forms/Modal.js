@@ -1,7 +1,7 @@
+// import all forms
 import UserForm from './UserForm.js';
 import RegisterForm from './RegisterForm.js';
 import LoginForm from './LoginForm.js';
-
 import UserViewForm from './UserViewForm.js';
 import UserEditForm from './UserEditForm.js';
 import UserChangePassForm from './UserChangePassForm.js';
@@ -12,13 +12,23 @@ export class Modal {
     this.form = document.getElementById(contentId);
     this.initEventListeners();
 
+    // Create instances of all forms
     this.userForm = new UserForm(this);
     this.registerForm = new RegisterForm(this);
     this.loginForm = new LoginForm(this);
-
     this.userViewForm = new UserViewForm(this);
     this.userEditForm = new UserEditForm(this);
     this.userChangePassForm = new UserChangePassForm(this);
+
+    // Create a map of all forms for selecting with showForm
+    this.formMap = {
+      'userForm': this.userForm,
+      'registerForm': this.registerForm,
+      'loginForm': this.loginForm,
+      'userViewForm': this.userViewForm,
+      'userEditForm': this.userEditForm,
+      'userChangePassForm': this.userChangePassForm
+    }
   }
 
   initEventListeners() {
@@ -45,34 +55,14 @@ export class Modal {
   hide() {
     this.modal.style.display = "none";
   }
-  
-  async showUserForm() {
-    console.log("modal picker");
-    this.show(this.userForm);
-  }
-  
-  async showRegisterForm() {
-    console.log("modal picker");
-    this.show(this.registerForm);
-  }
-  
-  async showLoginForm() {
-    console.log("modal picker");
-    this.show(this.loginForm);
-  }
 
-  async showUserViewForm() {
-    console.log("modal picker");
-    this.show(this.userViewForm);
-  }
-
-  async showUserEditForm() {
-    console.log("modal picker");
-    this.show(this.userEditForm);
-  }
-
-  async showUserChangePassForm() {
-    console.log("modal picker");
-    this.show(this.userChangePassForm);
+  async showForm(formName) {
+    const form = this.formMap[formName];
+    if (form) {
+      // console.log(`showing form: ${formName}`);
+      this.show(form);
+    } else {
+      console.error(`form not found: ${formName}`);
+    }
   }
 }
