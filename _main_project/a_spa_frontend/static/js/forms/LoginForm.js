@@ -1,9 +1,9 @@
-import AbstractView from "../views/AbstractView.js";
+import AbstractModalView from "./AbstractModalView.js";
 import { navigateTo } from "../index.js";
 
-export default class extends AbstractView {
-  constructor(params) {
-    super(params);
+export default class extends AbstractModalView {
+  constructor(modal) {
+    super(modal);
     this.setTitle("Login Form");
   }
 
@@ -23,9 +23,6 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-
-    const modal = document.getElementById("formModal");
-
     document.getElementById('loginForm').addEventListener('submit', async(event) => {
       // Create form 
       const form = event.target;
@@ -53,7 +50,7 @@ export default class extends AbstractView {
         if (response.ok) {
           messageDiv.textContent = result.message;
           if (result.redirect) {
-            modal.style.display = "none";
+            this.modal.hide();
             localStorage.setItem('isLoggedIn', true);
             navigateTo(result.redirect);
           }

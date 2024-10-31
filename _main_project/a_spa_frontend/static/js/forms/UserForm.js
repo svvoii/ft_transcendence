@@ -1,11 +1,8 @@
-import AbstractView from "../views/AbstractView.js";
-import UserViewForm from "./UserViewForm.js";
-import UserEditForm from "./UserEditForm.js";
-import UserChangePassForm from "./UserChangePassForm.js";
+import AbstractModalView from "./AbstractModalView.js";
 
-export default class extends AbstractView {
-  constructor(params) {
-    super(params);
+export default class extends AbstractModalView {
+  constructor(modal) {
+    super(modal);
     this.setTitle("User Form");
   }
 
@@ -21,23 +18,16 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    const userViewForm = new UserViewForm();
-    const userEditForm = new UserEditForm();
-    const userChangePassForm = new UserChangePassForm();
-
     document.getElementById('userBtnView').addEventListener('click', async() => {
-      document.getElementById('modalContent').innerHTML = await userViewForm.getHtml();
-      userViewForm.afterRender();
+      this.modal.showUserViewForm();
     });
 
     document.getElementById('userBtnEdit').addEventListener('click', async() => {
-      document.getElementById('modalContent').innerHTML = await userEditForm.getHtml();
-      userEditForm.afterRender();
+      this.modal.showUserEditForm();
     });
 
     document.getElementById('userBtnChangePass').addEventListener('click', async() => {
-      document.getElementById('modalContent').innerHTML = await userChangePassForm.getHtml();
-      userChangePassForm.afterRender();
+      this.modal.showUserChangePassForm();
     });
   }
 }

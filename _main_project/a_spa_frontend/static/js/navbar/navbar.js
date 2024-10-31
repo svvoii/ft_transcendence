@@ -1,7 +1,4 @@
-import RegisterForm from "../forms/RegisterForm.js";
-import LoginForm from "../forms/LoginForm.js";
-import UserForm from "../forms/UserForm.js";
-import { Modal } from "./Modal.js";
+import { Modal } from "../forms/Modal.js";
 import { navigateTo } from "../index.js";
 import { getProfileInfo } from "../helpers/helpers.js";
 
@@ -31,23 +28,19 @@ export const navBarButtons = function () {
   // Buttons with Modal Forms
   const modal = new Modal('formModal', 'modalContent');
 
-  const registerForm = new RegisterForm();
-  const loginForm = new LoginForm();
-  const userForm = new UserForm();
-
   // Register Button
   document.getElementById('registerBtn').addEventListener('click', () => {
-    modal.show(registerForm);
+    modal.showRegisterForm();
   });
 
   // Login Button
   document.getElementById('loginBtn').addEventListener('click', () => {
-    modal.show(loginForm);
+    modal.showLoginForm();
   });
 
   // User Button
   document.getElementById('userBtn').addEventListener('click', () => {
-    modal.show(userForm);
+    modal.showUserForm();
   });
 
   // Logout Button

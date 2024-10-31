@@ -1,8 +1,8 @@
-import AbstractView from "../views/AbstractView.js";
+import AbstractModalView from "./AbstractModalView.js";
 
-export default class extends AbstractView {
-  constructor(params) {
-    super(params);
+export default class extends AbstractModalView {
+  constructor(modal) {
+    super(modal);
     this.setTitle("User Edit Form");
   }
 
