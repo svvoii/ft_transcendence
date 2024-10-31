@@ -1,13 +1,22 @@
-export const getProfileInfo = function () {
-  const profileImage = localStorage.getItem('profile_image_url');
-  const profileName = localStorage.getItem('profile_username');
+export const loginCheck = async () => {
+  try {
+    const response = await fetch('/login_check/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (profileImage !== null) {
-    const userPic = document.getElementById('userPic');
-    userPic.src = profileImage;
-  }  
-  if (profileName !== null) {
-    const userName = document.getElementById('userName');
-    userName.innerHTML = profileName;
-  }  
+    const data = await response.json();
+
+    if (data.status === 'error') {
+      console.error(data.message);
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    // console.error('Error:', error);
+    return false;
+  }
 };

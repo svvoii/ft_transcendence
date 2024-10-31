@@ -7,6 +7,7 @@ import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
 import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
+import { loginCheck } from "./helpers/helpers.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -84,5 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
   router();
 });
 
+// if (await loginCheck()) {
+//   console.log("User is logged in");
+// }
 // Adds functionality for the navbar buttons 
 navBarButtons();
