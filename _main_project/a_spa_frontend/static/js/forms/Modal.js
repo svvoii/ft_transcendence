@@ -5,6 +5,7 @@ import LoginForm from './LoginForm.js';
 import UserViewForm from './UserViewForm.js';
 import UserEditForm from './UserEditForm.js';
 import UserChangePassForm from './UserChangePassForm.js';
+import { loginCheck } from '../helpers/helpers.js';
 
 export class Modal {
   constructor(modalId, contentId) {
@@ -42,8 +43,12 @@ export class Modal {
     }
 
     if (backSpan) {
-      backSpan.addEventListener('click', () => {
-        this.showForm('userForm');
+      backSpan.addEventListener('click', async() => {
+        if (await loginCheck()) {
+          this.showForm('userForm');
+        } else {
+          this.hide();
+        }
       });
     }
 

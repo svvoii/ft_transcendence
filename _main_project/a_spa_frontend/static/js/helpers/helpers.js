@@ -1,4 +1,4 @@
-export const loginCheck = async () => {
+export const loginCheck = async (return_data = false) => {
   try {
     const response = await fetch('/login_check/', {
       method: 'GET',
@@ -13,7 +13,11 @@ export const loginCheck = async () => {
       console.error(data.message);
       return false;
     } else {
-      return true;
+      if (return_data) {
+        return data;
+      } else {
+        return true;
+      }
     }
   } catch (error) {
     // console.error('Error:', error);

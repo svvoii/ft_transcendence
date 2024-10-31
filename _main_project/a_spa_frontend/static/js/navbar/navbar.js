@@ -9,12 +9,22 @@ export const updateNavBar = async() => {
   const logout = document.getElementById("logoutBtn");
   const user = document.getElementById("userBtn");
 
-  if (await loginCheck()) {
+  const userInfo = await loginCheck(true);
+  if (userInfo) {
+    // if we get data back, we will update the user image and name
+    if (userInfo) {
+      const userPic = document.getElementById('userPic');
+      const userName = document.getElementById('userName');
+      userPic.src = userInfo.profile_image_url;
+      userName.textContent = userInfo.username
+    }
+    // also make buttons visible
     login.style.display = "none";
     register.style.display = "none";
     user.style.display = "flex";
     logout.style.display = "block";
   } else {
+    // if we dont get data back, we will show the login and register buttons
     login.style.display = "block";
     register.style.display = "block";
     user.style.display = "none";
@@ -23,7 +33,8 @@ export const updateNavBar = async() => {
 }
 
 /* Adds functionality to the buttons in the navbar */
-export const navBarButtons = function () {
+/* Also gets the user image and name if the user is logged in */
+export const navbarSetup = async() => {
   // Buttons with Modal Forms
   const modal = new Modal('formModal', 'modalContent');
 
