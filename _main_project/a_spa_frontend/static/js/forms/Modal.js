@@ -32,10 +32,18 @@ export class Modal {
   }
 
   initEventListeners() {
-    const span = this.modal.querySelector('.close');
-    if (span) {
-      span.addEventListener('click', () => {
+    const closeSpan = this.modal.querySelector('.close');
+    const backSpan = this.modal.querySelector('.back');
+
+    if (closeSpan) {
+      closeSpan.addEventListener('click', () => {
         this.hide();
+      });
+    }
+
+    if (backSpan) {
+      backSpan.addEventListener('click', () => {
+        this.showForm('userForm');
       });
     }
 
