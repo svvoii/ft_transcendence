@@ -172,43 +172,91 @@ def api_profile_view(request, *args, **kwargs):
 		context['friend_request'] = friend_request
 		context['is_blocked'] = is_blocked
 
-	print("context: ", context)
 	return Response(context, status=status.HTTP_200_OK)
 	# return render(request, 'a_user/profile.html', context)
 
 
-def edit_profile_view(request, *args, **kwargs):
+# @api_view(['POST'])
+# def api_edit_profile_view(request, *args, **kwargs):
+# 	if not request.user.is_authenticated:
+# 		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN);
+# 		# return redirect('login')
+
+# 	user_id = kwargs.get('user_id')
+# 	try:
+# 		account = Account.objects.get(pk=user_id)
+# 	except Account.DoesNotExist:
+# 		return Response("User not found.", status=status.HTTP_204_NO_CONTENT)
+# 		# return HttpResponse("User not found.")
+
+# 	if account.pk != request.user.pk:
+# 		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
+# 		# return HttpResponse("You cannot edit someone else's profile.")
+
+# 	context = {}
+
+# 	if request.method == 'POST':
+# 		print("request is post")
+# 		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+# 		if form.is_valid():
+# 			print("form is valid")
+# 			form.save()
+# 			# return redirect('a_user:profile', user_id=account.pk)
+# 			return Response("Profile updated successfully.", status=status.HTTP_200_OK)
+# 		else:
+# 			print("form is not valid")
+# 			form = AccountUpdateForm(
+# 				request.POST,
+# 				instance=request.user,
+# 				initial={
+# 					'id': account.pk,
+# 					'email': account.email,
+# 					'username': account.username,
+# 					'profile_image': account.profile_image,
+# 					'hide_email': account.hide_email,
+# 				}
+# 			)
+# 	else:
+# 		form = AccountUpdateForm(
+# 			initial={
+# 				'id': account.pk,
+# 				'email': account.email,
+# 				'username': account.username,
+# 				'profile_image': account.profile_image,
+# 				'hide_email': account.hide_email,
+# 			}
+# 		)
+
+# 	context['form'] = form
+# 	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
+
+# 	return Response(context, status=status.HTTP_200_OK)
+# 	# return render(request, 'a_user/edit_profile.html', context)
+
+# This is from copilot
+
+@api_view(['POST'])
+def api_edit_profile_view(request, *args, **kwargs):
 	if not request.user.is_authenticated:
-		return redirect('login')
+		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN)
 
 	user_id = kwargs.get('user_id')
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		return HttpResponse("User not found.")
+		return Response("User not found.", status=status.HTTP_204_NO_CONTENT)
 
 	if account.pk != request.user.pk:
-		return HttpResponse("You cannot edit someone else's profile.")
+		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
 
-	context = {}
-
-	if request.POST:
-		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+	if request.method == 'POST':
+		# form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+		form = AccountUpdateForm(request.data, instance=request.user)
 		if form.is_valid():
 			form.save()
-			return redirect('a_user:profile', user_id=account.pk)
+			return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 		else:
-			form = AccountUpdateForm(
-				request.POST,
-				instance=request.user,
-				initial={
-					'id': account.pk,
-					'email': account.email,
-					'username': account.username,
-					'profile_image': account.profile_image,
-					'hide_email': account.hide_email,
-				}
-			)
+			return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 	else:
 		form = AccountUpdateForm(
 			initial={
@@ -220,10 +268,13 @@ def edit_profile_view(request, *args, **kwargs):
 			}
 		)
 
-	context['form'] = form
-	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
+	context = {
+		'form': form.as_p(),  # Render the form as HTML
+		'DATA_UPLOAD_MAX_MEMORY_SIZE': settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
+	}
 
-	return render(request, 'a_user/edit_profile.html', context)
+	return Response(context, status=status.HTTP_200_OK)
+
 
 def account_search_view(request, *args, **kwargs):
 	context = {}

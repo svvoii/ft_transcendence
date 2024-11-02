@@ -15,6 +15,7 @@ export const updateNavBar = async() => {
     if (userInfo) {
       const userPic = document.getElementById('userPic');
       const userName = document.getElementById('userName');
+      console.log(userName);
       userPic.src = userInfo.profile_image_url;
       userName.textContent = userInfo.username
     }
