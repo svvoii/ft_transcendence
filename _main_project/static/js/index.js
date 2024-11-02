@@ -6,7 +6,8 @@ import ViewPost from "./views/ViewPost.js";
 import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
-import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
+import { updateNavBar, navbarSetup } from "./navbar/navbar.js";
+import { loginCheck } from "./helpers/helpers.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -29,8 +30,6 @@ export const navigateTo = url => {
 
 // This class handles routes for the single page application
 const router = async () => {
-  // console.log(pathToRegex('/posts/:id'));
-
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
@@ -39,7 +38,6 @@ const router = async () => {
     { path: '/posts/:id', view: ViewPost },
     { path: '/api_testing/', view: ApiTesting },
     { path: '/settings/', view: Settings },
-    // { path: '/register_page/', view: Register },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
@@ -88,4 +86,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Adds functionality for the navbar buttons 
-navBarButtons();
+navbarSetup();
