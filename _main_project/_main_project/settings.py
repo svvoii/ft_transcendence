@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 	'a_user',
 	'a_oauth2',
 	'a_api',
+	'a_pong',
 	'a_spa_frontend'
 ]
 

@@ -6,6 +6,7 @@ import ViewPost from "./views/ViewPost.js";
 import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
+import Pong from "./views/Pong.js";
 import { updateNavBar, navBarButtons } from "./navbar/navbar.js";
 
 // Create a regex to replace the path with something.
@@ -38,6 +39,7 @@ const router = async () => {
     { path: '/posts/new_post', view: NewPost },
     { path: '/posts/:id', view: ViewPost },
     { path: '/api_testing/', view: ApiTesting },
+    { path: '/pong/', view: Pong },
     { path: '/settings/', view: Settings },
     // { path: '/register_page/', view: Register },
   ];

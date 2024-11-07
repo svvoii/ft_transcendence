@@ -6,5 +6,6 @@ urlpatterns = [
   path("posts", views.index),
   path("settings", views.index),
   path("api_testing", views.index),
+  path("pong", views.index),
   re_path(r'^posts/.*$', views.index),
 ]

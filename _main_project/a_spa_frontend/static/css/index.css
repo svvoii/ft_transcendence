@@ -55,6 +55,9 @@ pre {
   border: 2px solid var(--secondary-color);
   /* border-left: 2px solid var(--primary-color); */
 
+  background-color: #00000000;
+
+
   mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem;
@@ -118,24 +121,41 @@ input:focus {
 }
 
 
+#startGame {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--secondary-color);
+  /* color: rgba(255, 255, 255, 0.05); */
+  font-weight: 700;
+  border: none;
+  background-color: #b9969629;
+  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem;
+}
+
 .nav__link:hover,
-.nav__button:hover{
+.nav__button:hover,
+#startGame:hover {
   /* background: rgba(255, 255, 255, 0.05); */
   background: var(--secondary-color);
   color: #fff;
   /* color: rgba(255, 255, 255, 0.05); */
+  cursor: pointer;
 
 }
 
-.response-box {
+.response-box,
+.response-box-pong {
+  font-family: var(--font-family);
+  color: var(--primary-color);
   width: 100%;
   padding: 0;
-  text-align: left;
+  text-align: center;
   vertical-align: top;
-  background-color: rgb(215, 210, 210);
+  background-color: rgba(215, 210, 210, 0);
 }
-
-
 
 /* The Modal (background) */
 .modal {
