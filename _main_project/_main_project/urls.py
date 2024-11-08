@@ -27,7 +27,6 @@ from a_spa_frontend.views import index
 
 urlpatterns = [
     path('', index, name='js_home'),
-    path('api/', include('a_api.urls'), name='api'),
 	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),

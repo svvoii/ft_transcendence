@@ -14,8 +14,11 @@ pre {
   margin: 0;
 }
 
+/* Navbar styling */
 .nav {
+  display: flex;
   position: fixed;
+  justify-content: space-between;
   top: 0;
   left: 0;
   /* width: var(--nav-width); */
@@ -23,12 +26,15 @@ pre {
   width: 100%;
   height: var(--nav-height);
   background: #222222;
+}
+
+.nav__left,
+.nav__right {
   display: flex;
   align-items: center;
 }
 
 .nav__link {
-  display: block;
   padding: 12px 18px;
   text-decoration: none;
   color: #eeeeee;
@@ -37,6 +43,25 @@ pre {
 
 .nav__link:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.nav__button {
+  align-items: center;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: #eeeeee;
+  background: #222222;
+  border: none;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+}
+
+.nav__button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav__button img {
+  margin-right: 10px;
 }
 
 .response-box {
@@ -110,27 +135,6 @@ pre {
   cursor: pointer;
 }
 
-.nav__button {
-  display: flex;
-  align-items: center;
-  padding: 12px 18px;
-  text-decoration: none;
-  color: #eeeeee;
-  background: #222222;
-  /* font-weight: 500; */
-  border: none;
-  font-family: 'Quicksand', sans-serif;
-  font-size: 18px;
-}
-
-.nav__button:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.nav__button img {
-  margin-right: 10px;
-}
-
 #app {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
@@ -149,11 +153,11 @@ pre {
 }
 
 #registerBtn {
-  display: block;
+  display: flex;
 }
 
 #loginBtn {
-  display: block;
+  display: flex;
 }
 
 #logoutBtn {
