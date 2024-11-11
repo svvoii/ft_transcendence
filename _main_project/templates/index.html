@@ -10,17 +10,19 @@
   <body>
     <!-- navbar -->
     <nav class="nav">
-      <a href="/" class="nav__link" data-link>Dashboard</a>
-      <a href="/posts/" class="nav__link" data-link>Posts</a>
-      <a href="/api_testing/" class="nav__link" data-link>API Testing</a>
-      <a href="/settings/" class="nav__link" data-link>Settings</a>
-      <button class="nav__button" id="loginBtn">Login</button>
-      <button class="nav__button" id="registerBtn">Register</button>
-      <button class="nav__button" id="userBtn">
-        <img id="userPic" src="" alt="" width="32" height="32">
-        <div id="userName">User</div>
-      </button>
-      <button class="nav__button" id="logoutBtn">Logout</button>
+      <div class="nav__left">
+        <a href="/" class="nav__link" data-link>Dashboard</a>
+        <a href="/settings/" class="nav__link" data-link>Settings</a>
+      </div>
+      <div class="nav__right">
+        <button class="nav__button" id="loginBtn">Login</button>
+        <button class="nav__button" id="registerBtn">Register</button>
+        <button class="nav__button" id="userBtn">
+          <img id="userPic" src="" alt="" width="32" height="32">
+          <div id="userName">User</div>
+        </button>
+        <button class="nav__button" id="logoutBtn">Logout</button>
+      </div>
     </nav>
     <!-- modal for forms -->
     <div id="formModal" class="modal-forms">

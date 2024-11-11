@@ -23,11 +23,11 @@ export const updateNavBar = async() => {
     login.style.display = "none";
     register.style.display = "none";
     user.style.display = "flex";
-    logout.style.display = "block";
+    logout.style.display = "flex";
   } else {
     // if we dont get data back, we will show the login and register buttons
-    login.style.display = "block";
-    register.style.display = "block";
+    login.style.display = "flex";
+    register.style.display = "flex";
     user.style.display = "none";
     logout.style.display = "none";
   }
