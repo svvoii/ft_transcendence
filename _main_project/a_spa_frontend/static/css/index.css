@@ -6,25 +6,26 @@
   /* font-color: #eeeeee; */
   --primary-color: #58ffec;
   --secondary-color: #fc0892;
-  --tertiary-color: #c72d04;
+  --tertiary-color: #f1d2ee;
   --background-color: #040847;
-  scrollbar-color: var(--primary-color) var(--secondary-color);
+  /* scrollbar-color: var(--primary-color) var(--secondary-color); */
   font-size: clamp(18px, 3vw, 30px);
+  --nav-height: 100px;
 }
 
-body {
-  /* --nav-width: 200px; */
-  --nav-height: 60px;
+/* body {
+ --nav-width: 200px;
   margin: 0 0 0 var(--nav-width);
-}
+} */
 
-a {
+a { /*links color */
   color: #2bd38a;
 }
 
 pre {
   margin: 0;
 }
+
 
 .nav {
   position: fixed;
@@ -39,6 +40,7 @@ pre {
   /* color: var(--primary-color); */
   display: flex;
   align-items: center;
+  z-index: 1000;
 }
 
 
@@ -58,46 +60,48 @@ pre {
   background-color: #00000000;
 
 
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
-  text-shadow: 0 0 0.5rem;
+  text-shadow: 0 0 0.5rem; */
 
   margin: 0 3px;
-  margin-top: 40px; 
+  /* margin-top: 40px;  */
 
 }
 
-button[type=submit] {
+button[type=submit],
+.paddle {
   display: block;
   padding: 12px 18px;
   color: var(--secondary-color);
   background-color: #00000000;
   /* border: 2px solid var(--secondary-color); */
   font-weight: 700;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-family: var(--font-family);
   font-size: large;
 
   border-color: #00000000;
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
-  text-shadow: 0 0 0.5rem;
+  text-shadow: 0 0 0.5rem; */
 }
 
 button[type=submit]:hover {
+  cursor: pointer;
   background: var(--secondary-color);
   color: #fff;
 
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
-  text-shadow: 0 0 0.5rem;
+  text-shadow: 0 0 0.5rem; */
 }
 
-h1, p {
+h1, h2, p {
   color: var(--primary-color); 
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px; 
-  text-shadow: 0 0 0.5rem;
+  text-shadow: 0 0 0.5rem; */
 
   /* color: rgb(234, 217, 245) ;
   text-align: center;
@@ -105,6 +109,12 @@ h1, p {
   text-shadow: -0.033em 0 1px rgba(255,0,0,0.67), 0.033em 0 1px rgba(0, 255, 255, 0.67); */
 }
 
+.message {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 5px;
+  animation: animate 1.5s linear infinite;
+}
 
 input {
   background-color: #00000000;
@@ -121,23 +131,8 @@ input:focus {
 }
 
 
-#startGame {
-  display: block;
-  padding: 12px 18px;
-  text-decoration: none;
-  color: var(--secondary-color);
-  /* color: rgba(255, 255, 255, 0.05); */
-  font-weight: 700;
-  border: none;
-  background-color: #b9969629;
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
-  mask-size: 100% 2px;
-  text-shadow: 0 0 0.5rem;
-}
-
 .nav__link:hover,
-.nav__button:hover,
-#startGame:hover {
+.nav__button:hover {
   /* background: rgba(255, 255, 255, 0.05); */
   background: var(--secondary-color);
   color: #fff;
@@ -146,8 +141,7 @@ input:focus {
 
 }
 
-.response-box,
-.response-box-pong {
+.response-box {
   font-family: var(--font-family);
   color: var(--primary-color);
   width: 100%;
@@ -214,8 +208,6 @@ input:focus {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
   /* margin: var(--nav-height) 2em 2em 2em; top right bottom left */
-  line-height: 1.5;
-  font-weight: 500;
 }
 
 #userContent {
@@ -257,7 +249,11 @@ body {
   align-items: center;
   height: 100vh;
   background-color: var(--background-color);
-  cursor: url('./assets/mouse.svg')
+  cursor: url('./assets/mouse.svg');
+
+  mask-image: linear-gradient(to bottom, #0005 50%, #000000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem;
 }
 
 div.retro-container {
@@ -269,9 +265,9 @@ div.retro-container {
   padding: 0.5rem;
   border: 2px solid var(--primary-color);
   color: var(--primary-color);
-  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
-  text-shadow: 0 0 0.5rem;
+  text-shadow: 0 0 0.5rem; */
 }
 
 header,
@@ -292,10 +288,10 @@ section {
 }
 
 
-div.retro-container {
+/* div.retro-container {
   mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
-}
+} */
 
 
 
@@ -389,3 +385,103 @@ p.motherSpeaking {
       opacity: 0;
     }
   } */
+
+
+/*////////////////////  PONG GAME //////////////////////////////*/
+
+
+.board {
+  margin-top: calc(var(--nav-height));
+  position: relative;
+  /* padding-top: 1000px; */
+
+  height: 78vh;
+  width: 70vw;
+  background-image: linear-gradient(
+          to right, #8c5c916f, #839b9779);
+  border-radius: 9px;
+
+
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
+
+
+  overflow: hidden; 
+
+}
+
+
+.paddle {
+  height: 150px;
+  width: 1px;
+  position: absolute;
+  border-right: 10px solid var(--tertiary-color);
+  box-shadow: inset -6px 0 4px -4px rgba(255, 255, 255, 0.5),
+  6px 0 4px -4px rgba(255, 255, 255, 0.5);
+}
+
+.paddle_1 {
+  top: 24%;
+  /* left: calc(10vw + 120px); */
+  left: 1%;
+  transform: translateY(-50%);
+  /* box-shadow: inset 0 0 18px #fff,
+      inset -6px 0 18px #f3bad6,
+      inset -6px 0 30px #f3bad6,
+      inset 6px 0 30px #0ff, 
+      0 0 18px #fff, 4px 0 18px*/
+}
+
+.paddle_2 {
+  top: 80%;
+  /* right: calc(20vw + 20px);  */
+  right : 7%;
+  transform: translateY(-50%);
+  /* box-shadow: inset 0 0 18px #fff,
+      inset 6px 0 18px #f3bad6,
+      inset -6px 0 18px #0ff,
+      inset 6px 0 30px #f3bad6,
+      inset -6px 0 30px #0ff,
+      0 0 18px #fff, -4px 0 18px
+      #f3bad6, 4px 0 18px #0ff; */
+}
+
+.ball {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background-color: var(--secondary-color);
+  position: fixed;
+  top: 58%;
+  left: 49%;
+
+  box-shadow: inset 0 0 10px var(--secondary-color),
+  0 0 10px var(--secondary-color);
+}
+
+/* .ball_effect {
+  height: 100%;
+  width: 100%;
+  border-radius: 100px;
+  box-shadow: inset 0 0 18px #fff,
+      inset 6px 0 18px violet,
+      inset -6px 0 18px #0ff,
+      inset 6px 0 30px violet,
+      inset -6px 0 30px #0ff,
+      0 0 18px #fff, -4px 0 18px
+      violet, 4px 0 18px #0ff;
+} */
+
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+} 
