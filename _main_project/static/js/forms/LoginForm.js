@@ -23,6 +23,12 @@ export default class extends AbstractModalView {
     `;
   }
 
+  async init() {}
+
+  getDomElements() {
+    return this.domElements;
+  }
+
   createDomElements() {
     const csrfToken = this.getCookie('csrftoken');
 
@@ -83,10 +89,6 @@ export default class extends AbstractModalView {
     container.appendChild(form);
 
     return container;
-  }
-
-  getDomElements() {
-    return this.domElements;
   }
 
   async afterRender() {

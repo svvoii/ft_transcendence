@@ -18,6 +18,12 @@ export default class extends AbstractModalView {
     `;
   }
 
+  async init() {}
+
+  getDomElements() {
+    return this.domElements;
+  }
+
   createDomElements() {
     // Create the container
     const container = document.createElement('div');
@@ -56,32 +62,16 @@ export default class extends AbstractModalView {
     return container;
   }
 
-  getDomElements() {
-    return this.domElements;
-  }
-
   async afterRender() {
-    // document.getElementById('userBtnView').addEventListener('click', async() => {
-    //   this.modal.showForm('userViewForm');
-    // });
-
-    // document.getElementById('userBtnEdit').addEventListener('click', async() => {
-    //   this.modal.showForm('userEditForm');
-    // });
-
-    // document.getElementById('userBtnChangePass').addEventListener('click', async() => {
-    //   this.modal.showForm('userChangePassForm');
-    // });
-
-    this.domElements.querySelector('#userBtnView').addEventListener('click', async() => {
+    document.getElementById('userBtnView').addEventListener('click', async() => {
       this.modal.showForm('userViewForm');
     });
 
-    this.domElements.querySelector('#userBtnEdit').addEventListener('click', async() => {
+    document.getElementById('userBtnEdit').addEventListener('click', async() => {
       this.modal.showForm('userEditForm');
     });
 
-    this.domElements.querySelector('#userBtnChangePass').addEventListener('click', async() => {
+    document.getElementById('userBtnChangePass').addEventListener('click', async() => {
       this.modal.showForm('userChangePassForm');
     });
   }

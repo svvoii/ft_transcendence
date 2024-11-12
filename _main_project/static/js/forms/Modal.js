@@ -96,6 +96,7 @@ export default class Modal {
 
   async show(contentForm) {
     this.form.innerHTML = '';
+    await contentForm.init();
     this.form.appendChild(contentForm.getDomElements());
     contentForm.afterRender();
     this.modal.style.display = "block";

@@ -5,6 +5,7 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("Register Form");
+    this.domElements = this.createDomElements();
   }
 
   async getHtml() {
@@ -21,6 +22,92 @@ export default class extends AbstractModalView {
         <button type="submit">Register</button>
       </form>
     `;
+  }
+
+  async init() {}
+
+  getDomElements() {
+    return this.domElements;
+  }
+
+  createDomElements() {
+    const csrfToken = this.getCookie('csrftoken');
+
+    // Create the container
+    const container = document.createElement('div');
+
+    // Create the paragraph
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'This is the register modal!';
+    container.appendChild(paragraph);
+
+    // Create the form
+    const form = document.createElement('form');
+    form.id = 'registrationForm';
+    form.onsubmit = (event) => event.preventDefault();
+
+    // Create the CSRF token input
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    // csrfInput.value = csrfToken;
+    form.appendChild(csrfInput);
+
+    // Create the email input
+    const emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.name = 'email';
+    emailInput.placeholder = 'Email address';
+    emailInput.required = true;
+    emailInput.autofocus = true;
+    form.appendChild(emailInput);
+    form.appendChild(document.createElement('br'));
+
+    // Create the username input
+    const usernameInput = document.createElement('input');
+    usernameInput.type = 'text';
+    usernameInput.name = 'username';
+    usernameInput.placeholder = 'Username';
+    usernameInput.required = true;
+    form.appendChild(usernameInput);
+    form.appendChild(document.createElement('br'));
+
+    // Create the password1 input
+    const password1Input = document.createElement('input');
+    password1Input.type = 'password';
+    password1Input.name = 'password1';
+    password1Input.placeholder = 'Password';
+    password1Input.required = true;
+    form.appendChild(password1Input);
+    form.appendChild(document.createElement('br'));
+
+    // Create the password2 input
+    const password2Input = document.createElement('input');
+    password2Input.type = 'password';
+    password2Input.name = 'password2';
+    password2Input.placeholder = 'Confirm password';
+    password2Input.required = true;
+    form.appendChild(password2Input);
+    form.appendChild(document.createElement('br'));
+
+    // Create the message paragraph
+    const messageParagraph = document.createElement('p');
+    const messageSpan = document.createElement('span');
+    messageSpan.id = 'message';
+    messageSpan.style.color = 'red';
+    messageParagraph.appendChild(messageSpan);
+    form.appendChild(messageParagraph);
+
+    // Create the submit button
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Register';
+    form.appendChild(submitButton);
+
+    // Append the form to the container
+    container.appendChild(form);
+
+    return container;
   }
 
   async afterRender() {

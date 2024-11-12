@@ -4,6 +4,7 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Edit Form");
+    this.domElements = null;
   }
 
   async getHtml() {
@@ -34,6 +35,82 @@ export default class extends AbstractModalView {
       return "";
     }
   }
+
+  async init() {
+    if (this.domElements === null)
+      this.domElements = await this.createDomElements();
+  }
+
+  getDomElements() {
+    return this.domElements;
+  }
+
+  async createDomElements() {
+    try {
+      const loginResponse = await fetch('/login_check/');
+      const loginData = await loginResponse.json();
+      const userResponse = await fetch(`http://localhost:8000/user/${loginData.id}/`);
+      const userData = await userResponse.json();
+
+      // Create the container
+      const container = document.createElement('div');
+
+      // Create the form
+      const form = document.createElement('form');
+      form.id = 'editUserForm';
+      form.onsubmit = (event) => event.preventDefault();
+
+      // Create the email heading
+      const emailHeading = document.createElement('h6');
+      emailHeading.textContent = 'Email';
+      form.appendChild(emailHeading);
+
+      // Create the email input
+      const emailInput = document.createElement('input');
+      emailInput.type = 'email';
+      emailInput.name = 'email';
+      emailInput.placeholder = 'Email address';
+      emailInput.required = true;
+      emailInput.autofocus = true;
+      emailInput.value = userData.email;
+      form.appendChild(emailInput);
+
+      // Create the hide email checkbox
+      const hideEmailLabel = document.createElement('label');
+      const hideEmailCheckbox = document.createElement('input');
+      hideEmailCheckbox.type = 'checkbox';
+      hideEmailCheckbox.name = 'hide_email';
+      if (userData.hide_email) {
+        hideEmailCheckbox.checked = true;
+      }
+      hideEmailLabel.appendChild(hideEmailCheckbox);
+      hideEmailLabel.appendChild(document.createTextNode('Hide Email'));
+      form.appendChild(hideEmailLabel);
+      form.appendChild(document.createElement('br'));
+
+      // Create the message paragraph
+      const messageParagraph = document.createElement('p');
+      const messageSpan = document.createElement('span');
+      messageSpan.id = 'message';
+      messageSpan.style.color = 'red';
+      messageParagraph.appendChild(messageSpan);
+      form.appendChild(messageParagraph);
+
+      // Create the submit button
+      const submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.textContent = 'Save';
+      form.appendChild(submitButton);
+
+      // Append the form to the container
+      container.appendChild(form);
+
+      return container;
+    } catch (error) {
+      console.log(error);
+      return document.createElement('div'); // Return an empty div in case of error
+    }
+  } 
 
   async afterRender() {
     const loginResponse = await fetch('/login_check/');
