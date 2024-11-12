@@ -2,7 +2,7 @@ import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar, footer } from "../index.js";
+import { navBar, footer, modal } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
@@ -39,6 +39,8 @@ export const router = async () => {
 
   // Add the navbar to the DOM and update the user info
   navBar.fast_render();
+  // Render the modal
+  modal.full_render();
   // Render the footer
   footer.full_render();
 

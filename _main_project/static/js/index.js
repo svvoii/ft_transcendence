@@ -1,10 +1,14 @@
 import NavBar from "./header_footer/NavBar.js";
 import Footer from "./header_footer/Footer.js";
+import Modal from "./forms/Modal.js";
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/helpers.js";
 
 // Create the navbar instance and render it
-export const navBar = new NavBar('app');
+// export const modal = new Modal('formModal', 'modalContent');
+export const modal = new Modal('app');
+modal.full_render();
+export const navBar = new NavBar('app', modal);
 navBar.full_render();
 export const footer = new Footer('app');
 footer.full_render();

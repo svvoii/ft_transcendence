@@ -4,6 +4,7 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Form");
+    this.domElements = this.createDomElements();
   }
 
   async getHtml() {
@@ -17,16 +18,70 @@ export default class extends AbstractModalView {
     `;
   }
 
+  createDomElements() {
+    // Create the container
+    const container = document.createElement('div');
+
+    // Create the paragraph
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'User Settings';
+    container.appendChild(paragraph);
+
+    // Create the unordered list
+    const ul = document.createElement('ul');
+
+    // Create the view profile button
+    const viewProfileButton = document.createElement('button');
+    viewProfileButton.id = 'userBtnView';
+    viewProfileButton.textContent = 'View Profile';
+    ul.appendChild(viewProfileButton);
+    ul.appendChild(document.createElement('br'));
+
+    // Create the edit profile button
+    const editProfileButton = document.createElement('button');
+    editProfileButton.id = 'userBtnEdit';
+    editProfileButton.textContent = 'Edit Profile';
+    ul.appendChild(editProfileButton);
+    ul.appendChild(document.createElement('br'));
+
+    // Create the change password button
+    const changePasswordButton = document.createElement('button');
+    changePasswordButton.id = 'userBtnChangePass';
+    changePasswordButton.textContent = 'Change Password';
+    ul.appendChild(changePasswordButton);
+
+    // Append the unordered list to the container
+    container.appendChild(ul);
+
+    return container;
+  }
+
+  getDomElements() {
+    return this.domElements;
+  }
+
   async afterRender() {
-    document.getElementById('userBtnView').addEventListener('click', async() => {
+    // document.getElementById('userBtnView').addEventListener('click', async() => {
+    //   this.modal.showForm('userViewForm');
+    // });
+
+    // document.getElementById('userBtnEdit').addEventListener('click', async() => {
+    //   this.modal.showForm('userEditForm');
+    // });
+
+    // document.getElementById('userBtnChangePass').addEventListener('click', async() => {
+    //   this.modal.showForm('userChangePassForm');
+    // });
+
+    this.domElements.querySelector('#userBtnView').addEventListener('click', async() => {
       this.modal.showForm('userViewForm');
     });
 
-    document.getElementById('userBtnEdit').addEventListener('click', async() => {
+    this.domElements.querySelector('#userBtnEdit').addEventListener('click', async() => {
       this.modal.showForm('userEditForm');
     });
 
-    document.getElementById('userBtnChangePass').addEventListener('click', async() => {
+    this.domElements.querySelector('#userBtnChangePass').addEventListener('click', async() => {
       this.modal.showForm('userChangePassForm');
     });
   }
