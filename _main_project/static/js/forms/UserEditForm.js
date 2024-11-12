@@ -1,4 +1,4 @@
-import { updateNavBar } from "../navbar/navbar.js";
+import { updateNavBar } from "../header_footer/navbar.js";
 import AbstractModalView from "./AbstractModalView.js";
 
 export default class extends AbstractModalView {

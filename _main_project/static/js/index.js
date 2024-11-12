@@ -2,7 +2,7 @@
 import Dashboard from "./views/Dashboard.js";
 import Settings from "./views/Settings.js";
 import Page404 from "./views/Page404.js";
-import { updateNavBar, navbarSetup } from "./navbar/navbar.js";
+import { updateNavBar, renderNavBar } from "./header_footer/navbar.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -53,8 +53,17 @@ const router = async () => {
   // Creates a new instance of the view
   const view = new match.route.view(getParams(match));
 
+  // Clear the app div
+  document.querySelector('#app').innerHTML = '';
+
+  // Create Navbar and add it to the DOM
+  renderNavBar();
+
   // Uses the view instance we just created to render the view
-  document.querySelector('#app').innerHTML = await view.getHtml();
+  const newDiv = document.createElement('div');
+  newDiv.innerHTML = await view.getHtml();
+  document.querySelector('#app').appendChild(newDiv);
+
   await view.afterRender();
   updateNavBar();
 };
@@ -77,4 +86,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Adds functionality for the navbar buttons 
-navbarSetup();
