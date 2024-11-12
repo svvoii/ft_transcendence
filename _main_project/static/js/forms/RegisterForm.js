@@ -1,5 +1,5 @@
 import AbstractModalView from "./AbstractModalView.js";
-import { navigateTo } from "../index.js";
+import { navigateTo } from "../helpers/helpers.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -52,18 +52,13 @@ export default class extends AbstractModalView {
           messageDiv.textContent = result.message;
           if (result.redirect) {
             this.modal.hide();
-            // localStorage.setItem('isLoggedIn', true);
             navigateTo(result.redirect);
           }
           // Update user profile image
           if (result.profile_image_url) {
             const userPic = document.getElementById('userPic');
             userPic.src = result.profile_image_url;
-            // localStorage.setItem('profile_image_url', result.profile_image_url);
           }
-          // if (result.username) {
-          //   localStorage.setItem('profile_username', result.username);
-          // }
         } else {
           messageDiv.textContent = JSON.stringify(result.errors);
         }

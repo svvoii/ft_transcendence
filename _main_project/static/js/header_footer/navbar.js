@@ -1,6 +1,5 @@
 import { Modal } from '../forms/Modal.js';
-import { loginCheck } from '../helpers/helpers.js';
-import { navigateTo } from '../index.js';
+import { loginCheck, navigateTo } from '../helpers/helpers.js';
 
 export class NavBar {
   constructor(appId) {
