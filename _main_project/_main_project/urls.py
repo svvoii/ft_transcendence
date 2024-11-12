@@ -21,22 +21,22 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 from a_homepage.views import home_view
-from a_user.views import register_view, login_view, logout_view, account_search_view
+from a_user.views import api_register_view, api_login_view, api_logout_view, account_search_view, api_logged_in_user_view
 from a_spa_frontend.views import index
 
 
 urlpatterns = [
     path('', index, name='js_home'),
-    path('api/', include('a_api.urls'), name='api'),
 	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
 	path('friends/', include('a_friends.urls', namespace='friends')),
     path('register_page/', index, name='register_page'),
-	path('register/', register_view, name='register'),
-	path('login/', login_view, name='login'),
-	path('logout/', logout_view, name='logout'),
+	path('register/', api_register_view, name='register'),
+	path('login/', api_login_view, name='login'),
+    path('login_check/', api_logged_in_user_view, name='login_check'),
+	path('logout/', api_logout_view, name='logout'),
 	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
 	path('pong/', include('a_pong.urls'), name='pong'),

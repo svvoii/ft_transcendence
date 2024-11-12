@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import Game from "./Game.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -18,6 +19,23 @@ export default class extends AbstractView {
       </p>
       <p>
         If you'd like to look at the old version, click <a href="home/" >here</a>.
+      </p>
+      <p>
+        Blah blah blah, some stuff about matchmaking? IDK....
+      </p>
+      <button id="playGameBtn">Play Game (Coming Soon)</button>
     `;
+  }
+
+  async afterRender() {
+    const gameModal = document.getElementById("game");
+
+    document.getElementById('playGameBtn').addEventListener('click', async(event) => {
+      gameModal.style.display = "block";
+
+      const game = new Game();
+      gameModal.innerHTML = await game.getHtml();
+      game.afterRender();
+    });
   }
 }

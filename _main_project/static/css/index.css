@@ -27,8 +27,11 @@ pre {
 }
 
 
+/* Navbar styling */
 .nav {
+  display: flex;
   position: fixed;
+  justify-content: space-between;
   top: 0;
   left: 0;
   /* width: var(--nav-width); */
@@ -38,6 +41,10 @@ pre {
   background: #040847;
   /* border-bottom: 2px solid var(--primary-color); */
   /* color: var(--primary-color); */
+}
+
+.nav__left,
+.nav__right {
   display: flex;
   align-items: center;
   z-index: 1000;
@@ -141,6 +148,25 @@ input:focus {
 
 }
 
+.nav__button {
+  align-items: center;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: #eeeeee;
+  background: #222222;
+  border: none;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+}
+
+.nav__button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav__button img {
+  margin-right: 10px;
+}
+
 .response-box {
   font-family: var(--font-family);
   color: var(--primary-color);
@@ -151,11 +177,11 @@ input:focus {
   background-color: rgba(215, 210, 210, 0);
 }
 
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+/* Modal that contains the forms like login and register */
+.modal-forms {
+  display: none;
+  position: fixed;
+  z-index: 2; /* Sit on top but under the modal-game */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -166,6 +192,26 @@ input:focus {
 /* Modal Content */
 .modal-content {
   /* background-color: white; */
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal that contains the Game */
+.modal-game {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: var(--nav-height);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Modal Content Box inside the modal-forms */
+.modal-content-box {
+  background-color: white;
   /* margin: 15% auto; 15% from the top and centered */
   margin: calc(5vw) calc(5vw);
   padding: 20px;
@@ -181,7 +227,6 @@ input:focus {
   font-weight: bold;
 }
 
-/* When the cursor is hovering over the close button */
 .close:hover,
 .close:focus {
   color: black;
@@ -204,6 +249,21 @@ input:focus {
   background: var(--primary-color);
 }
 
+/* The Back Button */
+.back {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.back:hover,
+.back:focus {
+  color: black;
+  cursor: pointer;
+}
+
 #app {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
@@ -220,11 +280,11 @@ input:focus {
 }
 
 #registerBtn {
-  display: block;
+  display: flex;
 }
 
 #loginBtn {
-  display: block;
+  display: flex;
 }
 
 #logoutBtn {

@@ -17,61 +17,74 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-@api_view(["GET", "POST"])
-def register_view(request, *args, **kwargs):
+@api_view(["POST"])
+def api_register_view(request, *args, **kwargs):
 	user = request.user
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
-	if request.method == 'GET':
-		return redirect('js_home')
-	if request.method == 'POST':
-		form = RegistrationForm(request.data)
-		if form.is_valid():
-			form.save()
-			email = form.cleaned_data.get('email')
-			raw_password = form.cleaned_data.get('password1')
-			account = authenticate(email=email, password=raw_password)
-			login(request, account)
-		else:
-			return Response({"message": "Registration Form not valid."})
-	return Response({"message": "Registration Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
-
-
-def det_redirect_if_exists(request):
-	redirect = None
-	if request.GET:
-		if request.GET.get('next'):
-			redirect = str(request.GET.get('next'))
-	return redirect
+	form = RegistrationForm(request.data)
+	if form.is_valid():
+		form.save()
+		email = form.cleaned_data.get('email')
+		raw_password = form.cleaned_data.get('password1')
+		account = authenticate(email=email, password=raw_password)
+		login(request, account)
+		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		return Response({
+			"message": "Registration Successful", 
+			"redirect": reverse('js_home'),
+			"profile_image_url": profile_image_url,
+			"username": account.username,
+		}, status=status.HTTP_201_CREATED)
+	else:
+		return Response({"message": form.getErrors()})
 
 
 @api_view(["GET"])
-def logout_view(request):
+def api_logout_view(request):
 	logout(request)
 	return Response({"message": "You have been logged out."})
 	# return redirect('home')
 
 
 @api_view(["POST"])
-def login_view(request, *args, **kwargs):
+def api_login_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
 
 	if user.is_authenticated:
 		return Response({"message": f"You are already authenticated as {user.email}."})
-	if request.method == 'POST':
-		form = AccountAuthenticationForm(request.data)
-		if form.is_valid():
-			email = form.cleaned_data.get('email')
-			password = form.cleaned_data.get('password')
-			user = authenticate(email=email, password=password)
-			if user:
-				login(request, user)
-			else:
-				return Response({"message": "Invalid login credentials."})
+	form = AccountAuthenticationForm(request.data)
+	if form.is_valid():
+		email = form.cleaned_data.get('email')
+		password = form.cleaned_data.get('password')
+		account = authenticate(email=email, password=password)
+		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		if account:
+			login(request, account)
+			return Response({
+				"message": "Login Successful", 
+				"redirect": reverse('js_home'),
+				"profile_image_url": profile_image_url,
+				"username": account.username,
+			}, status=status.HTTP_200_OK)
 		else:
-			return Response({"message": "Login Form not valid."})
-	return Response({"message": "Login Successful", "redirect": reverse('js_home')}, status=status.HTTP_201_CREATED)
+			return Response({"message": "Invalid login credentials."})
+	else:
+		return Response({"message": form.getErrors()})
+
+
+@api_view(['GET'])
+def api_logged_in_user_view(request):
+	user = request.user
+	if user.is_authenticated:
+		profile_image_url = user.profile_image.url if user.profile_image else get_default_profile_image()
+		return Response({
+			'id': user.id,
+			'username': user.username,
+			'profile_image_url': profile_image_url,
+		}, status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def det_redirect_if_exists(request):
@@ -81,21 +94,22 @@ def det_redirect_if_exists(request):
 			redirect = str(request.GET.get('next'))
 	return redirect
 
-
-def profile_view(request, *args, **kwargs):
+@api_view(['GET'])
+def api_profile_view(request, *args, **kwargs):
 	context = {}
 	user_id = kwargs.get('user_id')
 
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		return HttpResponse("User not found.")
+		# return HttpResponse("User not found.");
+		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
 
 	if account:
 		context['id'] = account.id
 		context['email'] = account.email
 		context['username'] = account.username
-		context['profile_image'] = account.profile_image
+		context['profile_image'] = account.profile_image.url if account.profile_image else None
 		context['hide_email'] = account.hide_email
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
@@ -158,41 +172,91 @@ def profile_view(request, *args, **kwargs):
 		context['friend_request'] = friend_request
 		context['is_blocked'] = is_blocked
 
-	return render(request, 'a_user/profile.html', context)
+	return Response(context, status=status.HTTP_200_OK)
+	# return render(request, 'a_user/profile.html', context)
 
 
-def edit_profile_view(request, *args, **kwargs):
+# @api_view(['POST'])
+# def api_edit_profile_view(request, *args, **kwargs):
+# 	if not request.user.is_authenticated:
+# 		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN);
+# 		# return redirect('login')
+
+# 	user_id = kwargs.get('user_id')
+# 	try:
+# 		account = Account.objects.get(pk=user_id)
+# 	except Account.DoesNotExist:
+# 		return Response("User not found.", status=status.HTTP_204_NO_CONTENT)
+# 		# return HttpResponse("User not found.")
+
+# 	if account.pk != request.user.pk:
+# 		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
+# 		# return HttpResponse("You cannot edit someone else's profile.")
+
+# 	context = {}
+
+# 	if request.method == 'POST':
+# 		print("request is post")
+# 		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+# 		if form.is_valid():
+# 			print("form is valid")
+# 			form.save()
+# 			# return redirect('a_user:profile', user_id=account.pk)
+# 			return Response("Profile updated successfully.", status=status.HTTP_200_OK)
+# 		else:
+# 			print("form is not valid")
+# 			form = AccountUpdateForm(
+# 				request.POST,
+# 				instance=request.user,
+# 				initial={
+# 					'id': account.pk,
+# 					'email': account.email,
+# 					'username': account.username,
+# 					'profile_image': account.profile_image,
+# 					'hide_email': account.hide_email,
+# 				}
+# 			)
+# 	else:
+# 		form = AccountUpdateForm(
+# 			initial={
+# 				'id': account.pk,
+# 				'email': account.email,
+# 				'username': account.username,
+# 				'profile_image': account.profile_image,
+# 				'hide_email': account.hide_email,
+# 			}
+# 		)
+
+# 	context['form'] = form
+# 	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
+
+# 	return Response(context, status=status.HTTP_200_OK)
+# 	# return render(request, 'a_user/edit_profile.html', context)
+
+# This is from copilot
+
+@api_view(['POST'])
+def api_edit_profile_view(request, *args, **kwargs):
 	if not request.user.is_authenticated:
-		return redirect('login')
+		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN)
 
 	user_id = kwargs.get('user_id')
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		return HttpResponse("User not found.")
+		return Response("User not found.", status=status.HTTP_204_NO_CONTENT)
 
 	if account.pk != request.user.pk:
-		return HttpResponse("You cannot edit someone else's profile.")
+		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
 
-	context = {}
-
-	if request.POST:
-		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+	if request.method == 'POST':
+		# form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
+		form = AccountUpdateForm(request.data, instance=request.user)
 		if form.is_valid():
 			form.save()
-			return redirect('a_user:profile', user_id=account.pk)
+			return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 		else:
-			form = AccountUpdateForm(
-				request.POST,
-				instance=request.user,
-				initial={
-					'id': account.pk,
-					'email': account.email,
-					'username': account.username,
-					'profile_image': account.profile_image,
-					'hide_email': account.hide_email,
-				}
-			)
+			return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 	else:
 		form = AccountUpdateForm(
 			initial={
@@ -204,10 +268,13 @@ def edit_profile_view(request, *args, **kwargs):
 			}
 		)
 
-	context['form'] = form
-	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
+	context = {
+		'form': form.as_p(),  # Render the form as HTML
+		'DATA_UPLOAD_MAX_MEMORY_SIZE': settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
+	}
 
-	return render(request, 'a_user/edit_profile.html', context)
+	return Response(context, status=status.HTTP_200_OK)
+
 
 def account_search_view(request, *args, **kwargs):
 	context = {}

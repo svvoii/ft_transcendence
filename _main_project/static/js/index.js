@@ -1,9 +1,6 @@
 // Import the views
 import Dashboard from "./views/Dashboard.js";
-import Posts from "./views/Posts.js";
 import Settings from "./views/Settings.js";
-import ViewPost from "./views/ViewPost.js";
-import NewPost from "./views/NewPost.js";
 import Page404 from "./views/Page404.js";
 import ApiTesting from "./views/ApiTesting.js";
 import Pong from "./views/Pong.js";
@@ -30,8 +27,6 @@ export const navigateTo = url => {
 
 // This class handles routes for the single page application
 const router = async () => {
-  // console.log(pathToRegex('/posts/:id'));
-
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
@@ -41,7 +36,6 @@ const router = async () => {
     { path: '/api_testing/', view: ApiTesting },
     { path: '/pong/', view: Pong },
     { path: '/settings/', view: Settings },
-    // { path: '/register_page/', view: Register },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
@@ -90,4 +84,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Adds functionality for the navbar buttons 
-navBarButtons();
+navbarSetup();
