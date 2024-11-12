@@ -2,7 +2,8 @@
 import Dashboard from "./views/Dashboard.js";
 import Settings from "./views/Settings.js";
 import Page404 from "./views/Page404.js";
-import { updateNavBar, renderNavBar } from "./header_footer/navbar.js";
+import { NavBar } from "./header_footer/navbar.js";
+import { renderFooter } from "./header_footer/footer.js";
 
 // Create a regex to replace the path with something.
 const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
@@ -22,6 +23,9 @@ export const navigateTo = url => {
   history.pushState(null, null, url);
   router();
 }
+
+const navBar = new NavBar('app');
+navBar.full_render();
 
 // This class handles routes for the single page application
 const router = async () => {
@@ -56,8 +60,10 @@ const router = async () => {
   // Clear the app div
   document.querySelector('#app').innerHTML = '';
 
-  // Create Navbar and add it to the DOM
-  renderNavBar();
+  // Add the navbar to the DOM and update the user info
+  navBar.fast_render();
+  // Render the footer
+  renderFooter();
 
   // Uses the view instance we just created to render the view
   const newDiv = document.createElement('div');
@@ -65,7 +71,6 @@ const router = async () => {
   document.querySelector('#app').appendChild(newDiv);
 
   await view.afterRender();
-  updateNavBar();
 };
 
 // This event listener listens for a popstate event and calls the router function
@@ -84,5 +89,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   router();
 });
-
-// Adds functionality for the navbar buttons 

@@ -135,6 +135,13 @@ pre {
   cursor: pointer;
 }
 
+.footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
 #app {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
