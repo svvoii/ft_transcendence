@@ -19,7 +19,7 @@ export default class extends AbstractView {
     <div class="paddle_1 paddle"></div>
     <div class="paddle_2 paddle"></div>
     <h2 class="message">
-        Press Enter to Play Pong
+        Press ENTER to play PONG
     </h2>
 
     </div>
