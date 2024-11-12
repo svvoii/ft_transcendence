@@ -1,7 +1,7 @@
 import { Modal } from '../forms/Modal.js';
 import { loginCheck, navigateTo } from '../helpers/helpers.js';
 
-export class NavBar {
+export default class NavBar {
   constructor(appId) {
     this.app = document.querySelector(`#${appId}`);
     this.navbar = document.createElement('nav');

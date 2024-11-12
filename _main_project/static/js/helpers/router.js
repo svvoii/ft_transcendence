@@ -1,9 +1,8 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import Page404 from "../views/Page404.js";
-import { renderFooter } from "../header_footer/footer.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar } from "../index.js";
+import { navBar, footer } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
@@ -41,7 +40,7 @@ export const router = async () => {
   // Add the navbar to the DOM and update the user info
   navBar.fast_render();
   // Render the footer
-  renderFooter();
+  footer.full_render();
 
   // Uses the view instance we just created to render the view
   const newDiv = document.createElement('div');
