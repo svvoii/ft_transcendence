@@ -2,6 +2,7 @@
 import Dashboard from "./views/Dashboard.js";
 import Settings from "./views/Settings.js";
 import Page404 from "./views/Page404.js";
+import Game from "./views/Game.js";
 import { updateNavBar, navbarSetup } from "./navbar/navbar.js";
 
 // Create a regex to replace the path with something.
@@ -29,6 +30,7 @@ const router = async () => {
   const routes = [
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
+    { path: '/game/', view: Game },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
