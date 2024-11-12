@@ -39,6 +39,7 @@ urlpatterns = [
 	path('logout/', api_logout_view, name='logout'),
 	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
+    path('game/', include('a_game.urls'), name='game'),
     re_path(r'^.*/', include('a_spa_frontend.urls')),
 
 	# Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
