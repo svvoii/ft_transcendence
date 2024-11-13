@@ -119,19 +119,20 @@ export default class extends AbstractModalView {
       // Create form 
       const form = event.target;
       const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
+      // const data = {};
+      // formData.forEach((value, key) => {
+      //   data[key] = value;
+      // });
 
       const content = {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          // 'Accept': 'application/json',
+          // 'Content-Type': 'application/json',
           'X-CSRFToken': this.getCookie('csrftoken')
         },
-        body: JSON.stringify(data)
+        // body: JSON.stringify(data)
+        body: formData
       };
 
       console.log(content);
