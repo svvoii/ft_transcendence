@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 	'a_homepage',
 	'a_user',
 	'a_oauth2',
+    'a_game',
 	'a_spa_frontend'
 ]
 

@@ -1,9 +1,20 @@
+:root {
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  /* font-color: #eeeeee; */
+  --primary-color: #58ffec;
+  --secondary-color: #fc0892;
+  --tertiary-color: #f1d2ee;
+  --background-color: #040847;
+  /* scrollbar-color: var(--primary-color) var(--secondary-color); */
+  font-size: clamp(18px, 3vw, 30px);
+  --nav-height: 100px;
+}
+
 body {
   /* --nav-width: 200px; */
-  --nav-height: 60px;
   margin: 0 0 0 var(--nav-width);
-  font-family: 'Quicksand', sans-serif;
-  font-size: 18px;
+
 }
 
 a {
@@ -16,8 +27,8 @@ pre {
 
 /* Navbar styling */
 .nav {
-  display: flex;
   position: fixed;
+  display: flex;
   justify-content: space-between;
   top: 0;
   left: 0;
@@ -25,7 +36,8 @@ pre {
   /* height: 100vh; */
   width: 100%;
   height: var(--nav-height);
-  background: #222222;
+  background: #040847;
+  z-index: 1000;
 }
 
 .nav__left,
@@ -34,42 +46,122 @@ pre {
   align-items: center;
 }
 
-.nav__link {
-  padding: 12px 18px;
-  text-decoration: none;
-  color: #eeeeee;
-  font-weight: 500;
-}
-
-.nav__link:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
+.nav__link,
 .nav__button {
-  align-items: center;
+  display: block;
   padding: 12px 18px;
   text-decoration: none;
-  color: #eeeeee;
-  background: #222222;
-  border: none;
-  font-family: 'Quicksand', sans-serif;
-  font-size: 18px;
+  color: var(--secondary-color);
+  font-weight: 700;
+  border: 2px solid var(--secondary-color);
+  background-color: #00000000;
+  margin: 0 3px;
 }
 
+.nav__link:hover,
 .nav__button:hover {
-  background: rgba(255, 255, 255, 0.05);
+  /* background: rgba(255, 255, 255, 0.05); */
+  background: var(--secondary-color);
+  color: #fff;
+  /* color: rgba(255, 255, 255, 0.05); */
+  cursor: pointer;
+
 }
 
-.nav__button img {
-  margin-right: 10px;
+
+button[type=submit],
+.paddle {
+  display: block;
+  padding: 12px 18px;
+  color: var(--secondary-color);
+  background-color: #00000000;
+  /* border: 2px solid var(--secondary-color); */
+  font-weight: 700;
+  /* cursor: pointer; */
+  font-family: var(--font-family);
+  font-size: large;
+
+  border-color: #00000000;
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
 }
+
+button[type=submit]:hover {
+  cursor: pointer;
+  background: var(--secondary-color);
+  color: #fff;
+
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
+}
+
+h1, h2, p {
+  color: var(--primary-color); 
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px; 
+  text-shadow: 0 0 0.5rem; */
+
+  /* color: rgb(234, 217, 245) ;
+  text-align: center;
+  letter-spacing: 0.033em;
+  text-shadow: -0.033em 0 1px rgba(255,0,0,0.67), 0.033em 0 1px rgba(0, 255, 255, 0.67); */
+}
+
+.message {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 5px;
+  animation: animate 1.5s linear infinite;
+}
+
+input {
+  background-color: #00000000;
+  font-size: large;
+  border: none;
+  color: rgb(255, 255, 255);
+  font-family: var(--font-family);
+  /* background-color: hsla(1, 1%, 100%, 1); */
+  
+}
+
+input:focus {
+  outline: none;
+}
+
+
 
 .response-box {
+  font-family: var(--font-family);
+  color: var(--primary-color);
   width: 100%;
   padding: 0;
-  text-align: left;
+  text-align: center;
   vertical-align: top;
-  background-color: rgb(215, 210, 210);
+  background-color: rgba(215, 210, 210, 0);
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(32, 60, 102, 0.829); /*  background  */
+}
+
+/* Modal Content */
+.modal-content {
+  /* background-color: white; */
+  /* margin: 15% auto; 15% from the top and centered */
+  margin: calc(5vw) calc(5vw);
+  padding: 20px;
+  /* border: 1px solid #888; */
+  width: 80%; /* Could be more or less depending on screen size */
 }
 
 /* Modal that contains the forms like login and register */
@@ -108,7 +200,7 @@ pre {
 
 /* The Close Button */
 .close {
-  color: #aaa;
+  color: #352356;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -116,8 +208,23 @@ pre {
 
 .close:hover,
 .close:focus {
-  color: black;
+  color: var(--secondary-color);
   cursor: pointer;
+}
+
+.nav__button {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: #eeeeee;
+  background: rgb(30, 23, 66);
+  /* font-weight: 500; */
+  border: none;
+  font-size: 18px;
+}
+
+.nav__button:hover {
+  background: var(--primary-color);
 }
 
 /* The Back Button */
@@ -146,8 +253,6 @@ pre {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
   /* margin: var(--nav-height) 2em 2em 2em; top right bottom left */
-  line-height: 1.5;
-  font-weight: 500;
 }
 
 #userContent {
@@ -173,4 +278,273 @@ pre {
 
 #userBtn {
   display: none;
+}
+
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+  cursor: url('./assets/mouse.svg');
+
+  mask-image: linear-gradient(to bottom, #0005 50%, #000000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem;
+}
+
+div.retro-container {
+  width: 90vw;
+  height: 90vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  padding: 0.5rem;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
+}
+
+header,
+footer {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+main {
+  overflow: hidden;
+}
+
+section {
+  height: 100%;
+  overflow: hidden auto;
+  margin: 1rem 0;
+}
+
+
+/* div.retro-container {
+  mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+} */
+
+
+
+/**************************************************************************/
+
+/*Rectangular caret blinking : WORKS */
+
+/* .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.box {
+  padding: 0 50px 0 10px;
+  border: 2px solid #656464;
+  border-radius: 10px;
+}
+
+p.motherSpeaking {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+p.motherSpeaking::after {
+  content: "";
+  width: 10px;
+  height: 20px;
+  background: #ffffff;
+  display: inline-block;
+  animation: cursor-blink 1.5s steps(2) infinite;
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+} */
+
+
+
+/****************************************************************/
+
+/*Typewriter effect : WORKS */
+
+
+p.motherSpeaking {
+  color: #fff;
+  font-family: var(--font-family);
+  overflow: hidden; 
+  border-right: .50em solid #fff; 
+  white-space: nowrap; 
+  margin: 10 auto; 
+  letter-spacing: .15em; 
+  animation: 
+    typing 2s steps(30, end),
+    blink-caret 1.5s step-end infinite;
+}
+
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  30% { border-color: #fff }
+}
+
+
+  /****************************************************************/
+  
+  /* JOUR NUIT effect : WORKS */
+  /* p.motherSpeaking {
+    content: ' _';
+    animation: animate 1.5s linear infinite;
+  }
+  
+  
+  @keyframes animate {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 0;
+    }
+  } */
+
+
+/*////////////////////  PONG GAME //////////////////////////////*/
+
+
+.board {
+  margin-top: calc(var(--nav-height));
+  position: relative;
+  /* padding-top: 1000px; */
+
+  height: 78vh;
+  width: 70vw;
+  background-image: linear-gradient(
+          to right, #8c5c916f, #839b9779);
+  border-radius: 9px;
+
+
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
+
+
+  overflow: hidden; 
+
+}
+
+
+.paddle {
+  height: 150px;
+  width: 1px;
+  position: absolute;
+  border-right: 10px solid var(--tertiary-color);
+  box-shadow: inset -6px 0 4px -4px rgba(255, 255, 255, 0.5),
+  6px 0 4px -4px rgba(255, 255, 255, 0.5);
+}
+
+.paddle_1 {
+  top: 24%;
+  /* left: calc(10vw + 120px); */
+  left: 1%;
+  transform: translateY(-50%);
+  /* box-shadow: inset 0 0 18px #fff,
+      inset -6px 0 18px #f3bad6,
+      inset -6px 0 30px #f3bad6,
+      inset 6px 0 30px #0ff, 
+      0 0 18px #fff, 4px 0 18px*/
+}
+
+.paddle_2 {
+  top: 80%;
+  /* right: calc(20vw + 20px);  */
+  right : 7%;
+  transform: translateY(-50%);
+  /* box-shadow: inset 0 0 18px #fff,
+      inset 6px 0 18px #f3bad6,
+      inset -6px 0 18px #0ff,
+      inset 6px 0 30px #f3bad6,
+      inset -6px 0 30px #0ff,
+      0 0 18px #fff, -4px 0 18px
+      #f3bad6, 4px 0 18px #0ff; */
+}
+
+.ball {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background-color: var(--secondary-color);
+  position: fixed;
+  top: 58%;
+  left: 49%;
+
+  box-shadow: inset 0 0 10px var(--secondary-color),
+  0 0 10px var(--secondary-color);
+}
+
+/* .ball_effect {
+  height: 100%;
+  width: 100%;
+  border-radius: 100px;
+  box-shadow: inset 0 0 18px #fff,
+      inset 6px 0 18px violet,
+      inset -6px 0 18px #0ff,
+      inset 6px 0 30px violet,
+      inset -6px 0 30px #0ff,
+      0 0 18px #fff, -4px 0 18px
+      violet, 4px 0 18px #0ff;
+} */
+
+
+#old-crt-monitor {
+  box-shadow: inset 0px 0px 2rem;
+  background-image: linear-gradient(0deg, #ff0000 10%, rgb(0, 255, 21) 90%, #0000 100%);
+  animation: crtAnimation 100s linear infinite;
+  background-size: 100% 80%;
+}
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+} 
+
+@keyframes crtAnimation {
+  0% {
+      background-position: 0 0;
+  }
+
+  100% {
+      background-position: 0 10000%;
+  }
 }
