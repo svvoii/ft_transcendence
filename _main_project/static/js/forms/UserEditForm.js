@@ -4,7 +4,6 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Edit Form");
-    this.domElements = null;
   }
 
   async getHtml() {
@@ -34,15 +33,6 @@ export default class extends AbstractModalView {
       console.log(error);
       return "";
     }
-  }
-
-  async init() {
-    if (this.domElements === null)
-      this.domElements = await this.createDomElements();
-  }
-
-  getDomElements() {
-    return this.domElements;
   }
 
   async createDomElements() {

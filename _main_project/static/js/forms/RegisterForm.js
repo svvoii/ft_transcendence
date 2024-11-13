@@ -5,7 +5,6 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("Register Form");
-    this.domElements = this.createDomElements();
   }
 
   async getHtml() {
@@ -22,12 +21,6 @@ export default class extends AbstractModalView {
         <button type="submit">Register</button>
       </form>
     `;
-  }
-
-  async init() {}
-
-  getDomElements() {
-    return this.domElements;
   }
 
   createDomElements() {

@@ -4,7 +4,6 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Change Password Form");
-    this.domElements = this.createDomElements();
   }
 
   async getHtml() {
@@ -13,12 +12,6 @@ export default class extends AbstractModalView {
         Viewing Change User Pass Screen!
       </p>
     `;
-  }
-
-  async init() {}
-
-  getDomElements() {
-    return this.domElements;
   }
 
   createDomElements() {

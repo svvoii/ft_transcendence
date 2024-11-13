@@ -5,7 +5,6 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("Login Form");
-    this.domElements = this.createDomElements();
   }
 
   async getHtml() {
@@ -21,12 +20,6 @@ export default class extends AbstractModalView {
         <button type="submit">Login</button>
       </form>
     `;
-  }
-
-  async init() {}
-
-  getDomElements() {
-    return this.domElements;
   }
 
   createDomElements() {
@@ -92,8 +85,8 @@ export default class extends AbstractModalView {
   }
 
   async afterRender() {
-    // document.getElementById('loginForm').addEventListener('submit', async(event) => {
-    this.domElements.querySelector('#loginForm').addEventListener('submit', async(event) => {
+    document.getElementById('loginForm').addEventListener('submit', async(event) => {
+    // this.domElements.querySelector('#loginForm').addEventListener('submit', async(event) => {
       // Create form 
       console.log('Login form submitted');
       const form = event.target;
