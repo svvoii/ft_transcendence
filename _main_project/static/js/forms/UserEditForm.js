@@ -1,3 +1,4 @@
+import { navigateTo } from "../helpers/helpers.js";
 import AbstractModalView from "./AbstractModalView.js";
 
 export default class extends AbstractModalView {
@@ -45,10 +46,47 @@ export default class extends AbstractModalView {
       // Create the container
       const container = document.createElement('div');
 
+      // Create the image element
+      const img = document.createElement('img');
+      img.src = userData.profile_image;
+      img.alt = 'user image';
+      img.style.width = '100px';
+      img.style.height = '100px';
+      container.appendChild(img);
+
+      // Create the line break element
+      const br = document.createElement('br');
+      container.appendChild(br);
+
       // Create the form
       const form = document.createElement('form');
       form.id = 'editUserForm';
       form.onsubmit = (event) => event.preventDefault();
+
+      // Create the file input
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.name = 'profile_image';
+      form.appendChild(fileInput);
+      form.appendChild(document.createElement('br'));
+
+      // Create the username heading
+      const usernameHeading = document.createElement('h6');
+      usernameHeading.textContent = 'Username';
+      form.appendChild(usernameHeading);
+
+      // Create the username input
+      const usernameInput = document.createElement('input');
+      usernameInput.type = 'text';
+      usernameInput.name = 'username';
+      usernameInput.placeholder = 'Username';
+      usernameInput.required = true;
+      usernameInput.value = userData.username;
+      form.appendChild(usernameInput);
+      form.appendChild(document.createElement('br'));
+
+      // Append the form to the container
+      container.appendChild(form);
 
       // Create the email heading
       const emailHeading = document.createElement('h6');
@@ -135,6 +173,7 @@ export default class extends AbstractModalView {
         if (response.ok) {
           messageDiv.style.color = 'green';
           messageDiv.textContent = result.message;
+          navigateTo(result.redirect);
         } else {
           messageDiv.textContent = JSON.stringify(result.errors);
         }
