@@ -1,4 +1,5 @@
 import Dashboard from "../views/Dashboard.js";
+import Game from "../views/Game.js";
 import Settings from "../views/Settings.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
@@ -9,6 +10,7 @@ export const router = async () => {
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
+    { path: '/game/', view: Game },
     { path: '/settings/', view: Settings },
   ];
 

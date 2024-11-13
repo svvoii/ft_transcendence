@@ -13,12 +13,21 @@ export default class NavBar {
     const navLeft = document.createElement('div');
     navLeft.classList.add('nav__left');
 
+    // Create the dashboard element
     const dashboardLink = document.createElement('a');
     dashboardLink.href = '/';
     dashboardLink.classList.add('nav__link');
     dashboardLink.setAttribute('data-link', '');
     dashboardLink.textContent = 'Dashboard';
 
+    // Create the game element
+    const gameLink = document.createElement('a');
+    gameLink.href = '/game/';
+    gameLink.classList.add('nav__link');
+    gameLink.setAttribute('data-link', '');
+    gameLink.textContent = 'Game';
+
+    // Create the Settings element
     const settingsLink = document.createElement('a');
     settingsLink.href = '/settings/';
     settingsLink.classList.add('nav__link');
@@ -26,6 +35,7 @@ export default class NavBar {
     settingsLink.textContent = 'Settings';
 
     navLeft.appendChild(dashboardLink);
+    navLeft.appendChild(gameLink);
     navLeft.appendChild(settingsLink);
 
     return navLeft;
