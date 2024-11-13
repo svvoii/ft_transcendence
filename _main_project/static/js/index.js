@@ -1,65 +1,18 @@
-// Import the views
-import Dashboard from "./views/Dashboard.js";
-import Settings from "./views/Settings.js";
-import Page404 from "./views/Page404.js";
-import Game from "./views/Game.js";
-import { updateNavBar, navbarSetup } from "./navbar/navbar.js";
+import NavBar from "./header_footer/NavBar.js";
+import Footer from "./header_footer/Footer.js";
+import Modal from "./forms/Modal.js";
+import { router } from "./helpers/router.js";
+import { navigateTo } from "./helpers/helpers.js";
 
-// Create a regex to replace the path with something.
-const pathToRegex = path => new RegExp('^' + path.replace(/\//g, "\\/").replace(/:\w+/g, '(.+)') + '$');
+// Create the navbar instance and render it
+// export const modal = new Modal('formModal', 'modalContent');
+export const modal = new Modal('app');
+modal.full_render();
+export const navBar = new NavBar('app', modal);
+navBar.full_render();
+export const footer = new Footer('app');
+footer.full_render();
 
-// Finds the key and the values for our params
-const getParams = match => {
-  const values = match.result.slice(1);
-  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
-
-  return Object.fromEntries(keys.map((key, i) => {
-    return [key, values[i]];
-  }));
-}
-
-// Allows us to use the history API to navigate to different routes
-export const navigateTo = url => {
-  history.pushState(null, null, url);
-  router();
-}
-
-// This class handles routes for the single page application
-const router = async () => {
-  // Listing the routes
-  const routes = [
-    { path: '/', view: Dashboard },
-    { path: '/settings/', view: Settings },
-    { path: '/game/', view: Game },
-  ];
-
-  // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location
-  const potentialMatches = routes.map(route => {
-    return {
-      route: route,
-      result: location.pathname.match(pathToRegex(route.path))
-    };
-  });
-
-  // creates a match object that contains the route and whether or not it is a match
-  let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-
-  // If no match is found, use the 404 page.
-  if (!match) {
-    match = {
-      route: { path: '', view: Page404 },
-      result: [location.pathname]
-    };
-  }
-
-  // Creates a new instance of the view
-  const view = new match.route.view(getParams(match));
-
-  // Uses the view instance we just created to render the view
-  document.querySelector('#app').innerHTML = await view.getHtml();
-  await view.afterRender();
-  updateNavBar();
-};
 
 // This event listener listens for a popstate event and calls the router function
 // This means when the back or forward buttons are clicked, the router function is called.
@@ -77,6 +30,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   router();
 });
-
-// Adds functionality for the navbar buttons 
-navbarSetup();

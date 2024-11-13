@@ -7,11 +7,17 @@ import UserEditForm from './UserEditForm.js';
 import UserChangePassForm from './UserChangePassForm.js';
 import { loginCheck } from '../helpers/helpers.js';
 
-export class Modal {
-  constructor(modalId, contentId) {
-    this.modal = document.getElementById(modalId);
-    this.form = document.getElementById(contentId);
+export default class Modal {
+  constructor(appId) {
+    this.app = document.querySelector(`#${appId}`);
+    // this.modal = document.getElementById(modalId);
+    // this.form = document.getElementById(contentId);
+    this.modal = document.createElement('div');
+    this.modal.id = 'formModal';
+    this.modal.classList.add('modal-forms');
+    this.createModalElements();
     this.initEventListeners();
+    this.form = this.modal.querySelector('#modalContent');
 
     // Create instances of all forms
     this.userForm = new UserForm(this);
@@ -30,6 +36,34 @@ export class Modal {
       'userEditForm': this.userEditForm,
       'userChangePassForm': this.userChangePassForm
     }
+  }
+
+  createModalElements() {
+    // Create the modal content box div
+    const modalContentBox = document.createElement('div');
+    modalContentBox.classList.add('modal-content-box');
+
+    // Create the close span
+    const closeSpan = document.createElement('span');
+    closeSpan.classList.add('close');
+    closeSpan.innerHTML = '&times;';
+
+    // Create the back span
+    const backSpan = document.createElement('span');
+    backSpan.classList.add('back');
+    backSpan.innerHTML = '&larrhk;';
+
+    // Create the modal content div
+    const modalContent = document.createElement('div');
+    modalContent.id = 'modalContent';
+
+    // Append the spans and modal content to the modal content box
+    modalContentBox.appendChild(closeSpan);
+    modalContentBox.appendChild(backSpan);
+    modalContentBox.appendChild(modalContent);
+
+    // Append the modal content box to the main container
+    this.modal.appendChild(modalContentBox);
   }
 
   initEventListeners() {
@@ -61,15 +95,17 @@ export class Modal {
   }
 
   async show(contentForm) {
-    this.form.innerHTML = await contentForm.getHtml();
+    this.form.innerHTML = '';
+    this.form.appendChild(await contentForm.createDomElements());
     contentForm.afterRender();
     this.modal.style.display = "block";
   }
 
   async showForm(formName) {
     const form = this.formMap[formName];
+
     if (form) {
-      // console.log(`showing form: ${formName}`);
+      console.log(`showing form: ${formName}`);
       this.show(form);
     } else {
       console.error(`form not found: ${formName}`);
@@ -78,5 +114,9 @@ export class Modal {
 
   hide() {
     this.modal.style.display = "none";
+  }
+
+  full_render() {
+    this.app.appendChild(this.modal);
   }
 }

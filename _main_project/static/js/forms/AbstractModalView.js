@@ -7,8 +7,8 @@ export default class {
     document.title = title;
   }
 
-  async getHtml() {
-    return "";
+  createDomElements() {
+    return document.createElement('div');
   }
 
   async afterRender() {
