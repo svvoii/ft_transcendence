@@ -7,22 +7,6 @@ export default class extends AbstractModalView {
     this.setTitle("Register Form");
   }
 
-  async getHtml() {
-    const csrfToken = this.getCookie('csrftoken');
-    return `
-      <p>This is the register modal!</p>
-      <form id="registrationForm" onsubmit="event.preventDefault();" >
-        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-        <input type="email" name="email" placeholder="Email address" required autofocus></br>
-        <input type="text" name="username" placeholder="Username" required></br>
-        <input type="password" name="password1" placeholder="Password" required></br>
-        <input type="password" name="password2" placeholder="Confirm password" required></br>
-        <p><span id="message" style="color: red;"></span></p>
-        <button type="submit">Register</button>
-      </form>
-    `;
-  }
-
   createDomElements() {
     const csrfToken = this.getCookie('csrftoken');
 
