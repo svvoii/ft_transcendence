@@ -21,8 +21,7 @@ export default class extends AbstractModalView {
       const img = document.createElement('img');
       img.src = userData.profile_image;
       img.alt = 'user image';
-      img.style.width = '100px';
-      img.style.height = '100px';
+      img.classList.add('user-image');
       container.appendChild(img);
 
       // Create the line break element
@@ -42,7 +41,7 @@ export default class extends AbstractModalView {
       form.appendChild(document.createElement('br'));
 
       // Create the username heading
-      const usernameHeading = document.createElement('h6');
+      const usernameHeading = document.createElement('h3');
       usernameHeading.textContent = 'Username';
       form.appendChild(usernameHeading);
 
@@ -60,7 +59,7 @@ export default class extends AbstractModalView {
       container.appendChild(form);
 
       // Create the email heading
-      const emailHeading = document.createElement('h6');
+      const emailHeading = document.createElement('h3');
       emailHeading.textContent = 'Email';
       form.appendChild(emailHeading);
 
@@ -79,6 +78,7 @@ export default class extends AbstractModalView {
       const hideEmailCheckbox = document.createElement('input');
       hideEmailCheckbox.type = 'checkbox';
       hideEmailCheckbox.name = 'hide_email';
+      hideEmailCheckbox.classList.add('checkbox');
       if (userData.hide_email) {
         hideEmailCheckbox.checked = true;
       }
@@ -91,7 +91,7 @@ export default class extends AbstractModalView {
       const messageParagraph = document.createElement('p');
       const messageSpan = document.createElement('span');
       messageSpan.id = 'message';
-      messageSpan.style.color = 'red';
+      messageSpan.classList.add('message');
       messageParagraph.appendChild(messageSpan);
       form.appendChild(messageParagraph);
 
@@ -143,7 +143,7 @@ export default class extends AbstractModalView {
         const messageDiv = document.getElementById('message');
 
         if (response.ok) {
-          messageDiv.style.color = 'green';
+          messageDiv.style.color = 'var(--success-color)';
           messageDiv.textContent = result.message;
           navigateTo(result.redirect);
         } else {

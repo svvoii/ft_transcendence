@@ -6,8 +6,10 @@
   --secondary-color: #fc0892;
   --tertiary-color: #f1d2ee;
   --background-color: #040847;
-  --white-color: #ffffff;
+  --plane-text-color: #ffffff;
   --dark-color: rgb(30, 23, 66);
+  --success-color: #00ff00;
+  --failure-color: var(--secondary-color);
   /* scrollbar-color: var(--primary-color) var(--secondary-color); */
   font-size: clamp(18px, 3vw, 30px);
   --nav-height: 80px;
@@ -112,14 +114,14 @@ button[type=submit] {
 button[type=submit]:hover {
   cursor: pointer;
   background: var(--secondary-color);
-  color: var(--white-color);
+  color: var(--plane-text-color);
 
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem; */
 }
 
-h1, h2, p {
+p, h1, h2 {
   color: var(--primary-color); 
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px; 
@@ -132,7 +134,11 @@ h1, h2, p {
 }
 
 h3 {
-  color: var(--white-color)
+  color: var(--plane-text-color)
+}
+
+label {
+  color: var(--plane-text-color)
 }
 
 input {

@@ -107,10 +107,12 @@
 }
 
 .message {
+  display: flex;
   text-align: center;
   font-size: 24px;
   margin-bottom: 0.5rem;
   animation: animate 3s linear infinite;
+  color: var(--failure-color);
 }
 
 .user-image {
@@ -118,4 +120,8 @@
   height: 150px;
   border-radius: 25%;
   margin: 0 auto;
+}
+
+.checkbox {
+  margin: 0.5rem;
 }

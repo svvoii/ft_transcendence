@@ -34,7 +34,7 @@
 
 .nav__link:hover {
   background: var(--secondary-color);
-  color: var(--white-color);
+  color: var(--plane-text-color);
   cursor: pointer;
 
 }
@@ -44,7 +44,7 @@
   line-height: var(--nav-button-height);
   padding: 0 18px;
   text-decoration: none;
-  color: var(--white-color);
+  color: var(--plane-text-color);
   font-weight: 500;
   border: none;
   background: var(--dark-color);

@@ -53,10 +53,8 @@ export default class extends AbstractModalView {
     // Create the message paragraph
     const messageParagraph = document.createElement('p');
     const messageSpan = document.createElement('span');
-    messageSpan.style.display = 'flex';
     messageSpan.classList.add('message');
     messageSpan.id = 'message';
-    messageSpan.style.color = 'var(--secondary-color)';
     messageParagraph.appendChild(messageSpan);
     form.appendChild(messageParagraph);
 
