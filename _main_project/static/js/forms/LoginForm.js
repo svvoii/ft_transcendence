@@ -8,15 +8,16 @@ export default class extends AbstractModalView {
   }
 
   createDomElements() {
-    const csrfToken = this.getCookie('csrftoken');
+    // const csrfToken = this.getCookie('csrftoken');
 
     // Create the container
     const container = document.createElement('div');
 
     // Create the paragraph
-    const paragraph = document.createElement('p');
-    paragraph.textContent = 'Login';
-    container.appendChild(paragraph);
+    const title = document.createElement('h2');
+    title.classList.add('modal-title');
+    title.textContent = 'Login';
+    container.appendChild(title);
 
     // Create the form
     const form = document.createElement('form');
@@ -52,6 +53,8 @@ export default class extends AbstractModalView {
     // Create the message paragraph
     const messageParagraph = document.createElement('p');
     const messageSpan = document.createElement('span');
+    messageSpan.style.display = 'flex';
+    messageSpan.classList.add('message');
     messageSpan.id = 'message';
     messageSpan.style.color = 'var(--secondary-color)';
     messageParagraph.appendChild(messageSpan);
