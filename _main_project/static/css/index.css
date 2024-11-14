@@ -85,7 +85,7 @@ button[type=select] {
   font-weight: 700;
   border: 2px solid var(--primary-color);
   background: var(--dark-color);
-  margin: 0 3px;
+  /* margin: 0 3px; */
 }
 
 button[type=select]:hover {
@@ -149,29 +149,4 @@ input:focus {
   margin: 2em;
   margin-top: var(--nav-height); /* overwrites only the margin top attribute */
   /* margin: var(--nav-height) 2em 2em 2em; top right bottom left */
-}
-
-#userContent {
-  width: 100%;
-  height: 40vh;
-  min-height: 200px;
-  padding: 0;
-  text-align: left;
-  vertical-align: top;
-}
-
-#registerBtn {
-  display: flex;
-}
-
-#loginBtn {
-  display: flex;
-}
-
-#logoutBtn {
-  display: none;
-}
-
-#userBtn {
-  display: none;
 }
