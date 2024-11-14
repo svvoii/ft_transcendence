@@ -59,6 +59,23 @@
   width: 80%; /* Could be more or less depending on screen size */
 }
 
+.select-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  border: 2px solid var(--primary-color);
+  background: var(--dark-color);
+  margin-bottom: 0.5rem;
+}
+
+.select-button:hover {
+  color: var(--dark-color);
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
 /* The Close Button */
 .close {
   color: var(--primary-color);
