@@ -15,7 +15,7 @@ export default class extends AbstractModalView {
 
     // Create the paragraph
     const paragraph = document.createElement('p');
-    paragraph.textContent = 'This is the login modal!';
+    paragraph.textContent = 'Login';
     container.appendChild(paragraph);
 
     // Create the form
@@ -53,7 +53,7 @@ export default class extends AbstractModalView {
     const messageParagraph = document.createElement('p');
     const messageSpan = document.createElement('span');
     messageSpan.id = 'message';
-    messageSpan.style.color = 'red';
+    messageSpan.style.color = 'var(--secondary-color)';
     messageParagraph.appendChild(messageSpan);
     form.appendChild(messageParagraph);
 

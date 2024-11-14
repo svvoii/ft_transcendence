@@ -47,7 +47,7 @@
 
 /* Modal Content Box inside the modal-forms */
 .modal-content-box {
-  background-color: white;
+  background-color: var(--background-color);
   /* margin: 15% auto; 15% from the top and centered */
   margin: calc(5vw) calc(5vw);
   padding: 20px;
@@ -57,7 +57,7 @@
 
 /* The Close Button */
 .close {
-  color: #352356;
+  color: var(--primary-color);
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -71,7 +71,7 @@
 
 /* The Back Button */
 .back {
-  color: #aaa;
+  color: var(--primary-color);
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -80,7 +80,7 @@
 
 .back:hover,
 .back:focus {
-  color: black;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 

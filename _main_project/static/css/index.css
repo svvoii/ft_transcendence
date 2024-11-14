@@ -6,6 +6,8 @@
   --secondary-color: #fc0892;
   --tertiary-color: #f1d2ee;
   --background-color: #040847;
+  --white-color: #ffffff;
+  --dark-color: rgb(30, 23, 66);
   /* scrollbar-color: var(--primary-color) var(--secondary-color); */
   font-size: clamp(18px, 3vw, 30px);
   --nav-height: 100px;
@@ -62,11 +64,37 @@ section {
 }
 
 a {
-  color: #009579;
+  color: var(--secondary-color);
 }
 
-pre {
-  margin: 0;
+button {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
+  mask-size: 100% 2px;
+  text-shadow: 0 0 0.5rem; */
+}
+
+button[type=game_select] {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  border: 2px solid var(--primary-color);
+  background: var(--dark-color);
+  margin: 0 3px;
+}
+
+button[type=game_select]:hover {
+  color: var(--dark-color);
+  background: var(--primary-color);
+  cursor: pointer;
 }
 
 button[type=submit],
@@ -90,7 +118,7 @@ button[type=submit],
 button[type=submit]:hover {
   cursor: pointer;
   background: var(--secondary-color);
-  color: #fff;
+  color: var(--white-color);
 
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
@@ -110,13 +138,12 @@ h1, h2, p {
 }
 
 input {
-  background-color: #00000000;
-  font-size: large;
+  background-color: var(--tertiary-color);
+  font-size: 1rem;
   border: none;
-  color: rgb(255, 255, 255);
+  color: (var(--primary-color));
   font-family: var(--font-family);
-  /* background-color: hsla(1, 1%, 100%, 1); */
-  
+  margin-bottom: 0.5rem;
 }
 
 input:focus {
