@@ -94,8 +94,7 @@ button[type=game_select]:hover {
   cursor: pointer;
 }
 
-button[type=submit],
-.paddle {
+button[type=submit] {
   display: block;
   padding: 12px 18px;
   color: var(--secondary-color);
