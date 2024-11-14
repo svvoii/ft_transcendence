@@ -10,7 +10,8 @@
   --dark-color: rgb(30, 23, 66);
   /* scrollbar-color: var(--primary-color) var(--secondary-color); */
   font-size: clamp(18px, 3vw, 30px);
-  --nav-height: 100px;
+  --nav-height: 80px;
+  --nav-button-height: calc(var(--nav-height) - 30px);
 }
 
 * {
@@ -25,8 +26,6 @@ body {
   align-items: center;
   height: 100vh;
   background-color: var(--background-color);
-  /* cursor: url('./assets/mouse.svg'); */
-
   mask-image: linear-gradient(to bottom, #0005 50%, #000000 50%);
   mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem;
@@ -130,6 +129,10 @@ h1, h2, p {
   text-align: center;
   letter-spacing: 0.033em;
   text-shadow: -0.033em 0 1px rgba(255,0,0,0.67), 0.033em 0 1px rgba(0, 255, 255, 0.67); */
+}
+
+h3 {
+  color: var(--white-color)
 }
 
 input {

@@ -22,7 +22,8 @@
 
 .nav__link {
   display: block;
-  padding: 12px 18px;
+  line-height: var(--nav-button-height);
+  padding: 0 18px;
   text-decoration: none;
   color: var(--secondary-color);
   font-weight: 700;
@@ -40,7 +41,8 @@
 
 .nav__button {
   display: block;
-  padding: 12px 18px;
+  line-height: var(--nav-button-height);
+  padding: 0 18px;
   text-decoration: none;
   color: var(--white-color);
   font-weight: 500;
@@ -52,6 +54,14 @@
 .nav__button:hover {
   background: var(--primary-color);
   color: var(--dark-color);
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-pic {
+  margin: 10px 10px 10px 0;
 }
 
 #registerBtn {

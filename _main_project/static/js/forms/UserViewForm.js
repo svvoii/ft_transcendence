@@ -20,8 +20,7 @@ export default class extends AbstractModalView {
       const img = document.createElement('img');
       img.src = userData.profile_image;
       img.alt = 'user image';
-      img.style.width = '100px';
-      img.style.height = '100px';
+      img.classList.add('user-image');
       container.appendChild(img);
 
       // Create the username heading
