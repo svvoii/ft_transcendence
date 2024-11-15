@@ -64,11 +64,11 @@ export default class extends AbstractView {
     const gameModal = document.getElementById("game");
 
     document.getElementById('playGameBtn').addEventListener('click', async(event) => {
-      gameModal.style.display = "block";
+      // gameModal.style.display = "block";
 
-      const game = new Game();
-      gameModal.innerHTML = await game.getHtml();
-      game.afterRender();
+      // const game = new Game();
+      // gameModal.innerHTML = await game.getHtml();
+      // game.afterRender();
     });
   }
 }
