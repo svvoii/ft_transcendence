@@ -11,6 +11,8 @@ export const navBar = new NavBar('app', modal);
 navBar.full_render();
 export const footer = new Footer('app');
 footer.full_render();
+// export const game = new Game('app');
+// game.initial_render();
 
 
 // This event listener listens for a popstate event and calls the router function

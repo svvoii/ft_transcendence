@@ -26,7 +26,7 @@
 body {
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
   height: 100vh;
   background-color: var(--background-color);
   mask-image: linear-gradient(to bottom, #0005 50%, #000000 50%);
@@ -48,12 +48,12 @@ div.retro-container {
   text-shadow: 0 0 0.5rem; */
 }
 
-header,
+/* header,
 footer {
   display: flex;
   gap: 2rem;
   align-items: center;
-}
+} */
 
 main {
   overflow: hidden;
@@ -158,11 +158,10 @@ input:focus {
 .gif-container {
   position: relative;
   width: 100%;
+  margin-top: var(--nav-height);
   height: calc(100vh - (calc(var(--nav-height)) + var(--footer-height)));
-  /* height: 100vh; */
   background: url('/static/images/Synth-sunset-.webp') no-repeat center center;
   background-size: cover;
-  margin-top: var(--footer-height);
   /* box-sizing: border-box; */
 }
 

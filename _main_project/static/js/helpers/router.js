@@ -35,7 +35,13 @@ export const router = async () => {
 
   // Creates a new instance of the view
   const view = new match.route.view(getParams(match));
+  
+  // Render the view
+  await renderPage(view);
 
+};
+
+const renderPage = async(view) => {
   // Clear the app div
   const app = document.querySelector('#app');
   app.innerHTML = '';
@@ -47,17 +53,17 @@ export const router = async () => {
   // Render the footer
   footer.full_render();
 
+  // If viewing the dashboard, add the gif-container class
   if (view.name === 'Dashboard') {
     app.classList.add('gif-container');
   } else {
     app.classList.remove('gif-container');
   }
 
-  // Uses the view instance we just created to render the view
-  const bodyContent = document.createElement('div');
-  bodyContent.appendChild(view.getDomElements());
-  // bodyContent.innerHTML = await view.getHtml();
-  app.appendChild(bodyContent);
+  // Create the div that holds the view content and add content
+  const viewContent = document.createElement('div');
+  viewContent.appendChild(view.getDomElements());
+  app.appendChild(viewContent);
 
   await view.afterRender();
 };
