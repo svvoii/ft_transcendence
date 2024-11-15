@@ -55,8 +55,8 @@ export const router = async () => {
 
   // Uses the view instance we just created to render the view
   const bodyContent = document.createElement('div');
-  bodyContent.innerHTML = await view.getHtml();
-  bodyContent.style.width = '90%';
+  bodyContent.appendChild(view.getDomElements());
+  // bodyContent.innerHTML = await view.getHtml();
   app.appendChild(bodyContent);
 
   await view.afterRender();

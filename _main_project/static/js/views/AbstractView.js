@@ -12,9 +12,8 @@ export default class {
     document.title = title;
   }
 
-  // Just returns some html, but this is an abstract class so it does nothing.
-  async getHtml() {
-    return "";
+  getDomElements() {
+    return document.createElement('div');
   }
 
   async afterRender() {

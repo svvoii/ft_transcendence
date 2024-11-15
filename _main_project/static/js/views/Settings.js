@@ -7,11 +7,17 @@ export default class extends AbstractView {
     this.name = "Settings";
   }
 
-  async getHtml() {
-    return `
-      <p>
-        You are viewing the settings!
-      </p>
-    `;
+  getDomElements() {
+    // Create a container div
+    const container = document.createElement('div');
+
+    // Create the paragraph element
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'You are viewing the settings!';
+
+    // Append the paragraph to the container
+    container.appendChild(paragraph);
+
+    return container;
   }
 }
