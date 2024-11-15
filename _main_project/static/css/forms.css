@@ -29,7 +29,7 @@
 .modal-forms {
   display: none;
   position: fixed;
-  z-index: 2; /* Sit on top but under the modal-game */
+  z-index: 3; /* Sit on top but under the modal-game */
   left: 0;
   top: 0;
   width: 100%;

@@ -4,6 +4,7 @@ export default class extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle("Page Not Found");
+    this.name = "Page404";
   }
 
   async getHtml() {

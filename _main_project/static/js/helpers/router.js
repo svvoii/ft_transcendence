@@ -37,7 +37,8 @@ export const router = async () => {
   const view = new match.route.view(getParams(match));
 
   // Clear the app div
-  document.querySelector('#app').innerHTML = '';
+  const app = document.querySelector('#app');
+  app.innerHTML = '';
 
   // Add the navbar to the DOM and update the user info
   navBar.fast_render();
@@ -46,10 +47,17 @@ export const router = async () => {
   // Render the footer
   footer.full_render();
 
+  if (view.name === 'Dashboard') {
+    app.classList.add('gif-container');
+  } else {
+    app.classList.remove('gif-container');
+  }
+
   // Uses the view instance we just created to render the view
-  const newDiv = document.createElement('div');
-  newDiv.innerHTML = await view.getHtml();
-  document.querySelector('#app').appendChild(newDiv);
+  const bodyContent = document.createElement('div');
+  bodyContent.innerHTML = await view.getHtml();
+  bodyContent.style.width = '90%';
+  app.appendChild(bodyContent);
 
   await view.afterRender();
 };

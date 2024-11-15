@@ -5,7 +5,6 @@ import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/helpers.js";
 
 // Create the navbar instance and render it
-// export const modal = new Modal('formModal', 'modalContent');
 export const modal = new Modal('app');
 modal.full_render();
 export const navBar = new NavBar('app', modal);
