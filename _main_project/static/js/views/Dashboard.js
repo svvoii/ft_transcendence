@@ -17,20 +17,11 @@ export default class extends AbstractView {
 
     // Create the h1 element
     const heading = document.createElement('h1');
-    heading.textContent = 'Welcome back to TranscenDANCE';
+    heading.textContent = 'Welcome to our TranscenDANCE';
 
     // Create the first paragraph
     const paragraph1 = document.createElement('p');
     paragraph1.textContent = 'This is the dashboard. You can view the list of posts, your settings, or logout.';
-
-    // Create the second paragraph with a link
-    const paragraph2 = document.createElement('p');
-    const link1 = document.createElement('a');
-    link1.href = '/posts/';
-    link1.setAttribute('data-link', '');
-    link1.textContent = 'View recent posts';
-    paragraph2.appendChild(link1);
-    paragraph2.appendChild(document.createTextNode('.'));
 
     // Create the third paragraph with a link
     const paragraph3 = document.createElement('p');
@@ -54,7 +45,6 @@ export default class extends AbstractView {
     // Append all elements to the container
     container.appendChild(heading);
     container.appendChild(paragraph1);
-    container.appendChild(paragraph2);
     container.appendChild(paragraph3);
     container.appendChild(paragraph4);
     container.appendChild(button);

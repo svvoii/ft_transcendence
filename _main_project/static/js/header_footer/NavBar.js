@@ -18,14 +18,14 @@ export default class NavBar {
     dashboardLink.href = '/';
     dashboardLink.classList.add('nav__link');
     dashboardLink.setAttribute('data-link', '');
-    dashboardLink.textContent = 'FT_transcenDANCE';
+    dashboardLink.textContent = 'FT_DANCE';
 
     // Create the Settings element
     const settingsLink = document.createElement('a');
     settingsLink.href = '/settings/';
     settingsLink.classList.add('nav__link');
     settingsLink.setAttribute('data-link', '');
-    settingsLink.textContent = 'Game Settings';
+    settingsLink.textContent = 'Game_Settings';
 
     navLeft.appendChild(dashboardLink);
     navLeft.appendChild(settingsLink);

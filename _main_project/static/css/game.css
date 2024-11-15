@@ -7,8 +7,13 @@
   /* padding-top: 1000px; */
   /* height: 70vh; */
   --game-height: calc(100vh - (calc(var(--nav-height)) + var(--footer-height) + 2rem));
+  /* Should set height and width based on  */
   height: var(--game-height);
   width: calc(var(--game-height) * 1.5);
+  max-width: calc(100vw - 2rem);
+  /* Setting min width and height to avoid weird dims */
+  min-width: 450px;
+  min-height: 300px;
   background-image: linear-gradient(
           to right, #8c5c916f, #839b9779);
   border-radius: 9px;
