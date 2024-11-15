@@ -15,7 +15,6 @@ export default class GameBoard {
 
   fast_render() {
     this.app.appendChild(this.gameboard);
-    this.afterRender();
   }
 
   getDomElements() {
