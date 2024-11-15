@@ -109,11 +109,11 @@ export default class Modal {
     const form = this.formMap[formName];
 
     if (form) {
-      console.log(`showing form: ${formName}`);
+      // console.log(`showing form: ${formName}`);
       this.mostRecent = form;
       this.show(form);
     } else {
-      console.error(`form not found: ${formName}`);
+      // console.error(`form not found: ${formName}`);
     }
   }
 

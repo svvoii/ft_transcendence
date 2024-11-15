@@ -10,7 +10,7 @@ export default class extends AbstractModalView {
     // Create the container
     const container = document.createElement('div');
 
-    // Create the paragraph
+    // Create the title
     const title = document.createElement('h2');
     title.textContent = 'User Settings';
     title.classList.add('modal-title');

@@ -5,17 +5,24 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Edit Form");
+    this.loginData = null;
   }
 
   async createDomElements() {
     try {
       const loginResponse = await fetch('/login_check/');
-      const loginData = await loginResponse.json();
-      const userResponse = await fetch(`http://localhost:8000/user/${loginData.id}/`);
+      this.loginData = await loginResponse.json();
+      const userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
       const userData = await userResponse.json();
 
       // Create the container
       const container = document.createElement('div');
+
+      // Create the title
+      const title = document.createElement('h2');
+      title.textContent = 'Edit User Profile';
+      title.classList.add('modal-title');
+      container.appendChild(title);
 
       // Create the image element
       const img = document.createElement('img');
@@ -112,9 +119,6 @@ export default class extends AbstractModalView {
   } 
 
   async afterRender() {
-    const loginResponse = await fetch('/login_check/');
-    const loginData = await loginResponse.json();
-
     document.getElementById('editUserForm').addEventListener('submit', async(event) => {
       // Create form 
       const form = event.target;
@@ -138,7 +142,7 @@ export default class extends AbstractModalView {
       console.log(content);
 
       try {
-        const response = await fetch(`/user/${loginData.id}/edit/`, content);
+        const response = await fetch(`/user/${this.loginData.id}/edit/`, content);
         const result = await response.json();
         const messageDiv = document.getElementById('message');
 
