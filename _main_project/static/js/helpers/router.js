@@ -1,16 +1,14 @@
 import Dashboard from "../views/Dashboard.js";
-import Game from "../views/Game.js";
 import Settings from "../views/Settings.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar, footer, modal } from "../index.js";
+import { navBar, footer, modal, gameBoard } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
-    { path: '/game/', view: Game },
     { path: '/settings/', view: Settings },
   ];
 
@@ -52,6 +50,8 @@ const renderPage = async(view) => {
   modal.full_render();
   // Render the footer
   footer.full_render();
+  // Render the gameboard
+  gameBoard.fast_render();
 
   // If viewing the dashboard, add the gif-container class
   if (view.name === 'Dashboard') {

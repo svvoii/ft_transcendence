@@ -1,5 +1,4 @@
 import AbstractView from "./AbstractView.js";
-import Game from "./Game.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -9,6 +8,9 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+    // Set the game modal to hidden
+    document.getElementById("gameModal").style.display = "none";
+
     // Create the main container div
     const container = document.createElement('div');
     container.classList.add('view-content');
@@ -61,14 +63,10 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    const gameModal = document.getElementById("game");
+    const gameModal = document.getElementById("gameModal");
 
-    document.getElementById('playGameBtn').addEventListener('click', async(event) => {
+    document.getElementById('playGameBtn').addEventListener('click', () => {
       gameModal.style.display = "block";
-
-      const game = new Game();
-      gameModal.innerHTML = await game.getHtml();
-      game.afterRender();
     });
   }
 }

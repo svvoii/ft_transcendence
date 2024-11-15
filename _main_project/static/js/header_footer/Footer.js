@@ -9,6 +9,6 @@ export default class Footer {
     const footer_content = `ft_transcendence`;
 
     this.footer.textContent = footer_content;
-    app.appendChild(this.footer);
+    this.app.appendChild(this.footer);
   }
 }

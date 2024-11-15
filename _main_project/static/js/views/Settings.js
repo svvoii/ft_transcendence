@@ -8,6 +8,9 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+    // Set the game modal to hidden
+    document.getElementById("gameModal").style.display = "none";
+
     // Create a container div
     const container = document.createElement('div');
     container.classList.add('text-container');
