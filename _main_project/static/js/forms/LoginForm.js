@@ -109,7 +109,14 @@ export default class extends AbstractModalView {
             userPic.src = result.profile_image_url;
           }
         } else {
-          messageDiv.textContent = JSON.stringify(result.errors);
+          messageDiv.textContent = '';
+
+          for (const [key, value] of Object.entries(result.errors)) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('message');
+            errorMessage.textContent = `${key}: ${value}`;
+            messageDiv.appendChild(errorMessage);
+          }
         }
       } catch (error) {
         console.error('Error:', error);

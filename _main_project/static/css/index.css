@@ -8,7 +8,7 @@
   --background-color: #040847;
   --plane-text-color: #ffffff;
   --dark-color: rgb(30, 23, 66);
-  --success-color: #00ff00;
+  --success-color: #89ff89;
   --failure-color: var(--secondary-color);
   /* scrollbar-color: var(--primary-color) var(--secondary-color); */
   font-size: clamp(18px, 3vw, 30px);

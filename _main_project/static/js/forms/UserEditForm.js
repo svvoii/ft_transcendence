@@ -147,7 +147,14 @@ export default class extends AbstractModalView {
           messageDiv.textContent = result.message;
           navigateTo(result.redirect);
         } else {
-          messageDiv.textContent = JSON.stringify(result.errors);
+          messageDiv.textContent = '';
+
+          for (const [key, value] of Object.entries(result.errors)) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('message');
+            errorMessage.textContent = `${key}: ${value}`;
+            messageDiv.appendChild(errorMessage);
+          }
         }
       } catch (error) {
         console.error('Error:', error);
