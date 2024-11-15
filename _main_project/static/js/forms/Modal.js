@@ -10,11 +10,11 @@ import { loginCheck } from '../helpers/helpers.js';
 export default class Modal {
   constructor(appId) {
     this.app = document.querySelector(`#${appId}`);
-    // this.modal = document.getElementById(modalId);
-    // this.form = document.getElementById(contentId);
+
     this.modal = document.createElement('div');
     this.modal.id = 'formModal';
     this.modal.classList.add('modal-forms');
+
     this.createModalElements();
     this.initEventListeners();
     this.form = this.modal.querySelector('#modalContent');
@@ -26,6 +26,9 @@ export default class Modal {
     this.userViewForm = new UserViewForm(this);
     this.userEditForm = new UserEditForm(this);
     this.userChangePassForm = new UserChangePassForm(this);
+
+    // Most recent
+    this.mostRecent = null;
 
     // Create a map of all forms for selecting with showForm
     this.formMap = {
@@ -78,8 +81,9 @@ export default class Modal {
 
     if (backSpan) {
       backSpan.addEventListener('click', async() => {
-        // find a way do check without calling loginCheck?
-        if (await loginCheck()) {
+        if (this.mostRecent === this.userViewForm
+          || this.mostRecent === this.userEditForm
+          || this.mostRecent === this.userChangePassForm) {
           this.showForm('userForm');
         } else {
           this.hide();
@@ -106,6 +110,7 @@ export default class Modal {
 
     if (form) {
       console.log(`showing form: ${formName}`);
+      this.mostRecent = form;
       this.show(form);
     } else {
       console.error(`form not found: ${formName}`);
