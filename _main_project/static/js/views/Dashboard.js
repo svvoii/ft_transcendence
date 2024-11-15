@@ -11,7 +11,7 @@ export default class extends AbstractView {
   getDomElements() {
     // Create the main container div
     const container = document.createElement('div');
-    container.classList.add('body-content');
+    container.classList.add('view-content');
 
     // Create the h1 element
     const heading = document.createElement('h1');
