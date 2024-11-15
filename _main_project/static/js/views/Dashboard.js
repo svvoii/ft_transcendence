@@ -66,7 +66,7 @@ export default class extends AbstractView {
     const gameModal = document.getElementById("gameModal");
 
     document.getElementById('playGameBtn').addEventListener('click', () => {
-      gameModal.style.display = "block";
+      gameModal.style.display = "flex";
     });
   }
 }
