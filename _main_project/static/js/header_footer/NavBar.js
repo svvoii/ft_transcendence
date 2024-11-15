@@ -61,6 +61,7 @@ export default class NavBar {
 
     const userPic = document.createElement('img');
     userPic.id = 'userPic';
+    userPic.classList.add('user-pic');
     userPic.src = '';
     userPic.alt = '';
     userPic.width = 32;
@@ -68,6 +69,7 @@ export default class NavBar {
 
     const userName = document.createElement('div');
     userName.id = 'userName';
+    userName.classList.add('user-name');
     userName.textContent = 'User';
 
     userBtn.appendChild(userPic);

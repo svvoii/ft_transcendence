@@ -1,0 +1,126 @@
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(32, 60, 102, 0.829); /*  background  */
+}
+
+/* modal title */
+.modal-title {
+  margin-bottom: 0.5rem;
+}
+
+/* Modal Content */
+.modal-content {
+  /* background-color: white; */
+  /* margin: 15% auto; 15% from the top and centered */
+  margin: calc(5vw) calc(5vw);
+  padding: 20px;
+  /* border: 1px solid #888; */
+  width: 80%; /* Could be more or less depending on screen size */
+}
+
+/* Modal that contains the forms like login and register */
+.modal-forms {
+  display: none;
+  position: fixed;
+  z-index: 2; /* Sit on top but under the modal-game */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal that contains the Game */
+.modal-game {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: var(--nav-height);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Modal Content Box inside the modal-forms */
+.modal-content-box {
+  background-color: var(--background-color);
+  /* margin: 15% auto; 15% from the top and centered */
+  margin: calc(5vw) calc(5vw);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less depending on screen size */
+}
+
+.select-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  border: 2px solid var(--primary-color);
+  background: var(--dark-color);
+  margin-bottom: 0.5rem;
+  /* margin: 0.25rem 0; */
+}
+
+.select-button:hover {
+  color: var(--dark-color);
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+/* The Close Button */
+.close {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+/* The Back Button */
+.back {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.back:hover,
+.back:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.message {
+  display: flex;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 0.5rem;
+  color: var(--failure-color);
+}
+
+.user-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 25%;
+  margin: 0 auto;
+}
+
+.checkbox {
+  margin: 0.5rem;
+}

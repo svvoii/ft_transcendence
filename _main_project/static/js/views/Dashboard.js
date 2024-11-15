@@ -22,7 +22,7 @@ export default class extends AbstractView {
       <p>
         Blah blah blah, some stuff about matchmaking? IDK....
       </p>
-      <button id="playGameBtn">Play Game (Coming Soon)</button>
+      <button id="playGameBtn", type="select">Play Game (Coming Soon)</button>
     `;
   }
 

@@ -5,24 +5,30 @@ export default class extends AbstractModalView {
   constructor(modal) {
     super(modal);
     this.setTitle("User Edit Form");
+    this.loginData = null;
   }
 
   async createDomElements() {
     try {
       const loginResponse = await fetch('/login_check/');
-      const loginData = await loginResponse.json();
-      const userResponse = await fetch(`http://localhost:8000/user/${loginData.id}/`);
+      this.loginData = await loginResponse.json();
+      const userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
       const userData = await userResponse.json();
 
       // Create the container
       const container = document.createElement('div');
 
+      // Create the title
+      const title = document.createElement('h2');
+      title.textContent = 'Edit User Profile';
+      title.classList.add('modal-title');
+      container.appendChild(title);
+
       // Create the image element
       const img = document.createElement('img');
       img.src = userData.profile_image;
       img.alt = 'user image';
-      img.style.width = '100px';
-      img.style.height = '100px';
+      img.classList.add('user-image');
       container.appendChild(img);
 
       // Create the line break element
@@ -42,7 +48,7 @@ export default class extends AbstractModalView {
       form.appendChild(document.createElement('br'));
 
       // Create the username heading
-      const usernameHeading = document.createElement('h6');
+      const usernameHeading = document.createElement('h3');
       usernameHeading.textContent = 'Username';
       form.appendChild(usernameHeading);
 
@@ -60,7 +66,7 @@ export default class extends AbstractModalView {
       container.appendChild(form);
 
       // Create the email heading
-      const emailHeading = document.createElement('h6');
+      const emailHeading = document.createElement('h3');
       emailHeading.textContent = 'Email';
       form.appendChild(emailHeading);
 
@@ -79,6 +85,7 @@ export default class extends AbstractModalView {
       const hideEmailCheckbox = document.createElement('input');
       hideEmailCheckbox.type = 'checkbox';
       hideEmailCheckbox.name = 'hide_email';
+      hideEmailCheckbox.classList.add('checkbox');
       if (userData.hide_email) {
         hideEmailCheckbox.checked = true;
       }
@@ -91,7 +98,7 @@ export default class extends AbstractModalView {
       const messageParagraph = document.createElement('p');
       const messageSpan = document.createElement('span');
       messageSpan.id = 'message';
-      messageSpan.style.color = 'red';
+      messageSpan.classList.add('message');
       messageParagraph.appendChild(messageSpan);
       form.appendChild(messageParagraph);
 
@@ -112,9 +119,6 @@ export default class extends AbstractModalView {
   } 
 
   async afterRender() {
-    const loginResponse = await fetch('/login_check/');
-    const loginData = await loginResponse.json();
-
     document.getElementById('editUserForm').addEventListener('submit', async(event) => {
       // Create form 
       const form = event.target;
@@ -138,16 +142,23 @@ export default class extends AbstractModalView {
       console.log(content);
 
       try {
-        const response = await fetch(`/user/${loginData.id}/edit/`, content);
+        const response = await fetch(`/user/${this.loginData.id}/edit/`, content);
         const result = await response.json();
         const messageDiv = document.getElementById('message');
 
         if (response.ok) {
-          messageDiv.style.color = 'green';
+          messageDiv.style.color = 'var(--success-color)';
           messageDiv.textContent = result.message;
           navigateTo(result.redirect);
         } else {
-          messageDiv.textContent = JSON.stringify(result.errors);
+          messageDiv.textContent = '';
+
+          for (const [key, value] of Object.entries(result.errors)) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('message');
+            errorMessage.textContent = `${key}: ${value}`;
+            messageDiv.appendChild(errorMessage);
+          }
         }
       } catch (error) {
         console.error('Error:', error);

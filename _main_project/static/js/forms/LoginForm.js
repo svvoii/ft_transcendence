@@ -8,15 +8,16 @@ export default class extends AbstractModalView {
   }
 
   createDomElements() {
-    const csrfToken = this.getCookie('csrftoken');
+    // const csrfToken = this.getCookie('csrftoken');
 
     // Create the container
     const container = document.createElement('div');
 
     // Create the paragraph
-    const paragraph = document.createElement('p');
-    paragraph.textContent = 'This is the login modal!';
-    container.appendChild(paragraph);
+    const title = document.createElement('h2');
+    title.classList.add('modal-title');
+    title.textContent = 'Login';
+    container.appendChild(title);
 
     // Create the form
     const form = document.createElement('form');
@@ -52,8 +53,8 @@ export default class extends AbstractModalView {
     // Create the message paragraph
     const messageParagraph = document.createElement('p');
     const messageSpan = document.createElement('span');
+    messageSpan.classList.add('message');
     messageSpan.id = 'message';
-    messageSpan.style.color = 'red';
     messageParagraph.appendChild(messageSpan);
     form.appendChild(messageParagraph);
 
@@ -108,7 +109,14 @@ export default class extends AbstractModalView {
             userPic.src = result.profile_image_url;
           }
         } else {
-          messageDiv.textContent = JSON.stringify(result.errors);
+          messageDiv.textContent = '';
+
+          for (const [key, value] of Object.entries(result.errors)) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('message');
+            errorMessage.textContent = `${key}: ${value}`;
+            messageDiv.appendChild(errorMessage);
+          }
         }
       } catch (error) {
         console.error('Error:', error);
