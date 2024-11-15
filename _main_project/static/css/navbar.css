@@ -74,6 +74,8 @@
 
 #logoutBtn {
   display: none;
+  /* Might want to find a more elegant way, rather than hard code to 52px; */
+  height: 52px;
 }
 
 #userBtn {
