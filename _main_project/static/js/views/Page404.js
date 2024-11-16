@@ -10,6 +10,7 @@ export default class extends AbstractView {
   getDomElements() {
       // Create a container div
       const container = document.createElement('div');
+      container.classList.add('text-container');
 
       // Create the paragraph element
       const title = document.createElement('h1');
