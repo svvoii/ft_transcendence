@@ -15,6 +15,8 @@ footer.full_render();
 export const gameBoard = new GameBoard('app');
 gameBoard.full_render();
 
+document.querySelector('body').classList.add('old-crt-monitor');
+
 // This event listener listens for a popstate event and calls the router function
 // This means when the back or forward buttons are clicked, the router function is called.
 window.addEventListener('popstate', router);

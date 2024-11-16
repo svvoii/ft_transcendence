@@ -7,6 +7,7 @@ export default class GameBoard {
   full_render() {
     this.gameboard.id = "gameModal";
     this.gameboard.classList.add('modal-game');
+    this.gameboard.classList.add('old-crt-monitor');
     this.gameboard.appendChild(this.getDomElements());
 
     this.app.appendChild(this.gameboard);
