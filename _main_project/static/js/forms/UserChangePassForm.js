@@ -20,19 +20,6 @@ export default class extends AbstractModalView {
     const form = document.createElement('form');
     form.id = 'changePassForm';
     form.onsubmit = (event) => event.preventDefault();
-    // form.method = 'POST';
-
-    // Create the CSRF token input (assuming you have a way to get the CSRF token)
-    // const csrfTokenInput = document.createElement('input');
-    // csrfTokenInput.type = 'hidden';
-    // csrfTokenInput.name = 'csrfmiddlewaretoken';
-    // csrfTokenInput.value = '{{ csrf_token }}'; // Replace with actual CSRF token value
-    // form.appendChild(csrfTokenInput);
-
-    // Create the heading
-    // const heading = document.createElement('h1');
-    // heading.textContent = 'Change password';
-    // form.appendChild(heading);
 
     // Create the old password input
     const oldPasswordInput = document.createElement('input');
@@ -90,15 +77,12 @@ export default class extends AbstractModalView {
       const content = {
         method: 'POST',
         headers: {
-          // 'accept': 'application/json',
+          'accept': 'application/json',
           // 'content-type': 'application/json',
           'x-csrftoken': this.getCookie('csrftoken')
         },
-        // body: json.stringify(data)
         body: formData
       };
-
-      console.log(content);
 
       try {
         const response = await fetch(`/password_change/`, content);
@@ -108,7 +92,6 @@ export default class extends AbstractModalView {
         if (response.ok) {
           messageDiv.style.color = 'var(--success-color)';
           messageDiv.textContent = result.message;
-          navigateTo(result.redirect);
         } else {
           messageDiv.textContent = '';
 

@@ -23,6 +23,7 @@ from django.contrib.auth import views as auth_views
 from a_homepage.views import home_view
 from a_user.views import api_register_view, api_login_view, api_logout_view, account_search_view, api_logged_in_user_view
 from a_spa_frontend.views import index
+from a_pass import views
 
 
 urlpatterns = [
@@ -40,12 +41,14 @@ urlpatterns = [
 	path('user/', include('a_user.urls', namespace='user')),
 	path('search/', account_search_view, name='search'),
     path('game/', include('a_game.urls'), name='game'),
+    path('password_change/', include('a_pass.urls'), name='password_change'),
 
 	# Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='password_reset/password_change_done.html'), name='password_change_done'),
     path('password_change/', auth_views.PasswordChangeView.as_view(template_name='password_reset/password_change.html'), name='password_change'),
     path('password_reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_done.html'), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'), path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'), 
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
 
     re_path(r'^.*/', include('a_spa_frontend.urls')),

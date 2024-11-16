@@ -139,8 +139,6 @@ export default class extends AbstractModalView {
         body: formData
       };
 
-      console.log(content);
-
       try {
         const response = await fetch(`/user/${this.loginData.id}/edit/`, content);
         const result = await response.json();
