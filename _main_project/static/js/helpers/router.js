@@ -2,6 +2,7 @@ import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
+import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard } from "../index.js";
@@ -14,6 +15,7 @@ export const router = async () => {
     { path: '/settings/', view: Settings },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
+    { path: '/about_us/', view: AboutUs },
   ];
 
   // Uses the map method to create an array of objects that contain the route and whether or not it matches the current location

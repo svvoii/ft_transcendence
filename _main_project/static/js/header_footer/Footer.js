@@ -13,9 +13,12 @@ export default class Footer {
     this.privacy_policy.textContent = 'Privacy Policy';
     this.privacy_policy.style.marginLeft = '1rem';
 
-    this.footer_text = document.createElement('p');
-    this.footer_text.textContent = 'ft_transcendence';
-    this.footer_text.style.marginLeft = '1rem';
+    this.about_us = document.createElement('a');
+    this.about_us.setAttribute('data-link', '');
+    this.about_us.classList.add('about_us');
+    this.about_us.href = '/about_us/';
+    this.about_us.textContent = 'ft_transcendence_team';
+    this.about_us.style.marginLeft = '1rem';
 
     this.terms_of_service = document.createElement('a');
     this.terms_of_service.setAttribute('data-link', '');
@@ -24,7 +27,7 @@ export default class Footer {
     this.terms_of_service.style.marginLeft = '1rem';
 
     this.footer.appendChild(this.terms_of_service);
-    this.footer.appendChild(this.footer_text);
+    this.footer.appendChild(this.about_us);
     this.footer.appendChild(this.privacy_policy);
 
     this.app.appendChild(this.footer);
