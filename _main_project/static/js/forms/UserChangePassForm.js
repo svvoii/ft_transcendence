@@ -18,7 +18,9 @@ export default class extends AbstractModalView {
 
     // Create the form
     const form = document.createElement('form');
-    form.method = 'POST';
+    form.id = 'changePassForm';
+    form.onsubmit = (event) => event.preventDefault();
+    // form.method = 'POST';
 
     // Create the CSRF token input (assuming you have a way to get the CSRF token)
     // const csrfTokenInput = document.createElement('input');
@@ -58,11 +60,13 @@ export default class extends AbstractModalView {
     newPassword2Input.required = true;
     form.appendChild(newPassword2Input);
 
-    // Create the error paragraph
-    // const errorParagraph = document.createElement('p');
-    // errorParagraph.style.color = 'red';
-    // errorParagraph.textContent = '{{ error }}'; // Replace with actual error message
-    // form.appendChild(errorParagraph);
+    // Create the message paragraph
+    const messageParagraph = document.createElement('p');
+    const messageSpan = document.createElement('span');
+    messageSpan.id = 'message';
+    messageSpan.classList.add('message');
+    messageParagraph.appendChild(messageSpan);
+    form.appendChild(messageParagraph);
 
     // Create the submit button
     const submitButton = document.createElement('button');
@@ -75,5 +79,51 @@ export default class extends AbstractModalView {
 
     // Assuming you want to append this container to the body or another element
     return container;
+  }
+
+  async afterRender() {
+    document.getElementById('changePassForm').addEventListener('submit', async(event) => {
+      // Create form 
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const content = {
+        method: 'POST',
+        headers: {
+          // 'accept': 'application/json',
+          // 'content-type': 'application/json',
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        // body: json.stringify(data)
+        body: formData
+      };
+
+      console.log(content);
+
+      try {
+        const response = await fetch(`/password_change/`, content);
+        const result = await response.json();
+        const messageDiv = document.getElementById('message');
+
+        if (response.ok) {
+          messageDiv.style.color = 'var(--success-color)';
+          messageDiv.textContent = result.message;
+          navigateTo(result.redirect);
+        } else {
+          messageDiv.textContent = '';
+
+          for (const [key, value] of Object.entries(result.errors)) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('message');
+            errorMessage.textContent = `${key}: ${value}`;
+            messageDiv.appendChild(errorMessage);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = 'An error occurred. Please try again.';
+      }
+    });
   }
 }
