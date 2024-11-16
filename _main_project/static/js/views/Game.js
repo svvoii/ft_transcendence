@@ -1,11 +1,10 @@
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
-  
-  
   constructor(params) {
     super(params);
     this.setTitle("Game");
+    this.name = "Game";
   }
   
   async getHtml() {
@@ -24,6 +23,42 @@ export default class extends AbstractView {
     </div>
     `;
   }
+
+  getDomElements() {
+    // Create the main container div
+    const container = document.createElement('div');
+    container.classList.add('board');
+
+    // Create the ball div
+    const ball = document.createElement('div');
+    ball.classList.add('ball');
+
+    // Create the ball effect div and append it to the ball div
+    const ballEffect = document.createElement('div');
+    ballEffect.classList.add('ball_effect');
+    ball.appendChild(ballEffect);
+
+    // Create the paddle_1 div
+    const paddle1 = document.createElement('div');
+    paddle1.classList.add('paddle_1', 'paddle');
+
+    // Create the paddle_2 div
+    const paddle2 = document.createElement('div');
+    paddle2.classList.add('paddle_2', 'paddle');
+
+    // Create the game message h2 element
+    const gameMessage = document.createElement('h2');
+    gameMessage.classList.add('game-message');
+    gameMessage.textContent = 'Press ENTER to play PONG';
+
+    // Append all elements to the container
+    container.appendChild(ball);
+    container.appendChild(paddle1);
+    container.appendChild(paddle2);
+    container.appendChild(gameMessage);
+
+    return container;
+  }
   
   async afterRender() {
 
@@ -35,7 +70,7 @@ export default class extends AbstractView {
     // let ball = document.querySelector('.ball');
     // let score_1 = document.querySelector('.player_1_score');
     // let score_2 = document.querySelector('.player_2_score');
-    let message = document.querySelector('.message');
+    let message = document.querySelector('.game-message');
     let paddle_1_coord = paddle_1.getBoundingClientRect();
     let paddle_2_coord = paddle_2.getBoundingClientRect();
     // let initial_ball_coord = ball.getBoundingClientRect();

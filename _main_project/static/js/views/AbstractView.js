@@ -2,6 +2,7 @@
 export default class {
   constructor(params) {
     this.params = params;
+    this.name = '';
 
     // console.log(params);
   }
@@ -11,9 +12,8 @@ export default class {
     document.title = title;
   }
 
-  // Just returns some html, but this is an abstract class so it does nothing.
-  async getHtml() {
-    return "";
+  getDomElements() {
+    return document.createElement('div');
   }
 
   async afterRender() {

@@ -18,24 +18,16 @@ export default class NavBar {
     dashboardLink.href = '/';
     dashboardLink.classList.add('nav__link');
     dashboardLink.setAttribute('data-link', '');
-    dashboardLink.textContent = 'Dashboard';
-
-    // Create the game element
-    const gameLink = document.createElement('a');
-    gameLink.href = '/game/';
-    gameLink.classList.add('nav__link');
-    gameLink.setAttribute('data-link', '');
-    gameLink.textContent = 'Game';
+    dashboardLink.textContent = 'FT_DANCE';
 
     // Create the Settings element
     const settingsLink = document.createElement('a');
     settingsLink.href = '/settings/';
     settingsLink.classList.add('nav__link');
     settingsLink.setAttribute('data-link', '');
-    settingsLink.textContent = 'Settings';
+    settingsLink.textContent = 'Game_Settings';
 
     navLeft.appendChild(dashboardLink);
-    navLeft.appendChild(gameLink);
     navLeft.appendChild(settingsLink);
 
     return navLeft;
