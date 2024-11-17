@@ -28,7 +28,7 @@ export default class extends AbstractModalView {
     oldPasswordInput.type = 'password';
     oldPasswordInput.required = true;
     form.appendChild(oldPasswordInput);
-      form.appendChild(document.createElement('br'));
+    form.appendChild(document.createElement('br'));
 
     // Create the new password input
     const newPassword1Input = document.createElement('input');
@@ -85,7 +85,7 @@ export default class extends AbstractModalView {
       };
 
       try {
-        const response = await fetch(`/password_change/`, content);
+        const response = await fetch(`/password/change/`, content);
         const result = await response.json();
         const messageDiv = document.getElementById('message');
 

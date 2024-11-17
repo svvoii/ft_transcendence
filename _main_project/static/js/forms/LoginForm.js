@@ -135,7 +135,6 @@ export default class extends AbstractModalView {
     });
 
     document.getElementById('forgotPass').addEventListener('click', () => {
-      console.log('Forgot password button clicked');
       this.modal.showForm('forgotPassForm');
     });
   }
