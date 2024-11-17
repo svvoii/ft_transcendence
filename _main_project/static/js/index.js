@@ -3,6 +3,7 @@ import Footer from "./header_footer/Footer.js";
 import Modal from "./forms/Modal.js";
 import GameBoard from "./game/GameBoard.js";
 import CrtEffect from "./helpers/CrtEffect.js";
+import Chat from "./chat/Chat.js";
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/helpers.js";
 
@@ -17,6 +18,8 @@ export const gameBoard = new GameBoard('app');
 gameBoard.full_render();
 export const crtEffect = new CrtEffect('app');
 crtEffect.full_render();
+export const chat = new Chat('app');
+chat.full_render();
 
 // This event listener listens for a popstate event and calls the router function
 // This means when the back or forward buttons are clicked, the router function is called.

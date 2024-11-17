@@ -5,7 +5,7 @@ import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar, footer, modal, gameBoard, crtEffect } from "../index.js";
+import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
@@ -56,6 +56,7 @@ const renderPage = async(view) => {
   modal.full_render();
   footer.fast_render();
   gameBoard.fast_render();
+  chat.fast_render();
 
   // Create the div that holds the view content and add content
   const viewContent = document.createElement('div');

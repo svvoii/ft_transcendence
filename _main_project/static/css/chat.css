@@ -1,0 +1,21 @@
+.chat {
+  position: absolute;
+  background-color: var(--background-color);
+  z-index: 8;
+  border: 2px solid var(--primary-color);
+  color: var(--tertiary-color);
+  border-radius: 10px;
+}
+
+.chat-box-closed {
+  transform: translate(50%, 50%);
+  right: 2rem;
+  bottom: calc(var(--footer-height) / 2);
+}
+
+.chat-box-opened {
+  height: 10rem;
+  width: 15rem;
+  right: 0px;
+  bottom: 0px;
+}
