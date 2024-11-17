@@ -57,13 +57,6 @@ const renderPage = async(view) => {
   footer.fast_render();
   gameBoard.fast_render();
 
-  // If viewing the dashboard, add the gif-container class
-  // if (view.name === 'Dashboard') {
-  //   app.classList.add('gif-container');
-  // } else {
-  //   app.classList.remove('gif-container');
-  // }
-
   // Create the div that holds the view content and add content
   const viewContent = document.createElement('div');
   viewContent.appendChild(view.getDomElements());
