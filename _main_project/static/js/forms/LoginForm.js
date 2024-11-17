@@ -62,10 +62,19 @@ export default class extends AbstractModalView {
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.textContent = 'Login';
+    submitButton.style.marginBottom = '0.5rem;'
     form.appendChild(submitButton);
+
+    // Create the forgot password link
+    const forgotPassButton = document.createElement('button');
+    forgotPassButton.id = 'forgotPass';
+    forgotPassButton.type = 'select';
+    forgotPassButton.textContent = 'Forgot Password?';
 
     // Append the form to the container
     container.appendChild(form);
+
+    container.appendChild(forgotPassButton);
 
     return container;
   }
@@ -123,6 +132,10 @@ export default class extends AbstractModalView {
         const messageDiv = document.getElementById('message');
         messageDiv.textContent = 'An error occurred. Please try again.';
       }
+    });
+
+    document.getElementById('forgotPass').addEventListener('click', () => {
+      this.modal.showForm('forgotPassForm');
     });
   }
 }

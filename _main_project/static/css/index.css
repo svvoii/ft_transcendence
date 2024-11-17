@@ -30,7 +30,8 @@ body {
   height: 100vh;
   background-color: var(--background-color);
   mask-image: linear-gradient(to bottom, #0005 50%, #000000 50%); 
-  mask-size: 100% 0.5px;
+  /* mask-size: 100% 0.5px; */
+  mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem;
 }
 
@@ -104,6 +105,7 @@ button[type=submit] {
   font-family: var(--font-family);
   font-size: large;
   border-color: var(--secondary-color);
+  margin-bottom: 0.5rem;
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem; */
