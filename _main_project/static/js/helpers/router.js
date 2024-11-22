@@ -5,7 +5,7 @@ import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar, footer, modal, gameBoard } from "../index.js";
+import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
@@ -50,21 +50,13 @@ const renderPage = async(view) => {
   const app = document.querySelector('#app');
   app.innerHTML = '';
 
-  // Add the navbar to the DOM and update the user info
+  // Render the functional parts of the page
+  crtEffect.full_render();
   navBar.fast_render();
-  // Render the modal
   modal.full_render();
-  // Render the footer
   footer.fast_render();
-  // Render the gameboard
   gameBoard.fast_render();
-
-  // If viewing the dashboard, add the gif-container class
-  if (view.name === 'Dashboard') {
-    app.classList.add('gif-container');
-  } else {
-    app.classList.remove('gif-container');
-  }
+  chat.fast_render();
 
   // Create the div that holds the view content and add content
   const viewContent = document.createElement('div');

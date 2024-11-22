@@ -132,7 +132,6 @@ export default class NavBar {
     this.navbar.appendChild(this.createNavRight());
     this.app.appendChild(this.navbar);
     this.addEventListeners();
-    this.updateNavBar();
   }
 
   fast_render() {

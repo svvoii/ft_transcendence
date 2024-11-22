@@ -11,9 +11,15 @@ export default class extends AbstractView {
     // Set the game modal to hidden
     document.getElementById("gameModal").style.display = "none";
 
-    // Create the main container div
     const container = document.createElement('div');
-    container.classList.add('view-content');
+
+    // Create the main container div
+    const gifContainer = document.createElement('div');
+    // container.classList.add('view-content');
+    gifContainer.classList.add('gif-container');
+
+    const textContainer = document.createElement('div');
+    textContainer.classList.add('text-container');
 
     // Create the h1 element
     const heading = document.createElement('h1');
@@ -43,11 +49,14 @@ export default class extends AbstractView {
     button.textContent = 'Play Game (Coming Soon)';
 
     // Append all elements to the container
-    container.appendChild(heading);
-    container.appendChild(paragraph1);
-    container.appendChild(paragraph3);
-    container.appendChild(paragraph4);
-    container.appendChild(button);
+    textContainer.appendChild(heading);
+    textContainer.appendChild(paragraph1);
+    textContainer.appendChild(paragraph3);
+    textContainer.appendChild(paragraph4);
+    textContainer.appendChild(button);
+
+    container.appendChild(gifContainer);
+    container.appendChild(textContainer);
 
     return container;
   }
