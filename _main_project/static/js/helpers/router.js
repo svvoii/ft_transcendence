@@ -1,5 +1,6 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
+import GameMenu from "../views/GameMenu.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
@@ -13,6 +14,7 @@ export const router = async () => {
   const routes = [
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
+    { path: '/game_menu/', view: GameMenu },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },
