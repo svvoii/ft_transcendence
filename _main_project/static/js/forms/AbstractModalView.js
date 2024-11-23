@@ -7,7 +7,7 @@ export default class {
     document.title = title;
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     return document.createElement('div');
   }
 

@@ -6,7 +6,7 @@ export default class extends AbstractModalView {
     this.setTitle("User Form");
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     // Create the container
     const container = document.createElement('div');
 

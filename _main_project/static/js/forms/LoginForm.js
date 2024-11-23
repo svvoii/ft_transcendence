@@ -7,7 +7,7 @@ export default class extends AbstractModalView {
     this.setTitle("Login Form");
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     // const csrfToken = this.getCookie('csrftoken');
 
     // Create the container

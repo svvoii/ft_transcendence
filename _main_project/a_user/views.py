@@ -16,6 +16,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from .models import Account
+from .serializers import AccountSerializer
+
 
 @api_view(["POST"])
 def api_register_view(request, *args, **kwargs):
@@ -282,27 +285,58 @@ def api_account_search_view(request, *args, **kwargs):
 
 	if request.method == 'GET':
 		search_query = request.GET.get('q')
-		if len(search_query) > 0:
+		if search_query and len(search_query) > 0:
 			# the following query will return all the accounts whose email or username contains the search query
 			search_results = Account.objects.filter(email__icontains=search_query).filter(username__icontains=search_query).distinct()
 			user = request.user
 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
 
-			if user.is_authenticated:
-				try:
-					user_friend_list = FriendList.objects.get(user=user)
-					for account in search_results:
-						accounts.append((account, user_friend_list.is_mutual_friend(account)))
-				except FriendList.DoesNotExist:
-					for account in search_results:
-						accounts.append((account, False))
-				context['accounts'] = accounts
-			else:
+		if user.is_authenticated:
+			try:
+				user_friend_list = FriendList.objects.get(user=user)
 				for account in search_results:
-					accounts.append((account, False)) # False for indicating that the user is not a friend
-				context['accounts'] = accounts
+					account_data = AccountSerializer(account).data
+					accounts.append((account_data, user_friend_list.is_mutual_friend(account)))
+			except FriendList.DoesNotExist:
+				for account in search_results:
+					account_data = AccountSerializer(account).data
+					accounts.append((account_data, False))
+			context['accounts'] = accounts
+		else:
+			for account in search_results:
+				account_data = AccountSerializer(account).data
+				accounts.append((account_data, False)) # False for indicating that the user is not a friend
+			context['accounts'] = accounts
 
 	return Response(context, status=status.HTTP_200_OK)
+
+# @api_view(['GET'])
+# def api_account_search_view(request, *args, **kwargs):
+# 	context = {}
+
+# 	if request.method == 'GET':
+# 		search_query = request.GET.get('q')
+# 		if len(search_query) > 0:
+# 			# the following query will return all the accounts whose email or username contains the search query
+# 			search_results = Account.objects.filter(email__icontains=search_query).filter(username__icontains=search_query).distinct()
+# 			user = request.user
+# 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
+
+# 			if user.is_authenticated:
+# 				try:
+# 					user_friend_list = FriendList.objects.get(user=user)
+# 					for account in search_results:
+# 						accounts.append((account, user_friend_list.is_mutual_friend(account)))
+# 				except FriendList.DoesNotExist:
+# 					for account in search_results:
+# 						accounts.append((account, False))
+# 				context['accounts'] = accounts
+# 			else:
+# 				for account in search_results:
+# 					accounts.append((account, False)) # False for indicating that the user is not a friend
+# 				context['accounts'] = accounts
+
+# 	return Response(context, status=status.HTTP_200_OK)
 	# return render(request, 'a_user/search_results.html', context)
 
 

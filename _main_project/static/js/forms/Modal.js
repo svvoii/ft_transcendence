@@ -46,7 +46,7 @@ export default class Modal {
     }
   }
 
-  createModalElements() {
+  createModalElements(data=null) {
     // Create the modal content box div
     const modalContentBox = document.createElement('div');
     modalContentBox.classList.add('modal-content-box');
@@ -106,22 +106,21 @@ export default class Modal {
     }
   }
 
-  async show(contentForm) {
+  async show(contentForm, data=null) {
     this.form.innerHTML = '';
-    this.form.appendChild(await contentForm.createDomElements());
+    this.form.appendChild(await contentForm.createDomElements(data));
     contentForm.afterRender();
     this.modal.style.display = "block";
   }
 
-  async showForm(formName) {
+  async showForm(formName, data=null) {
     const form = this.formMap[formName];
 
     if (form) {
-      // console.log(`showing form: ${formName}`);
       this.mostRecent = form;
-      this.show(form);
+      this.show(form, data);
     } else {
-      // console.error(`form not found: ${formName}`);
+      console.error(`form not found: ${formName}`);
     }
   }
 

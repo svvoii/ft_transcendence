@@ -7,7 +7,7 @@ export default class extends AbstractModalView {
     this.loginData = null;
   }
 
-  async createDomElements() {
+  async createDomElements(data=null) {
     try {
       const loginResponse = await fetch('/login_check/');
       this.loginData = await loginResponse.json();
