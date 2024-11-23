@@ -276,7 +276,8 @@ def api_edit_profile_view(request, *args, **kwargs):
 	return Response(context, status=status.HTTP_200_OK)
 
 
-def account_search_view(request, *args, **kwargs):
+@api_view(['GET'])
+def api_account_search_view(request, *args, **kwargs):
 	context = {}
 
 	if request.method == 'GET':
@@ -301,7 +302,8 @@ def account_search_view(request, *args, **kwargs):
 					accounts.append((account, False)) # False for indicating that the user is not a friend
 				context['accounts'] = accounts
 
-	return render(request, 'a_user/search_results.html', context)
+	return Response(context, status=status.HTTP_200_OK)
+	# return render(request, 'a_user/search_results.html', context)
 
 
 @login_required
