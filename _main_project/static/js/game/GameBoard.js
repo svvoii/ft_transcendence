@@ -44,6 +44,15 @@ export default class GameBoard {
     gameMessage.classList.add('game-message');
     gameMessage.textContent = 'Press ENTER to play PONG';
 
+	// TEST CONNECTION //
+	const testWsButton = document.createElement('button');
+	testWsButton.id = 'testWsBtn';
+	testWsButton.type = 'button';
+	testWsButton.textContent = 'Test Websocket Connection';
+
+	container.appendChild(testWsButton);
+	// // // // // // // // //
+
     // Append all elements to the container
     container.appendChild(ball);
     container.appendChild(paddle1);
@@ -53,6 +62,7 @@ export default class GameBoard {
     return container;
   }
 
+<<<<<<< Updated upstream
   startAIgame() {
     console.log('AI game started');
   }
@@ -61,6 +71,41 @@ export default class GameBoard {
     console.log('Remote game started');
   }
   
+=======
+
+// TEST WS CONNECTION //
+async afterRender() {
+
+	// Add event listener for the WebSocket test button
+	document.getElementById('testWsBtn').addEventListener('click', () => {
+		const gameId = 'test_game';  // Replace with actual game ID
+		const socket = new WebSocket(`ws://${window.location.host}/ws/game/${gameId}/`);
+
+		socket.onopen = function(event) {
+			console.log('WebSocket is open now.');
+			socket.send(JSON.stringify({'message': 'Hello WebSocket!'}));
+		};
+
+		socket.onmessage = function(event) {
+			const data = JSON.parse(event.data);
+			console.log('Message from server:', data.message);
+			alert('Message from server: ' + data.message);
+		};
+
+		socket.onclose = function(event) {
+			console.log('WebSocket is closed now.');
+		};
+
+		socket.onerror = function(error) {
+			console.log('WebSocket error:', error);
+		};
+	});
+}
+// // // // // // // //
+
+/* COMMENT 
+
+>>>>>>> Stashed changes
   async afterRender() {
 
     let gameState = 'start';
@@ -161,6 +206,9 @@ export default class GameBoard {
 
 
   }
+
+END COMMENT */
+
 };
 
 
