@@ -62,7 +62,6 @@ export default class GameBoard {
     return container;
   }
 
-<<<<<<< Updated upstream
   startAIgame() {
     console.log('AI game started');
   }
@@ -71,7 +70,6 @@ export default class GameBoard {
     console.log('Remote game started');
   }
   
-=======
 
 // TEST WS CONNECTION //
 async afterRender() {
@@ -105,7 +103,6 @@ async afterRender() {
 
 /* COMMENT 
 
->>>>>>> Stashed changes
   async afterRender() {
 
     let gameState = 'start';
