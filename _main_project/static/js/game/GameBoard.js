@@ -52,6 +52,14 @@ export default class GameBoard {
 
     return container;
   }
+
+  startAIgame() {
+    console.log('AI game started');
+  }
+
+  startRemotegame() {
+    console.log('Remote game started');
+  }
   
   async afterRender() {
 

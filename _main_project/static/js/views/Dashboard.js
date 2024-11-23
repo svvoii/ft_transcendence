@@ -1,3 +1,4 @@
+import { navigateTo } from "../helpers/helpers.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -65,7 +66,8 @@ export default class extends AbstractView {
     const gameModal = document.getElementById("gameModal");
 
     document.getElementById('playGameBtn').addEventListener('click', () => {
-      gameModal.style.display = "flex";
+      // gameModal.style.display = "flex";
+      navigateTo('/game_menu/');
     });
   }
 }
