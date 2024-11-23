@@ -286,8 +286,7 @@ def api_account_search_view(request, *args, **kwargs):
 	if request.method == 'GET':
 		search_query = request.GET.get('q')
 		if search_query and len(search_query) > 0:
-			# the following query will return all the accounts whose email or username contains the search query
-			search_results = Account.objects.filter(email__icontains=search_query).filter(username__icontains=search_query).distinct()
+			search_results = Account.objects.filter(username__icontains=search_query).distinct()
 			user = request.user
 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
 
