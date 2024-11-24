@@ -7,7 +7,7 @@ export default class extends AbstractModalView {
     this.setTitle("Login Form");
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     // const csrfToken = this.getCookie('csrftoken');
 
     // Create the container
@@ -83,7 +83,7 @@ export default class extends AbstractModalView {
     document.getElementById('loginForm').addEventListener('submit', async(event) => {
     // this.domElements.querySelector('#loginForm').addEventListener('submit', async(event) => {
       // Create form 
-      console.log('Login form submitted');
+      // console.log('Login form submitted');
       const form = event.target;
       const formData = new FormData(form);
       const data = {};

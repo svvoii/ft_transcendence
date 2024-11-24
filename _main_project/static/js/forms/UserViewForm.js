@@ -7,11 +7,16 @@ export default class extends AbstractModalView {
     this.loginData = null;
   }
 
-  async createDomElements() {
+  async createDomElements(data=null) {
     try {
       const loginResponse = await fetch('/login_check/');
       this.loginData = await loginResponse.json();
-      const userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
+      let userResponse = null;
+      if (data) {
+        userResponse = await fetch(`http://localhost:8000/user/${data.id}/`);
+      } else {
+        userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
+      }
       const userData = await userResponse.json();
 
       // Create the container
@@ -39,6 +44,8 @@ export default class extends AbstractModalView {
       const emailParagraph = document.createElement('p');
       emailParagraph.textContent = `Email: ${userData.email}`;
       container.appendChild(emailParagraph);
+
+      // Add a send a message button
 
       return container;
     } catch (error) {

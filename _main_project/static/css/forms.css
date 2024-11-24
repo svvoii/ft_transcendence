@@ -112,3 +112,26 @@
 .checkbox {
   margin: 0.5rem;
 }
+
+/* Search Results / Search User Form */
+.search-results {
+  color: var(--primary-color);
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.search-result {
+  display: flex;
+  align-items: center;
+}
+
+.username-search {
+  margin-right: 0.5rem;
+}
+
+.profile-image-search {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}

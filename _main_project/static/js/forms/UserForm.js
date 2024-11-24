@@ -6,7 +6,7 @@ export default class extends AbstractModalView {
     this.setTitle("User Form");
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     // Create the container
     const container = document.createElement('div');
 
@@ -25,7 +25,6 @@ export default class extends AbstractModalView {
     viewProfileButton.classList.add('select-button');
     viewProfileButton.textContent = 'View Profile';
     ul.appendChild(viewProfileButton);
-    // ul.appendChild(document.createElement('br'));
 
     // Create the edit profile button
     const editProfileButton = document.createElement('button');
@@ -33,7 +32,13 @@ export default class extends AbstractModalView {
     editProfileButton.classList.add('select-button');
     editProfileButton.textContent = 'Edit Profile';
     ul.appendChild(editProfileButton);
-    // ul.appendChild(document.createElement('br'));
+
+    // Create the edit profile button
+    const searchProfileButton = document.createElement('button');
+    searchProfileButton.id = 'userBtnSearch';
+    searchProfileButton.classList.add('select-button');
+    searchProfileButton.textContent = 'Search Profile';
+    ul.appendChild(searchProfileButton);
 
     // Create the change password button
     const changePasswordButton = document.createElement('button');
@@ -55,6 +60,10 @@ export default class extends AbstractModalView {
 
     document.getElementById('userBtnEdit').addEventListener('click', async() => {
       this.modal.showForm('userEditForm');
+    });
+
+    document.getElementById('userBtnSearch').addEventListener('click', async() => {
+      this.modal.showForm('userSearchForm');
     });
 
     document.getElementById('userBtnChangePass').addEventListener('click', async() => {
