@@ -1,3 +1,5 @@
+import { user } from '../index.js';
+
 export default class Chat {
   constructor(appId) {
     this.title = "Chat";
@@ -72,30 +74,24 @@ export default class Chat {
   }
 
   full_render() {
+    this.showChatIfLoggedIn();
     this.addEventListeners();
     this.app.appendChild(this.chat);
   }
 
   fast_render() {
+    this.showChatIfLoggedIn();
     this.app.appendChild(this.chat);
   }
 
   addEventListeners() {
     // Add event listener for clicking the closed chat box
     this.chat.querySelector('.chat-box-closed').addEventListener('click', () => {
-      this.chat.querySelector('.chat-box-closed').style.display = 'none';
-      this.chat.querySelector('.chat-box-opened').style.display = 'flex';
-      this.app.querySelector('.chat').style.transform = 'translate(0%, 0%)';
-      this.app.querySelector('.chat').style.right = '0px';
-      this.app.querySelector('.chat').style.bottom = '0px';
+      this.openChat();
     });
     // Adds event listener for clicking the close when the chat box is opened
     this.chat.querySelector('.close-chat').addEventListener('click', () => {
-      this.chat.querySelector('.chat-box-closed').style.display = 'block';
-      this.chat.querySelector('.chat-box-opened').style.display = 'none';
-      this.app.querySelector('.chat').style.transform = 'translate(50%, 50%)';
-      this.app.querySelector('.chat').style.right = '2rem';
-      this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
+      this.closeChat();
     });
   }
 
@@ -105,5 +101,29 @@ export default class Chat {
     messageElement.classList.add('chat-message');
     messageElement.textContent = message;
     messageContainer.appendChild(messageElement);
+  }
+
+  showChatIfLoggedIn() {
+    if (user.getLoginStatus()) {
+      this.chat.style.display = 'block';
+    } else {
+      this.chat.style.display = 'none';
+    }
+  }
+
+  openChat() {
+    this.chat.querySelector('.chat-box-closed').style.display = 'none';
+    this.chat.querySelector('.chat-box-opened').style.display = 'flex';
+    this.app.querySelector('.chat').style.transform = 'translate(0%, 0%)';
+    this.app.querySelector('.chat').style.right = '0px';
+    this.app.querySelector('.chat').style.bottom = '0px';
+  }
+
+  closeChat() {
+    this.chat.querySelector('.chat-box-closed').style.display = 'block';
+    this.chat.querySelector('.chat-box-opened').style.display = 'none';
+    this.app.querySelector('.chat').style.transform = 'translate(50%, 50%)';
+    this.app.querySelector('.chat').style.right = '2rem';
+    this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
   }
 };
