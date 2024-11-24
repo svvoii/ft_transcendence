@@ -1,5 +1,5 @@
 import AbstractModalView from "./AbstractModalView.js";
-import { user } from "../index.js";
+import { user, chat } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -54,7 +54,9 @@ export default class extends AbstractModalView {
         sendAMessageBtn.classList.add('select-button');
         sendAMessageBtn.textContent = 'Send a Message';
         sendAMessageBtn.addEventListener('click', async() => {
-          console.log('Send a message button clicked');
+          // Open the chat modal and start a chat with the user
+          chat.openChat();
+          chat.startChat(userData.id, userData.username);
         });
 
         container.appendChild(sendAMessageBtn);

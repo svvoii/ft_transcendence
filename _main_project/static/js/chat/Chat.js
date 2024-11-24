@@ -49,8 +49,11 @@ export default class Chat {
     input.type = 'text';
     input.placeholder = 'Type a message...';
     input.classList.add('chat-input-field');
+
     const sendButton = document.createElement('button');
+    sendButton.classList.add('chat-send-button');
     sendButton.textContent = 'Send';
+
     inputArea.appendChild(input);
     inputArea.appendChild(sendButton);
 
@@ -93,6 +96,15 @@ export default class Chat {
     this.chat.querySelector('.close-chat').addEventListener('click', () => {
       this.closeChat();
     });
+
+    this.chat.querySelector('.chat-send-button').addEventListener('click', () => {
+      const input = this.chat.querySelector('.chat-input-field');
+      const message = input.value;
+      if (message) {
+        this.sendMessage(message);
+        input.value = '';
+      }
+    });
   }
 
   testAddChatMessage(message) {
@@ -125,5 +137,58 @@ export default class Chat {
     this.app.querySelector('.chat').style.transform = 'translate(50%, 50%)';
     this.app.querySelector('.chat').style.right = '2rem';
     this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
+  }
+
+  async startChat(userId, username) {
+    // Create a chatroom
+    try {
+      const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
+      if (!response.ok) {
+        throw new Error('Failed to create chatroom');
+      }
+      const data = await response.json();
+      console.log(data);
+
+      const wsUrl = `ws://localhost:8000/ws/chatroom/${data.room_name}/`;
+      this.socket = new WebSocket(wsUrl);
+
+      // Handle WebSocket events
+      this.socket.onopen = () => {
+        console.log('WebSocket connection established');
+        this.testAddChatMessage(`Connected to chat with ${username}`);
+      };
+
+      this.socket.onmessage = (event) => {
+        console.log('Raw message:', event.data);
+        try {
+          const message = JSON.parse(event.data);
+          this.testAddChatMessage(message.text);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+      };
+
+      this.socket.onclose = () => {
+        console.log('WebSocket connection closed');
+        this.testAddChatMessage('Chat connection closed');
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        this.testAddChatMessage('Error in chat connection');
+      };
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  sendMessage(message) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ message: message }));
+      this.testAddChatMessage(`You: ${message}`);
+    } else {
+      console.error('WebSocket is not open');
+    }
   }
 };

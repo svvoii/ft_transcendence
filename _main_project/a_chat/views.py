@@ -3,6 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib import messages
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 from .models import ChatRoom, Message
 from .forms import ChatMessageCreateForm, NewGroupChatForm, ChatRoomEditForm
 from a_user.models import Account, BlockedUser
@@ -52,17 +56,18 @@ def chat_view(request, room_name='public-chat'):
 	return render(request, 'a_chat/chat.html', context)
 
 
+@api_view(['GET'])
 @login_required
 def get_or_create_chatroom(request, username):
 	if request.user.username == username:
-		return redirect('home')
+		return Response({'error': 'You cannot chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
 	other_user = Account.objects.get(username=username)
 
 	# Check if the user is blocked by any of the members of the chat room.
-	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
-		messages.warning(request, 'You are blocked by this user and cannot send messages.')
-		return redirect('a_user:profile', user_id=other_user.id)
+	# if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
+	# 	messages.warning(request, 'You are blocked by this user and cannot send messages.')
+	# 	return redirect('a_user:profile', user_id=other_user.id)
 
 	my_chatrooms = request.user.chat_rooms.filter(is_private=True)
 
@@ -78,7 +83,7 @@ def get_or_create_chatroom(request, username):
 		room = ChatRoom.objects.create(is_private=True)
 		room.members.add(request.user, other_user)
 
-	return redirect('a_chat:chat-room', room.room_name)
+	return Response({'room_name': room.room_name}, status=status.HTTP_200_OK);
 
 
 @login_required
