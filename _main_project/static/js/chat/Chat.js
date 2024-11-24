@@ -98,4 +98,12 @@ export default class Chat {
       this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
     });
   }
+
+  testAddChatMessage(message) {
+    const messageContainer = this.chat.querySelector('.chat-messages');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('chat-message');
+    messageElement.textContent = message;
+    messageContainer.appendChild(messageElement);
+  }
 };
