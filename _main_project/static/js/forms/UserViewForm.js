@@ -1,4 +1,5 @@
 import AbstractModalView from "./AbstractModalView.js";
+import { user } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -9,13 +10,14 @@ export default class extends AbstractModalView {
 
   async createDomElements(data=null) {
     try {
-      const loginResponse = await fetch('/login_check/');
-      this.loginData = await loginResponse.json();
+      if (user.getLoginStatus() === false) {
+        return ;
+      }
       let userResponse = null;
       if (data) {
         userResponse = await fetch(`http://localhost:8000/user/${data.id}/`);
       } else {
-        userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
+        userResponse = await fetch(`http://localhost:8000/user/${user.getUserId()}/`);
       }
       const userData = await userResponse.json();
 
