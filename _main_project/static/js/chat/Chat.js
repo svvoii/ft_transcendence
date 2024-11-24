@@ -147,14 +147,14 @@ export default class Chat {
         throw new Error('Failed to create chatroom');
       }
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
 
       const wsUrl = `ws://localhost:8000/ws/chatroom/${data.room_name}/`;
       this.socket = new WebSocket(wsUrl);
 
       // Handle WebSocket events
       this.socket.onopen = () => {
-        console.log('WebSocket connection established');
+        // console.log('WebSocket connection established');
         this.testAddChatMessage(`Connected to chat with ${username}`);
       };
 
@@ -165,7 +165,6 @@ export default class Chat {
             this.testAddChatMessage(`Online Users: ${message.online_count}`);
             return;
           } else if (message.user !== user.getUserName()) {
-            console.log("message.message.msg_content: ", message.message.msg_content);
             this.testAddChatMessage(`${message.user}: ${message.message.msg_content}`);
           }
         } catch (error) {
@@ -174,7 +173,7 @@ export default class Chat {
       };
 
       this.socket.onclose = () => {
-        console.log('WebSocket connection closed');
+        // console.log('WebSocket connection closed');
         this.testAddChatMessage('Chat connection closed');
       };
 
