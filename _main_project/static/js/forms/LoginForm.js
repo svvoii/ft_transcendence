@@ -106,10 +106,7 @@ export default class extends AbstractModalView {
 
         if (response.ok) {
           messageDiv.textContent = result.message;
-          user.setUserId(result.id);
-          user.setUserName(result.username);
-          user.setProfileImageUrl(result.profile_image_url);
-          user.setLoginStatus(true);
+          user.userLoginCheck();
           if (result.redirect) {
             this.modal.hide();
             navigateTo(result.redirect);

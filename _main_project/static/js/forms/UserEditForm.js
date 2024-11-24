@@ -1,5 +1,6 @@
 import { navigateTo } from "../helpers/helpers.js";
 import AbstractModalView from "./AbstractModalView.js";
+import { user } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -10,9 +11,10 @@ export default class extends AbstractModalView {
 
   async createDomElements(data=null) {
     try {
-      const loginResponse = await fetch('/login_check/');
-      this.loginData = await loginResponse.json();
-      const userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
+      if (user.getLoginStatus() === false) {
+        return ;
+      }
+      const userResponse = await fetch(`http://localhost:8000/user/${user.getUserId()}/`);
       const userData = await userResponse.json();
 
       // Create the container
@@ -120,33 +122,26 @@ export default class extends AbstractModalView {
 
   async afterRender() {
     document.getElementById('editUserForm').addEventListener('submit', async(event) => {
-      // Create form 
       const form = event.target;
       const formData = new FormData(form);
-      // const data = {};
-      // formData.forEach((value, key) => {
-      //   data[key] = value;
-      // });
 
       const content = {
         method: 'POST',
         headers: {
-          // 'Accept': 'application/json',
-          // 'Content-Type': 'application/json',
           'X-CSRFToken': this.getCookie('csrftoken')
         },
-        // body: JSON.stringify(data)
         body: formData
       };
 
       try {
-        const response = await fetch(`/user/${this.loginData.id}/edit/`, content);
+        const response = await fetch(`/user/${user.getUserId()}/edit/`, content);
         const result = await response.json();
         const messageDiv = document.getElementById('message');
 
         if (response.ok) {
           messageDiv.style.color = 'var(--success-color)';
           messageDiv.textContent = result.message;
+          user.userLoginCheck();
           navigateTo(result.redirect);
         } else {
           messageDiv.textContent = '';
