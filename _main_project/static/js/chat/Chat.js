@@ -159,10 +159,15 @@ export default class Chat {
       };
 
       this.socket.onmessage = (event) => {
-        console.log('Raw message:', event.data);
         try {
           const message = JSON.parse(event.data);
-          this.testAddChatMessage(message.text);
+          if (message.online_count) {
+            this.testAddChatMessage(`Online Users: ${message.online_count}`);
+            return;
+          } else if (message.user !== user.getUserName()) {
+            console.log("message.message.msg_content: ", message.message.msg_content);
+            this.testAddChatMessage(`${message.user}: ${message.message.msg_content}`);
+          }
         } catch (error) {
           console.error('Error parsing JSON:', error);
         }
