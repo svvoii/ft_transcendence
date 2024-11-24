@@ -21,7 +21,7 @@
 .chat-box-opened {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  /* width: 300px; */
   height: 400px;
 }
 

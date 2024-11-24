@@ -45,6 +45,8 @@ export default class extends AbstractModalView {
       emailParagraph.textContent = `Email: ${userData.email}`;
       container.appendChild(emailParagraph);
 
+      // Add a send a message button
+
       return container;
     } catch (error) {
       console.log(error);
