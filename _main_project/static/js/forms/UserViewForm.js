@@ -48,6 +48,17 @@ export default class extends AbstractModalView {
       container.appendChild(emailParagraph);
 
       // Add a send a message button
+      if (data !== null && user.getUserId() !== data.id) {
+        const sendAMessageBtn = document.createElement('button');
+        sendAMessageBtn.id = 'sendAMessageBtn';
+        sendAMessageBtn.classList.add('select-button');
+        sendAMessageBtn.textContent = 'Send a Message';
+        sendAMessageBtn.addEventListener('click', async() => {
+          console.log('Send a message button clicked');
+        });
+
+        container.appendChild(sendAMessageBtn);
+      }
 
       return container;
     } catch (error) {
