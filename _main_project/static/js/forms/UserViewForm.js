@@ -56,7 +56,7 @@ export default class extends AbstractModalView {
         sendAMessageBtn.addEventListener('click', async() => {
           // Open the chat modal and start a chat with the user
           chat.openChat();
-          chat.startChat(userData.id, userData.username);
+          chat.startChat(userData.username);
         });
 
         container.appendChild(sendAMessageBtn);

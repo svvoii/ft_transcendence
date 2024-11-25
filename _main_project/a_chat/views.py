@@ -164,3 +164,22 @@ def chatroom_leave_view(request, room_name):
 		'chat_room': chat_room,
 	}
 	return render(request, 'a_chat/chatroom_leave.html', context)
+
+
+@login_required
+@api_view(['GET'])
+def get_user_chatrooms(request):
+	chatrooms = request.user.chat_rooms.all()
+	chatrooms_data = []
+
+	for chatroom in chatrooms:
+		chatroom_data = {
+			'room_name': chatroom.room_name,
+			'is_private': chatroom.is_private,
+			'groupchat_name': chatroom.groupchat_name,
+			# 'admin': chatroom.admin.username,
+			'members': [member.username for member in chatroom.members.all()],
+		}
+		chatrooms_data.append(chatroom_data)
+
+	return Response(chatrooms_data, status=status.HTTP_200_OK)

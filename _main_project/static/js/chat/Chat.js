@@ -149,7 +149,7 @@ export default class Chat {
     this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
   }
 
-  async startChat(userId, username) {
+  async startChat(username) {
     document.querySelector('.chat-invite-button').style.display = 'block';
     document.querySelector('.chat-title').textContent = `${username}`;
     // Create a chatroom
