@@ -31,11 +31,17 @@ export default class Chat {
     const header = document.createElement('div');
     header.classList.add('chat-header');
     const title = document.createElement('span');
+    title.classList.add('chat-title');
     title.textContent = this.title;
+    const inviteButton = document.createElement('button');
+    inviteButton.classList.add('chat-invite-button');
+    inviteButton.textContent = 'Invite to game';
+    inviteButton.style.display = 'none';
     const closeSpan = document.createElement('span');
     closeSpan.classList.add('close-chat');
     closeSpan.innerHTML = '&times;';
     header.appendChild(title);
+    header.appendChild(inviteButton);
     header.appendChild(closeSpan);
 
     // Create the messages container
@@ -105,6 +111,10 @@ export default class Chat {
         input.value = '';
       }
     });
+
+    this.chat.querySelector('.chat-invite-button').addEventListener('click', () => {
+      console.log('Invite button clicked');
+    });
   }
 
   testAddChatMessage(message) {
@@ -140,6 +150,8 @@ export default class Chat {
   }
 
   async startChat(userId, username) {
+    document.querySelector('.chat-invite-button').style.display = 'block';
+    document.querySelector('.chat-title').textContent = `${username}`;
     // Create a chatroom
     try {
       const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
@@ -192,7 +204,7 @@ export default class Chat {
       this.socket.send(JSON.stringify({ message: message }));
       this.testAddChatMessage(`You: ${message}`);
     } else {
-      console.error('WebSocket is not open');
+      // console.error('WebSocket is not open');
     }
   }
 };

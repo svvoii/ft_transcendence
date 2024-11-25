@@ -69,6 +69,24 @@
   cursor: pointer;
 }
 
+.chat-title {
+  margin-right: 0.5rem;
+}
+
+.chat-invite-button {
+  border: 2px solid var(--tertiary-color);
+  background-color: var(--background-color);
+  color: var(--tertiary-color);
+  padding: 0.25rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.chat-invite-button:hover { 
+  background-color: var(--secondary-color);
+  color: var(--background-color);
+}
+
 .close-chat {
   color: var(--background-color);
   float: right;
