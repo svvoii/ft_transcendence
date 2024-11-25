@@ -26,6 +26,13 @@ export default class extends AbstractModalView {
     viewProfileButton.textContent = 'View Profile';
     ul.appendChild(viewProfileButton);
 
+    // Create my messages
+    const myMessagesButton = document.createElement('button');
+    myMessagesButton.id = 'myMessagesBtn';
+    myMessagesButton.classList.add('select-button');
+    myMessagesButton.textContent = 'My Messages';
+    ul.appendChild(myMessagesButton);
+
     // Create the edit profile button
     const editProfileButton = document.createElement('button');
     editProfileButton.id = 'userBtnEdit';
@@ -56,6 +63,10 @@ export default class extends AbstractModalView {
   async afterRender() {
     document.getElementById('userBtnView').addEventListener('click', async() => {
       this.modal.showForm('userViewForm');
+    });
+
+    document.getElementById('myMessagesBtn').addEventListener('click', async() => {
+      this.modal.showForm('messagesForm');
     });
 
     document.getElementById('userBtnEdit').addEventListener('click', async() => {
