@@ -42,6 +42,25 @@ export default class extends AbstractView {
     button.type = 'select';
     button.textContent = 'Play Game (Coming Soon)';
 
+
+
+    // const chatSocket = new WebSocket('ws://localhost:8000/ws/game/');
+
+    // chatSocket.onopen = function() {
+    //   console.log('WebSocket connection established.');
+    //   const message = {
+    //     'message': 'Hello, world!'
+    //   };
+    //   chatSocket.send(JSON.stringify(message));
+    // };
+    // chatSocket.onmessage = function(event) {
+    //   const message = JSON.parse(event.data);
+    //   console.log('Received message:', message);
+    // };
+
+
+
+
     // Append all elements to the container
     container.appendChild(heading);
     container.appendChild(paragraph1);
