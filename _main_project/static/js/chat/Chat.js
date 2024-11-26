@@ -155,9 +155,10 @@ export default class Chat {
     this.clearChat();
     document.querySelector('.chat-invite-button').style.display = 'block';
     document.querySelector('.chat-title').textContent = `${username}`;
-    // Create a chatroom
     try {
       let room_to_open = room_name;
+
+      // Create a chatroom
       if (!room_name) {
         const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
         if (!response.ok) {
@@ -169,6 +170,9 @@ export default class Chat {
 
       const wsUrl = `ws://localhost:8000/ws/chatroom/${room_to_open}/`;
       this.socket = new WebSocket(wsUrl);
+
+      // Get the chatroom history
+      await this.getMessageHistory(room_to_open);
 
       // Handle WebSocket events
       this.socket.onopen = () => {
@@ -199,7 +203,6 @@ export default class Chat {
         console.error('WebSocket error:', error);
         this.testAddChatMessage('Error in chat connection');
       };
-
     } catch (error) {
       console.error(error);
     }
@@ -223,6 +226,29 @@ export default class Chat {
   closeSocket() {
     if (this.socket) {
       this.socket.close();
+    }
+  }
+
+  async getMessageHistory(room_to_open) {
+    try {
+      const response = await fetch(`/chat/chat/${room_to_open}/messages`);
+
+      const data = await response.json();
+
+      // console.log(data);
+
+      data.forEach(message => {
+        if (message.user === user.getUserName()) {
+          this.testAddChatMessage(`You: ${message.content}`);
+        } else {
+          this.testAddChatMessage(`${message.author}: ${message.content}`);
+        }
+      });
+
+      this.testAddChatMessage(`End of chat history`);
+
+    } catch (error) {
+      console.error(error);
     }
   }
 };

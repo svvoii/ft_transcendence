@@ -183,3 +183,12 @@ def get_user_chatrooms(request):
 		chatrooms_data.append(chatroom_data)
 
 	return Response(chatrooms_data, status=status.HTTP_200_OK)
+
+@login_required
+@api_view(['GET'])
+def get_last_50_chat_messages(request, room_name):
+	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
+	chat_messages = chat_room.chat_messages.all().order_by('-created')[:50]
+	messages_data = [{'author': message.author.username, 'content': message.msg_content, 'created': message.created} for message in chat_messages]
+	messages_data.reverse()
+	return Response(messages_data, status=status.HTTP_200_OK)

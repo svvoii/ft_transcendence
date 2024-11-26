@@ -17,7 +17,7 @@ export default class extends AbstractModalView {
       title.classList.add('modal-title');
       container.appendChild(title);
 
-      const response = await fetch('/chat/get_chatrooms/');
+      const response = await fetch('/chat/chat/get_chatrooms/');
       const chatroom_data = await response.json();
 
       chatroom_data.forEach(chatroom => {
