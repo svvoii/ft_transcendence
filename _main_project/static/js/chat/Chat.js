@@ -1,4 +1,4 @@
-import { user } from '../index.js';
+import { user, modal } from '../index.js';
 
 export default class Chat {
   constructor(appId) {
@@ -165,10 +165,8 @@ export default class Chat {
 
   async startChat(username, room_name=null) {
     // init
-    this.closeSocket();
     this.clearChat();
-    document.querySelector('.chat-invite-button').style.display = 'block';
-    document.querySelector('.chat-title').textContent = `${username}`;
+    await this.setChatTitle(username);
     try {
       let room_to_open = room_name;
 
@@ -234,13 +232,34 @@ export default class Chat {
   clearChat() {
     this.chat.querySelector('.chat-messages').innerHTML = '';
     this.chat.querySelector('.chat-title').textContent = this.title;
+    this.chat.querySelector('.chat-title').removeEventListener('click', this.chatTitleClickHandler);
     this.chat.querySelector('.chat-invite-button').style.display = 'none';
+    this.closeSocket();
   }
 
   closeSocket() {
     if (this.socket) {
       this.socket.close();
     }
+  }
+
+  async setChatTitle(title) {
+    document.querySelector('.chat-invite-button').style.display = 'block';
+    document.querySelector('.chat-title').textContent = `${title}`;
+
+    const titleClick = async() => {
+      console.log("im an event listener");
+      const response = await fetch(`/search/?q=${encodeURIComponent(title)}`);
+      if (response.ok) {
+        const data = await response.json();
+        modal.showForm('userViewForm', data.accounts[0][0]);
+      } else {
+        console.error('Search request failed');
+      }
+    };
+
+    document.querySelector('.chat-title').addEventListener('click', titleClick);
+    this.chatTitleClickHandler = titleClick;
   }
 
   async getMessageHistory(room_to_open) {

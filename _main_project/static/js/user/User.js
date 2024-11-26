@@ -43,7 +43,6 @@ export default class User {
 
   async userLogout() {
     try {
-      chat.closeSocket();            
       chat.clearChat();
       await fetch('/logout/')
       this.userName = '';
