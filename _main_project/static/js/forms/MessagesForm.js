@@ -30,7 +30,7 @@ export default class extends AbstractModalView {
 
         chatroom_div.onclick = () => {
           chat.openChat();
-          chat.startChat(other_user);
+          chat.startChat(other_user, chatroom.room_name);
           modal.hide();
         }
         container.appendChild(chatroom_div);

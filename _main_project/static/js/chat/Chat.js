@@ -149,19 +149,25 @@ export default class Chat {
     this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
   }
 
-  async startChat(username) {
+  async startChat(username, room_name=null) {
+    // init
+    this.closeSocket();
+    this.clearChat();
     document.querySelector('.chat-invite-button').style.display = 'block';
     document.querySelector('.chat-title').textContent = `${username}`;
     // Create a chatroom
     try {
-      const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
-      if (!response.ok) {
-        throw new Error('Failed to create chatroom');
+      let room_to_open = room_name;
+      if (!room_name) {
+        const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
+        if (!response.ok) {
+          throw new Error('Failed to create chatroom');
+        }
+        const data = await response.json();
+        room_to_open = data.room_name;
       }
-      const data = await response.json();
-      // console.log(data);
 
-      const wsUrl = `ws://localhost:8000/ws/chatroom/${data.room_name}/`;
+      const wsUrl = `ws://localhost:8000/ws/chatroom/${room_to_open}/`;
       this.socket = new WebSocket(wsUrl);
 
       // Handle WebSocket events
@@ -186,7 +192,7 @@ export default class Chat {
 
       this.socket.onclose = () => {
         // console.log('WebSocket connection closed');
-        this.testAddChatMessage('Chat connection closed');
+        // this.testAddChatMessage('Chat connection closed');
       };
 
       this.socket.onerror = (error) => {
@@ -205,6 +211,18 @@ export default class Chat {
       this.testAddChatMessage(`You: ${message}`);
     } else {
       // console.error('WebSocket is not open');
+    }
+  }
+
+  clearChat() {
+    this.chat.querySelector('.chat-messages').innerHTML = '';
+    this.chat.querySelector('.chat-title').textContent = this.title;
+    this.chat.querySelector('.chat-invite-button').style.display = 'none';
+  }
+
+  closeSocket() {
+    if (this.socket) {
+      this.socket.close();
     }
   }
 };

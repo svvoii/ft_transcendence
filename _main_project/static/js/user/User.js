@@ -1,4 +1,5 @@
 import { navigateTo } from "../helpers/helpers.js";
+import { chat } from '../index.js';
 
 export default class User {
   constructor() {
@@ -42,6 +43,8 @@ export default class User {
 
   async userLogout() {
     try {
+      chat.closeSocket();            
+      chat.clearChat();
       await fetch('/logout/')
       this.userName = '';
       this.userImg = '';
