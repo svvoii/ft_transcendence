@@ -115,6 +115,17 @@ export default class Chat {
     this.chat.querySelector('.chat-invite-button').addEventListener('click', () => {
       console.log('Invite button clicked');
     });
+
+    this.chat.querySelector('.chat-input-field').addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        const input = this.chat.querySelector('.chat-input-field');
+        const message = input.value;
+        if (message) {
+          this.sendMessage(message);
+          input.value = '';
+        }
+      }
+    });
   }
 
   testAddChatMessage(message) {
@@ -123,6 +134,9 @@ export default class Chat {
     messageElement.classList.add('chat-message');
     messageElement.textContent = message;
     messageContainer.appendChild(messageElement);
+
+    // Scroll to the bottom of the messages container
+    messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
   showChatIfLoggedIn() {
