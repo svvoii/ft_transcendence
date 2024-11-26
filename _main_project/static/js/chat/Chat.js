@@ -128,10 +128,18 @@ export default class Chat {
     });
   }
 
-  testAddChatMessage(message) {
+  addChatMessage(sender, message) {
     const messageContainer = this.chat.querySelector('.chat-messages');
     const messageElement = document.createElement('div');
-    messageElement.classList.add('chat-message');
+
+    if (sender === 'You') {
+      messageElement.classList.add('chat-message-you');
+    } else if (sender === 'system') {
+      messageElement.classList.add('chat-message-system');
+    } else {
+      messageElement.classList.add('chat-message-other')
+    }
+
     messageElement.textContent = message;
     messageContainer.appendChild(messageElement);
 
@@ -189,17 +197,17 @@ export default class Chat {
       // Handle WebSocket events
       this.socket.onopen = () => {
         // console.log('WebSocket connection established');
-        this.testAddChatMessage(`Connected to chat with ${username}`);
+        this.addChatMessage("system", `Connected to chat with ${username}`);
       };
 
       this.socket.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
           if (message.online_count) {
-            this.testAddChatMessage(`Online Users: ${message.online_count}`);
+            this.addChatMessage('system', `Online Users: ${message.online_count}`);
             return;
           } else if (message.user !== user.getUserName()) {
-            this.testAddChatMessage(`${message.user}: ${message.message.msg_content}`);
+            this.addChatMessage(message.user, message.message.msg_content);
           }
         } catch (error) {
           console.error('Error parsing JSON:', error);
@@ -208,12 +216,12 @@ export default class Chat {
 
       this.socket.onclose = () => {
         // console.log('WebSocket connection closed');
-        // this.testAddChatMessage('Chat connection closed');
+        // this.addChatMessage('system', 'Chat connection closed');
       };
 
       this.socket.onerror = (error) => {
         console.error('WebSocket error:', error);
-        this.testAddChatMessage('Error in chat connection');
+        this.addChatMessage('system', 'Error in chat connection');
       };
     } catch (error) {
       console.error(error);
@@ -223,7 +231,7 @@ export default class Chat {
   sendMessage(message) {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify({ message: message }));
-      this.testAddChatMessage(`You: ${message}`);
+      this.addChatMessage('You', message);
     } else {
       // console.error('WebSocket is not open');
     }
@@ -271,14 +279,14 @@ export default class Chat {
       // console.log(data);
 
       data.forEach(message => {
-        if (message.user === user.getUserName()) {
-          this.testAddChatMessage(`You: ${message.content}`);
+        if (message.author === user.getUserName()) {
+          this.addChatMessage('You', message.content);
         } else {
-          this.testAddChatMessage(`${message.author}: ${message.content}`);
+          this.addChatMessage(message.author, message.content);
         }
       });
 
-      this.testAddChatMessage(`End of chat history`);
+      this.addChatMessage('system', `End of chat history`);
 
     } catch (error) {
       console.error(error);

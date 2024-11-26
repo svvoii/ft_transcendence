@@ -87,6 +87,20 @@
   color: var(--background-color);
 }
 
+.chat-message-you {
+  color: var(--primary-color);
+  text-align: right;
+}
+
+.chat-message-system {
+  color: var(--tertiary-color);
+  text-align: center;
+}
+
+.chat-message-other {
+  color: var(--secondary-color);
+}
+
 .close-chat {
   color: var(--background-color);
   float: right;
