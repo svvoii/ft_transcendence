@@ -38,7 +38,7 @@
 }
 
 .paddle_1 {
-  top: 24%;
+  top: 20px;
   /* left: calc(10vw + 120px); */
   left: 1%;
   transform: translateY(-50%);
@@ -50,7 +50,7 @@
 }
 
 .paddle_2 {
-  top: 80%;
+  top: 80px;
   /* right: calc(20vw + 20px);  */
   right : 7%;
   transform: translateY(-50%);

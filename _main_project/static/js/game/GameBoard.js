@@ -4,6 +4,8 @@ export default class GameBoard {
     this.gameboard = document.createElement('div');
   }
 
+
+  
   full_render() {
     this.gameboard.id = "gameModal";
     this.gameboard.classList.add('modal-game');
@@ -67,9 +69,14 @@ export default class GameBoard {
     let message = document.querySelector('.game-message');
     let paddle_1_coord = paddle_1.getBoundingClientRect();
     let paddle_2_coord = paddle_2.getBoundingClientRect();
+
+    let paddle_common = document.querySelector('.paddle').getBoundingClientRect();    
+
     // let initial_ball_coord = ball.getBoundingClientRect();
     // let ball_coord = initial_ball_coord;
-    let board_coord = board.getBoundingClientRect();
+
+
+
     // let paddle_common =
     //     document.querySelector('.paddle').getBoundingClientRect();
     
@@ -79,62 +86,89 @@ export default class GameBoard {
     let dyd = Math.floor(Math.random() * 2);
 
 
+
+    
+    
+    
+    
     document.addEventListener('keydown', (e) => {
       if (e.key == 'Enter') {
-          gameState = gameState == 'start' ? 'play' : 'start';
-          if (gameState == 'play') {
+        gameState = gameState == 'start' ? 'play' : 'start';
+        if (gameState == 'play') {
           message.innerHTML = 'Game Started';
           message.style.left = 42 + 'vw';
           // renderGameElements();
           requestAnimationFrame(() => {
-              dx = Math.floor(Math.random() * 4) + 3;
-              dy = Math.floor(Math.random() * 4) + 3;
-              dxd = Math.floor(Math.random() * 2);
-              dyd = Math.floor(Math.random() * 2);
-              // moveBall(dx, dy, dxd, dyd);
+            dx = Math.floor(Math.random() * 4) + 3;
+            dy = Math.floor(Math.random() * 4) + 3;
+            dxd = Math.floor(Math.random() * 2);
+            dyd = Math.floor(Math.random() * 2);
+            // moveBall(dx, dy, dxd, dyd);
           });
-          }
         }
+      }
+      
+      if (gameState == 'play') {
         
-        if (gameState == 'play') {
+
+
+        //WEBSOCKET COMMUNICATION
+        const chatSocket2 = new WebSocket('ws://localhost:8000/ws/game/');
     
+        chatSocket2.onopen = function() {
+          // console.log('WebSocket connection 2 established.');
+          const msg_content = {
+            'paddle_1_coord': JSON.stringify(paddle_1_coord)
+          };
+          chatSocket2.send(JSON.stringify(msg_content));
+        };
+        chatSocket2.onmessage = function(event) {
+          const msg_content = JSON.parse(event.data);
+          console.log('Received message:', msg_content);
+        };
+
+        let board_coord = board.getBoundingClientRect();
+
             if (e.key == 'w') {
               paddle_1.style.top =
               Math.max(
-              board_coord.top,
-              paddle_1_coord.top - 10
-              ) + 'px';
-            // paddle_1.style.top =
-            //     Math.max(
-            //     board_coord.top,
-            //     paddle_1_coord.top - 10
-            //     ) + 'px';
+                board_coord.top,
+                paddle_1_coord.top - window.innerHeight * 0.06
+                ) + 'px';
             paddle_1_coord = paddle_1.getBoundingClientRect();
             }
             if (e.key == 's') {
               paddle_1.style.top =
-                  Math.max(
-                  board_coord.top,
-                  paddle_1_coord.top + 10
-                  ) + 'px';
+              Math.min(
+                board_coord.bottom - paddle_common.height,
+                paddle_1_coord.top + window.innerHeight * 0.06
+                ) + 'px';
               paddle_1_coord = paddle_1.getBoundingClientRect();
               }
     
-            if (e.key == 'ArrowUp') {
-            paddle_2.style.top =
+              if (e.key == 'ArrowUp') {
+
+                paddle_2.style.top =
                 Math.max(
-                board_coord.top,
-                paddle_2_coord.top - 10
-                ) + 'px';
-            paddle_2_coord = paddle_2.getBoundingClientRect();
-            }
-            if (e.key == 'ArrowDown') {
-              paddle_2.style.top =
-                  Math.max(
                   board_coord.top,
-                  paddle_2_coord.top + 10
+                  paddle_2_coord.top - window.innerHeight * 0.06
                   ) + 'px';
               paddle_2_coord = paddle_2.getBoundingClientRect();
+              }
+
+                if (e.key == 'ArrowDown') {
+
+                console.log(board_coord.bottom - paddle_common.height);
+                console.log(paddle_2_coord.top + window.innerHeight * 0.06);
+
+
+                paddle_2.style.top =
+                  Math.min(
+                    board_coord.bottom - paddle_common.height,
+                    paddle_2_coord.top + window.innerHeight * 0.06
+                    ) + 'px';
+                  paddle_2_coord = paddle_2.getBoundingClientRect();
+
               }
         }
     });
