@@ -1,5 +1,5 @@
 import AbstractModalView from "./AbstractModalView.js";
-import { user } from "../index.js";
+import { user, chat } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -48,6 +48,19 @@ export default class extends AbstractModalView {
       container.appendChild(emailParagraph);
 
       // Add a send a message button
+      if (data !== null && user.getUserId() !== data.id) {
+        const sendAMessageBtn = document.createElement('button');
+        sendAMessageBtn.id = 'sendAMessageBtn';
+        sendAMessageBtn.classList.add('select-button');
+        sendAMessageBtn.textContent = 'Send a Message';
+        sendAMessageBtn.addEventListener('click', async() => {
+          // Open the chat modal and start a chat with the user
+          chat.openChat();
+          chat.startChat(userData.username);
+        });
+
+        container.appendChild(sendAMessageBtn);
+      }
 
       return container;
     } catch (error) {

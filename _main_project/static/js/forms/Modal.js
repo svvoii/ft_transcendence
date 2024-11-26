@@ -7,6 +7,7 @@ import UserEditForm from './UserEditForm.js';
 import UserChangePassForm from './UserChangePassForm.js';
 import ForgotPassForm from './ForgotPassForm.js';
 import UserSearchForm from './UserSearchForm.js';
+import MessagesForm from './MessagesForm.js';
 
 export default class Modal {
   constructor(appId) {
@@ -29,6 +30,7 @@ export default class Modal {
     this.userChangePassForm = new UserChangePassForm(this);
     this.forgotPassForm = new ForgotPassForm(this);
     this.userSearchForm = new UserSearchForm(this);
+    this.messagesForm = new MessagesForm(this);
 
     // Most recent
     this.mostRecent = null;
@@ -42,7 +44,8 @@ export default class Modal {
       'userEditForm': this.userEditForm,
       'userChangePassForm': this.userChangePassForm,
       'userSearchForm': this.userSearchForm,
-      'forgotPassForm': this.forgotPassForm
+      'forgotPassForm': this.forgotPassForm,
+      'messagesForm': this.messagesForm,
     }
   }
 
@@ -89,6 +92,7 @@ export default class Modal {
         if (this.mostRecent === this.userViewForm
           || this.mostRecent === this.userEditForm
           || this.mostRecent === this.userChangePassForm
+          || this.mostRecent === this.messagesForm
           || this.mostRecent === this.userSearchForm) {
           this.showForm('userForm');
         } else if (this.mostRecent === this.forgotPassForm) {
