@@ -195,6 +195,54 @@ input:focus {
   background-size: cover;
 }
 
+/* ALL THIS BUSINESS IS FOR THE GAME MENU */
+.menu-container {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--nav-height);
+  height: var(--app-height);
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--nav-height);
+  height: var(--app-height);
+}
+
+.button-container button {
+  margin: 30px;
+}
+
+.hidden-elements > *:not(.role-dialog) {
+  display: none;
+}
+
+.role-dialog {
+  position: absolute;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Add space between buttons */
+}
+
+.role-dialog p {
+  margin-bottom: 20px;
+}
+
+.role-dialog button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+/* END OF GAME MENU */
+
 /* #app {
   margin: 2em;
   margin-top: var(--nav-height); 
