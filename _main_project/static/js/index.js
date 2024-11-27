@@ -1,3 +1,4 @@
+import User from "./user/User.js";
 import NavBar from "./header_footer/NavBar.js";
 import Footer from "./header_footer/Footer.js";
 import Modal from "./forms/Modal.js";
@@ -7,6 +8,8 @@ import Chat from "./chat/Chat.js";
 import { router } from "./helpers/router.js";
 import { navigateTo } from "./helpers/helpers.js";
 
+export const user = new User();
+user.userLoginCheck();
 // Create the navbar instance and render it
 export const modal = new Modal('app');
 modal.full_render();

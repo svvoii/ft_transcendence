@@ -6,6 +6,8 @@ import UserViewForm from './UserViewForm.js';
 import UserEditForm from './UserEditForm.js';
 import UserChangePassForm from './UserChangePassForm.js';
 import ForgotPassForm from './ForgotPassForm.js';
+import UserSearchForm from './UserSearchForm.js';
+import MessagesForm from './MessagesForm.js';
 
 export default class Modal {
   constructor(appId) {
@@ -27,6 +29,8 @@ export default class Modal {
     this.userEditForm = new UserEditForm(this);
     this.userChangePassForm = new UserChangePassForm(this);
     this.forgotPassForm = new ForgotPassForm(this);
+    this.userSearchForm = new UserSearchForm(this);
+    this.messagesForm = new MessagesForm(this);
 
     // Most recent
     this.mostRecent = null;
@@ -39,11 +43,13 @@ export default class Modal {
       'userViewForm': this.userViewForm,
       'userEditForm': this.userEditForm,
       'userChangePassForm': this.userChangePassForm,
-      'forgotPassForm': this.forgotPassForm
+      'userSearchForm': this.userSearchForm,
+      'forgotPassForm': this.forgotPassForm,
+      'messagesForm': this.messagesForm,
     }
   }
 
-  createModalElements() {
+  createModalElements(data=null) {
     // Create the modal content box div
     const modalContentBox = document.createElement('div');
     modalContentBox.classList.add('modal-content-box');
@@ -85,7 +91,9 @@ export default class Modal {
       backSpan.addEventListener('click', async() => {
         if (this.mostRecent === this.userViewForm
           || this.mostRecent === this.userEditForm
-          || this.mostRecent === this.userChangePassForm) {
+          || this.mostRecent === this.userChangePassForm
+          || this.mostRecent === this.messagesForm
+          || this.mostRecent === this.userSearchForm) {
           this.showForm('userForm');
         } else if (this.mostRecent === this.forgotPassForm) {
           this.showForm('loginForm');
@@ -102,22 +110,21 @@ export default class Modal {
     }
   }
 
-  async show(contentForm) {
+  async show(contentForm, data=null) {
     this.form.innerHTML = '';
-    this.form.appendChild(await contentForm.createDomElements());
+    this.form.appendChild(await contentForm.createDomElements(data));
     contentForm.afterRender();
     this.modal.style.display = "block";
   }
 
-  async showForm(formName) {
+  async showForm(formName, data=null) {
     const form = this.formMap[formName];
 
     if (form) {
-      // console.log(`showing form: ${formName}`);
       this.mostRecent = form;
-      this.show(form);
+      this.show(form, data);
     } else {
-      // console.error(`form not found: ${formName}`);
+      console.error(`form not found: ${formName}`);
     }
   }
 

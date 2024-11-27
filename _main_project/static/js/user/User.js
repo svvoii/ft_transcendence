@@ -1,10 +1,15 @@
-export class User {
+import { navigateTo } from "../helpers/helpers.js";
+import { chat } from '../index.js';
+
+export default class User {
   constructor() {
+    this.userId = null;
     this.userName = '';
-    this.userPic = '';
+    this.userImg = '';
+    this.loggedIn = false;
   }
 
-  async fetchUserInfo() {
+  async userLoginCheck() {
     try {
       const response = await fetch('/login_check/', {
         method: 'GET',
@@ -13,29 +18,79 @@ export class User {
         },
       });
 
+      if (response.status === 204) {
+        // user is not logged in, return
+        // console.log('User is not logged in');
+        return;
+      }
+
       const data = await response.json();
 
       if (data.status === 'error') {
         console.error(data.message);
-        return false;
+        return ;
       } else {
-        if (return_data) {
-          return data;
-        } else {
-          return true;
-        }
+        this.userId = data.id;
+        this.userName = data.username;
+        this.userImg = data.profile_image_url;
+        this.loggedIn = true;
+        navigateTo('/');
       }
     } catch (error) {
-      // console.error('Error:', error);
-      return false;
+      console.error('Error:', error);
     }
   }
 
-  getUserInfo() {
-    return this.userInfo;
+  async userLogout() {
+    try {
+      chat.clearChat();
+      await fetch('/logout/')
+      this.userName = '';
+      this.userImg = '';
+      this.loggedIn = false;
+    } catch (error) {
+        console.log(error);
+    }
   }
 
-  isLoggedIn() {
-    return this.userInfo !== null;
+  printUserInfo() {
+    console.log(`User ID: ${this.userId}`);
+    console.log(`User Name: ${this.userName}`);
+    console.log(`User Image: ${this.userImg}`);
+    console.log(`Logged In: ${this.loggedIn}`);
   }
+
+  // Getters and Setters
+  getUserId() {
+    return this.userId;
+  }
+
+  getUserName() {
+    return this.userName;
+  }
+  
+  getProfileImageUrl() {
+    return this.userImg;
+  }
+
+  getLoginStatus() {
+    return this.loggedIn;
+  }
+
+  setUserId(id) {
+    this.userId = id;
+  }
+
+  setUserName(username) {
+    this.userName = username;
+  }
+
+  setProfileImageUrl(profile_image_url) {
+    this.userImg = profile_image_url;
+  }
+
+  setLoginStatus(status) {
+    this.loggedIn = status;
+  }
+
 }

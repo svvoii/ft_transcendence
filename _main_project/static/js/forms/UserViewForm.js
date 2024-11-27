@@ -1,4 +1,5 @@
 import AbstractModalView from "./AbstractModalView.js";
+import { user, chat } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -7,11 +8,17 @@ export default class extends AbstractModalView {
     this.loginData = null;
   }
 
-  async createDomElements() {
+  async createDomElements(data=null) {
     try {
-      const loginResponse = await fetch('/login_check/');
-      this.loginData = await loginResponse.json();
-      const userResponse = await fetch(`http://localhost:8000/user/${this.loginData.id}/`);
+      if (user.getLoginStatus() === false) {
+        return ;
+      }
+      let userResponse = null;
+      if (data) {
+        userResponse = await fetch(`http://localhost:8000/user/${data.id}/`);
+      } else {
+        userResponse = await fetch(`http://localhost:8000/user/${user.getUserId()}/`);
+      }
       const userData = await userResponse.json();
 
       // Create the container
@@ -39,6 +46,21 @@ export default class extends AbstractModalView {
       const emailParagraph = document.createElement('p');
       emailParagraph.textContent = `Email: ${userData.email}`;
       container.appendChild(emailParagraph);
+
+      // Add a send a message button
+      if (data !== null && user.getUserId() !== data.id) {
+        const sendAMessageBtn = document.createElement('button');
+        sendAMessageBtn.id = 'sendAMessageBtn';
+        sendAMessageBtn.classList.add('select-button');
+        sendAMessageBtn.textContent = 'Send a Message';
+        sendAMessageBtn.addEventListener('click', async() => {
+          // Open the chat modal and start a chat with the user
+          chat.openChat();
+          chat.startChat(userData.username);
+        });
+
+        container.appendChild(sendAMessageBtn);
+      }
 
       return container;
     } catch (error) {

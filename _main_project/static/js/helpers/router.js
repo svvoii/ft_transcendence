@@ -66,4 +66,6 @@ const renderPage = async(view) => {
   app.appendChild(viewContent);
 
   await view.afterRender();
+
+  // user.printUserInfo();
 };

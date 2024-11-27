@@ -6,7 +6,7 @@ export default class extends AbstractModalView {
     this.setTitle("User Change Password Form");
   }
 
-  createDomElements() {
+  createDomElements(data=null) {
     // Create the container
     const container = document.createElement('div');
 
@@ -78,7 +78,6 @@ export default class extends AbstractModalView {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          // 'content-type': 'application/json',
           'x-csrftoken': this.getCookie('csrftoken')
         },
         body: formData

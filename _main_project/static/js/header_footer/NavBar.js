@@ -1,5 +1,5 @@
-// import Modal from '../forms/Modal.js';
-import { loginCheck, navigateTo } from '../helpers/helpers.js';
+import { navigateTo } from '../helpers/helpers.js';
+import { user } from '../index.js';
 
 export default class NavBar {
   constructor(appId, modalObj) {
@@ -94,10 +94,7 @@ export default class NavBar {
     });
 
     document.getElementById('logoutBtn').addEventListener('click', async(event) => {
-      await fetch('/logout/')
-        .catch(error => {
-          console.log(error);
-        });
+      await user.userLogout();
       navigateTo('/');
     });
   }
@@ -106,23 +103,22 @@ export default class NavBar {
     const login = document.getElementById("loginBtn");
     const register = document.getElementById("registerBtn");
     const logout = document.getElementById("logoutBtn");
-    const user = document.getElementById("userBtn");
+    const userInfo = document.getElementById("userBtn");
 
-    const userInfo = await loginCheck(true);
-    if (userInfo) {
+    if (user.getLoginStatus()) {
       const userPic = document.getElementById('userPic');
       const userName = document.getElementById('userName');
-      userPic.src = userInfo.profile_image_url;
-      userName.textContent = userInfo.username;
+      userPic.src = user.getProfileImageUrl();
+      userName.textContent = user.getUserName();
 
       login.style.display = "none";
       register.style.display = "none";
-      user.style.display = "flex";
+      userInfo.style.display = "flex";
       logout.style.display = "flex";
     } else {
       login.style.display = "flex";
       register.style.display = "flex";
-      user.style.display = "none";
+      userInfo.style.display = "none";
       logout.style.display = "none";
     }
   }
