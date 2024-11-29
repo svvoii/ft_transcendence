@@ -24,6 +24,7 @@ class ChatConsumer(WebsocketConsumer):
 
 		self.accept()
 
+
 	def disconnect(self, close_code):
 		async_to_sync(self.channel_layer.group_discard)(
 			self.room_name,
@@ -34,6 +35,7 @@ class ChatConsumer(WebsocketConsumer):
 		if self.user in self.room.users_online.all():
 			self.room.users_online.remove(self.user)
 			self.update_online_count()
+
 
 	def receive(self, text_data):
 		data = json.loads(text_data)
@@ -51,6 +53,7 @@ class ChatConsumer(WebsocketConsumer):
 			}
 		)
 
+
 	def chat_message(self, event):
 		message = event['message']
 		user = event['user']
@@ -60,6 +63,7 @@ class ChatConsumer(WebsocketConsumer):
 			'user': user,
 		}))
 
+
 	def update_online_count(self):
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_name,
@@ -68,6 +72,7 @@ class ChatConsumer(WebsocketConsumer):
 				'count': self.room.users_online.count(),
 			}
 		)
+
 
 	def online_count(self, event):
 		count = event['count']

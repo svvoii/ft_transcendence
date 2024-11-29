@@ -50,7 +50,6 @@ export default class extends AbstractModalView {
       }
 
       // Checks if the user is viewing their own profile
-      // if (data !== null && user.getUserId() !== data.id) {
       if (userData.is_self === false) {
 
         // Create the send a message button
@@ -115,7 +114,6 @@ export default class extends AbstractModalView {
         if (userData.is_blocked === false) {
           blockUserBtn.textContent = 'Block User';
           blockUserBtn.addEventListener('click', async() => {
-            console.log('Block User button clicked');
             const response = await fetch(`http://localhost:8000/user/${userData.id}/block/`, {
               method: 'POST',
               headers: {
@@ -129,13 +127,13 @@ export default class extends AbstractModalView {
             });
             if (response.status === 200) {
               blockUserBtn.textContent = 'Unblock User';
+              // on success, this call forces a refresh of the user view form which will update the event listener
               this.modal.showForm('userViewForm', {id: userData.id});
             }
           });
         } else {
           blockUserBtn.textContent = 'Unblock User';
           blockUserBtn.addEventListener('click', async() => {
-            console.log('Unblock User button clicked');
             const response = await fetch(`http://localhost:8000/user/${userData.id}/unblock/`, {
               method: 'POST',
               headers: {
@@ -146,6 +144,7 @@ export default class extends AbstractModalView {
             });
             if (response.status === 200) {
               blockUserBtn.textContent = 'Block User';
+              // on success, this call forces a refresh of the user view form which will update the event listener
               this.modal.showForm('userViewForm', {id: userData.id});
             }
           });

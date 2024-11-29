@@ -176,20 +176,20 @@ export default class Chat {
 
   //// CHAT CONNECTION AND SOCKET ////
 
-  async startChat(username, room_name=null) {
+  async startChat(username) {
     // init
     this.clearChat();
     await this.setChatTitle(username);
     try {
-      // Search for a chat with the user else, create a new chat if none exists
-      if (!room_name) {
-        room_name = await this.getUserChatroomByOtherUser(username);
-        if (!room_name) {
-          const response = await fetch(`http://localhost:8000/chat/chat/${username}`);
-          const data = await response.json();
-          room_name = data.room_name;
-        }
+      // Get the chatroom name
+      const response = await fetch(`http://localhost:8000/chat/chat/${username}`);
+      const data = await response.json();
+      console.log("Data:", data);
+      if (data.error) {
+        this.addChatMessage('system', data.error);
+        throw new Error(data.error);
       }
+      const room_name = data.room_name;
 
       const wsUrl = `ws://localhost:8000/ws/chatroom/${room_name}/`;
       this.socket = new WebSocket(wsUrl);
@@ -227,7 +227,7 @@ export default class Chat {
         this.addChatMessage('system', 'Error in chat connection');
       };
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
@@ -311,25 +311,6 @@ export default class Chat {
       return data;
     } catch (error) {
       console.error(error);
-    }
-  }
-
-  // Takes a username and returns the room_name if a chatroom exists with that user
-  async getUserChatroomByOtherUser(other_user) {
-    const chatroom_data = await this.getAllUserChatrooms();
-    other_user = other_user.trim().toLowerCase();
-
-    if (chatroom_data.length === 0) {
-      return null
-    } else {
-      for (const chatroom of chatroom_data) {
-        const member0 = chatroom.members[0].trim().toLowerCase();
-        const member1 = chatroom.members[1].trim().toLowerCase();
-        if (member0 === other_user || member1 === other_user) {
-          return chatroom.room_name;
-        }
-      };
-      return null;
     }
   }
 };
