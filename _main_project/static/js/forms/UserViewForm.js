@@ -170,6 +170,28 @@ export default class extends AbstractModalView {
         container.appendChild(blockUserBtn);
       }
 
+      if (userData.is_self) {
+        const friendRequestsHeading = document.createElement('h2');
+        friendRequestsHeading.textContent = 'Friend Requests';
+
+        // Create the ul element
+        const friendRequestsList = document.createElement('ul');
+
+        // Create the p elements for each friend request
+        const friend1 = document.createElement('p');
+        friend1.textContent = 'friend1';
+        const friend2 = document.createElement('p');
+        friend2.textContent = 'friend2';
+
+        // Append the p elements to the ul
+        friendRequestsList.appendChild(friend1);
+        friendRequestsList.appendChild(friend2);
+
+        // Append the h2 and ul to the container
+        container.appendChild(friendRequestsHeading);
+        container.appendChild(friendRequestsList);
+      }
+
       return container;
     } catch (error) {
       console.log(error);

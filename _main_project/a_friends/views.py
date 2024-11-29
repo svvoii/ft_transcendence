@@ -32,21 +32,20 @@ def api_send_friend_request_view(request, username):
 		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def friend_requests_view(request, *args, **kwargs):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_friend_requests_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
-	if user.is_authenticated:
-		user_id = kwargs.get('user_id')
-		account = Account.objects.get(pk=user_id)
-		if account == user:
-			friend_requests = FriendRequest.objects.filter(receiver=account, is_active=True)
-			context['friend_requests_count'] = friend_requests
-		else:
-			return HttpResponse("You can't view another user's friend requests.")
+	user_id = kwargs.get('user_id')
+	account = Account.objects.get(pk=user_id)
+	if account == user:
+		friend_requests = FriendRequest.objects.filter(receiver=account, is_active=True)
+		context['friend_requests_count'] = friend_requests
 	else:
-		redirect('login')		
-	return render(request, 'a_friends/friend_requests.html', context)
-	# return Response(friend_requests, status=status.HTTP_200_OK);
+		return Response({'error': 'You can\'t view another user\'s friend requests.'}, status=status.HTTP_403_FORBIDDEN)
+		# return HttpResponse("You can't view another user's friend requests.")
+	return Response(friend_requests, status=status.HTTP_200_OK);
 
 
 def cancel_friend_request_view(request):
