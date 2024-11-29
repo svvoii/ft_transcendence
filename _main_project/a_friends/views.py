@@ -13,6 +13,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from .serializers import FriendRequestSerializer
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -38,14 +40,16 @@ def api_friend_requests_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
 	user_id = kwargs.get('user_id')
-	account = Account.objects.get(pk=user_id)
+	# account = Account.objects.get(pk=user_id)
+	account = get_object_or_404(Account, pk=user_id)
 	if account == user:
 		friend_requests = FriendRequest.objects.filter(receiver=account, is_active=True)
-		context['friend_requests_count'] = friend_requests
+		serializer = FriendRequestSerializer(friend_requests, many=True)
+		# context['friend_requests_count'] = friend_requests
+		return Response(serializer.data, status=status.HTTP_200_OK);
 	else:
 		return Response({'error': 'You can\'t view another user\'s friend requests.'}, status=status.HTTP_403_FORBIDDEN)
 		# return HttpResponse("You can't view another user's friend requests.")
-	return Response(friend_requests, status=status.HTTP_200_OK);
 
 
 def cancel_friend_request_view(request):

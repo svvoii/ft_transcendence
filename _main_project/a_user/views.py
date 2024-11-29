@@ -11,6 +11,7 @@ from a_user.models import Account, BlockedUser
 from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
+from a_friends.serializers import FriendRequestSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -105,7 +106,6 @@ def api_profile_view(request, *args, **kwargs):
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		# return HttpResponse("User not found.");
 		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
 
 	if account:
@@ -172,7 +172,7 @@ def api_profile_view(request, *args, **kwargs):
 		context['is_friend'] = is_friend
 		context['BASE_URL'] = settings.BASE_URL
 		context['request_sent'] = request_sent
-		context['friend_request'] = friend_request
+		context['friend_request'] = FriendRequestSerializer(friend_request, many=True).data
 		context['is_blocked'] = is_blocked
 
 	return Response(context, status=status.HTTP_200_OK)
