@@ -116,33 +116,38 @@ export default class extends AbstractModalView {
           blockUserBtn.textContent = 'Block User';
           blockUserBtn.addEventListener('click', async() => {
             console.log('Block User button clicked');
-          //   const response = await fetch(`http://localhost:8000/block-user/`, {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //       'Authorization': `Token ${user.getToken()}`
-          //     },
-          //     body: JSON.stringify({
-          //       'blocked_user': userData.id
-          //     })
-          //   });
-          //   if (response.status === 201) {
-          //     blockUserBtn.textContent = 'Unblock User';
-          //   }
+            const response = await fetch(`http://localhost:8000/user/${userData.id}/block/`, {
+              method: 'POST',
+              headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+                'x-csrftoken': this.getCookie('csrftoken')
+              },
+              body: JSON.stringify({
+                'blocked_user': userData.id
+              })
+            });
+            if (response.status === 200) {
+              blockUserBtn.textContent = 'Unblock User';
+              this.modal.showForm('userViewForm', {id: userData.id});
+            }
           });
         } else {
           blockUserBtn.textContent = 'Unblock User';
           blockUserBtn.addEventListener('click', async() => {
             console.log('Unblock User button clicked');
-          //   const response = await fetch(`http://localhost:8000/block-user/${userData.id}/`, {
-          //     method: 'DELETE',
-          //     headers: {
-          //       'Authorization': `Token ${user.getToken()}`
-          //     }
-          //   });
-          //   if (response.status === 204) {
-          //     blockUserBtn.textContent = 'Block User';
-          //   }
+            const response = await fetch(`http://localhost:8000/user/${userData.id}/unblock/`, {
+              method: 'POST',
+              headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+                'x-csrftoken': this.getCookie('csrftoken')
+              }
+            });
+            if (response.status === 200) {
+              blockUserBtn.textContent = 'Block User';
+              this.modal.showForm('userViewForm', {id: userData.id});
+            }
           });
         }
 
@@ -156,5 +161,9 @@ export default class extends AbstractModalView {
       console.log(error);
       return document.createElement('div'); // Return an empty div in case of error
     }
+  }
+
+  afterRender() {
+
   }
 }
