@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib import messages
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from .models import ChatRoom, Message
 from .forms import ChatMessageCreateForm, NewGroupChatForm, ChatRoomEditForm
@@ -56,8 +57,8 @@ def chat_view(request, room_name='public-chat'):
 	return render(request, 'a_chat/chat.html', context)
 
 
-@login_required
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_get_or_create_chatroom(request, username):
 	if request.user.username == username:
 		return Response({'error': 'You cannot chat with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -67,7 +68,7 @@ def api_get_or_create_chatroom(request, username):
 	# Check if the user is blocked by any of the members of the chat room.
 	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
 		# messages.warning(request, 'You are blocked by this user and cannot send messages.')
-		return Response({'error': 'You are blocked by this user and cannot send messages.'}, status=status.HTTP_200_OK)
+		return Response({'error': 'You are blocked by this user and cannot send messages.'}, status=status.HTTP_403_FORBIDDEN)
 		# return redirect('a_user:profile', user_id=other_user.id)
 
 	my_chatrooms = request.user.chat_rooms.filter(is_private=True)
@@ -172,8 +173,8 @@ def chatroom_leave_view(request, room_name):
 	return render(request, 'a_chat/chatroom_leave.html', context)
 
 
-@login_required
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_get_user_chatrooms(request):
 	chatrooms = request.user.chat_rooms.all()
 	chatrooms_data = []
@@ -193,8 +194,8 @@ def api_get_user_chatrooms(request):
 	return Response(chatrooms_data, status=status.HTTP_200_OK)
 
 
-@login_required
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_get_last_50_chat_messages(request, room_name):
 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
 	chat_messages = chat_room.chat_messages.all().order_by('-created')[:50]

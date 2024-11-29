@@ -7,6 +7,11 @@ from a_friends.forms import SendFriendRequestForm, HandleFriendRequestForm, Remo
 from a_friends.models import FriendRequest, FriendList
 from a_user.models import Account, BlockedUser
 
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 
 def send_friend_request_view(request, username):
 
@@ -44,6 +49,7 @@ def friend_requests_view(request, *args, **kwargs):
 	else:
 		redirect('login')		
 	return render(request, 'a_friends/friend_requests.html', context)
+	# return Response(friend_requests, status=status.HTTP_200_OK);
 
 
 def cancel_friend_request_view(request):
@@ -134,12 +140,13 @@ def remove_friend_view(request):
 		return redirect('a_user:profile', user_id=user.id)
 
 
-def friend_list_view(request, *args, **kwargs):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_friend_list_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
-	if not user.is_authenticated:
-		messages.error(request, 'You must be authenticated to view your friend list')
-		return redirect('login')
+	# if not user.is_authenticated:
+	# 	return Response({'detail': 'Authentication credentials were not provided.'}, status=status.HTTP_403_FORBIDDEN)
 
 	user_id = kwargs.get('user_id')
 	if user_id:
@@ -147,19 +154,16 @@ def friend_list_view(request, *args, **kwargs):
 			this_user = Account.objects.get(pk=user_id)
 			context['this_user'] = this_user
 		except Account.DoesNotExist:
-			messages.error(request, 'User not found')
-			return redirect('home')
+			return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 		try:
 			friend_list = FriendList.objects.get(user=this_user)
 		except FriendList.DoesNotExist:
-			messages.error(request, 'Friend list not found')
-			return redirect('home')
+			return Response({'detail': 'Friend list not found'}, status=status.HTTP_404_NOT_FOUND)
 
 		# Must be friend to view friend list
 		if user != this_user:
 			if not user in friend_list.friends.all():
-				messages.error(request, 'You must be friends to view their friend list')
-				return redirect('home')
+				return Response({'detail': 'You must be friends to view their friend list'}, status=status.HTTP_403_FORBIDDEN)
 
 		# Get the friend list
 		friends = [] # List of friends [(account1, True), (account2, False), ...]
@@ -168,4 +172,4 @@ def friend_list_view(request, *args, **kwargs):
 			friends.append((friend, user_friend_list.is_mutual_friend(friend)))
 		context['friends'] = friends
 
-	return render(request, 'a_friends/friend_list.html', context)
+	return Response(friends, status=status.HTTP_200_OK)

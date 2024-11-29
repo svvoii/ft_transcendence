@@ -84,6 +84,10 @@ export default class extends AbstractModalView {
           addFriendBtn.classList.add('select-button');
           addFriendBtn.addEventListener('click', async() => {
             console.log('Add Friend button clicked');
+            const response = await fetch(`/friends/friend-list/${userData.id}`);
+            const data = await response.json();
+
+            console.log(data);
           //   const response = await fetch(`http://localhost:8000/friend-request/`, {
           //     method: 'POST',
           //     headers: {
