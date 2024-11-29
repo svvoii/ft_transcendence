@@ -317,23 +317,18 @@ export default class Chat {
   // Takes a username and returns the room_name if a chatroom exists with that user
   async getUserChatroomByOtherUser(other_user) {
     const chatroom_data = await this.getAllUserChatrooms();
-    console.log(chatroom_data);
     other_user = other_user.trim().toLowerCase();
+
     if (chatroom_data.length === 0) {
-      console.log('No chatrooms found returning null');
       return null
     } else {
-      chatroom_data.forEach(chatroom => {
+      for (const chatroom of chatroom_data) {
         const member0 = chatroom.members[0].trim().toLowerCase();
         const member1 = chatroom.members[1].trim().toLowerCase();
-
-        console.log("comparing members", member0, " and ", member1, " with ", other_user);
         if (member0 === other_user || member1 === other_user) {
-          console.error(`Matching chatroom found returning room_name: ${chatroom.room_name}`);
           return chatroom.room_name;
         }
-      });
-      console.error(`No matching chatroom found returning null. user: ${other_user}`);
+      };
       return null;
     }
   }
