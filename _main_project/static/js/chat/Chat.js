@@ -13,6 +13,8 @@ export default class Chat {
     this.chat.style.transform = 'translate(50%, 50%)';
   }
 
+  //// INITIAL RENDERING ////
+
   closedChatBox() {
     const closedChatBox = document.createElement('div');
     closedChatBox.classList.add('chat-box-closed');
@@ -128,24 +130,7 @@ export default class Chat {
     });
   }
 
-  addChatMessage(sender, message) {
-    const messageContainer = this.chat.querySelector('.chat-messages');
-    const messageElement = document.createElement('div');
-
-    if (sender === 'You') {
-      messageElement.classList.add('chat-message-you');
-    } else if (sender === 'system') {
-      messageElement.classList.add('chat-message-system');
-    } else {
-      messageElement.classList.add('chat-message-other')
-    }
-
-    messageElement.textContent = message;
-    messageContainer.appendChild(messageElement);
-
-    // Scroll to the bottom of the messages container
-    messageContainer.scrollTop = messageContainer.scrollHeight;
-  }
+  //// VISUAL CHAT BOX FUNCTIONS ////
 
   showChatIfLoggedIn() {
     if (user.getLoginStatus()) {
@@ -153,6 +138,24 @@ export default class Chat {
     } else {
       this.chat.style.display = 'none';
     }
+  }
+
+  async setChatTitle(title) {
+    document.querySelector('.chat-invite-button').style.display = 'block';
+    document.querySelector('.chat-title').textContent = `${title}`;
+
+    const titleClick = async() => {
+      const response = await fetch(`/search/?q=${encodeURIComponent(title)}`);
+      if (response.ok) {
+        const data = await response.json();
+        modal.showForm('userViewForm', data.accounts[0][0]);
+      } else {
+        console.error('Search request failed');
+      }
+    };
+
+    document.querySelector('.chat-title').addEventListener('click', titleClick);
+    this.chatTitleClickHandler = titleClick;
   }
 
   openChat() {
@@ -171,28 +174,28 @@ export default class Chat {
     this.app.querySelector('.chat').style.bottom = 'calc(var(--footer-height) / 2)';
   }
 
+  //// CHAT CONNECTION AND SOCKET ////
+
   async startChat(username, room_name=null) {
     // init
     this.clearChat();
     await this.setChatTitle(username);
     try {
-      let room_to_open = room_name;
-
-      // Create a chatroom
+      // Search for a chat with the user else, create a new chat if none exists
       if (!room_name) {
-        const response = await fetch(`http://localhost:8000/chat/chat/${username}`)
-        if (!response.ok) {
-          throw new Error('Failed to create chatroom');
+        room_name = await this.getUserChatroomByOtherUser(username);
+        if (!room_name) {
+          const response = await fetch(`http://localhost:8000/chat/chat/${username}`);
+          const data = await response.json();
+          room_name = data.room_name;
         }
-        const data = await response.json();
-        room_to_open = data.room_name;
       }
 
-      const wsUrl = `ws://localhost:8000/ws/chatroom/${room_to_open}/`;
+      const wsUrl = `ws://localhost:8000/ws/chatroom/${room_name}/`;
       this.socket = new WebSocket(wsUrl);
 
       // Get the chatroom history
-      await this.getMessageHistory(room_to_open);
+      await this.getMessageHistory(room_name);
 
       // Handle WebSocket events
       this.socket.onopen = () => {
@@ -228,14 +231,7 @@ export default class Chat {
     }
   }
 
-  sendMessage(message) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify({ message: message }));
-      this.addChatMessage('You', message);
-    } else {
-      // console.error('WebSocket is not open');
-    }
-  }
+  //// CLEANUP ////
 
   clearChat() {
     this.chat.querySelector('.chat-messages').innerHTML = '';
@@ -251,45 +247,94 @@ export default class Chat {
     }
   }
 
-  async setChatTitle(title) {
-    document.querySelector('.chat-invite-button').style.display = 'block';
-    document.querySelector('.chat-title').textContent = `${title}`;
+  //// MESSAGES AND HISTORY ////
+  
+  addChatMessage(sender, message) {
+    const messageContainer = this.chat.querySelector('.chat-messages');
+    const messageElement = document.createElement('div');
 
-    const titleClick = async() => {
-      console.log("im an event listener");
-      const response = await fetch(`/search/?q=${encodeURIComponent(title)}`);
-      if (response.ok) {
-        const data = await response.json();
-        modal.showForm('userViewForm', data.accounts[0][0]);
-      } else {
-        console.error('Search request failed');
-      }
-    };
+    if (sender === 'You') {
+      messageElement.classList.add('chat-message-you');
+    } else if (sender === 'system') {
+      messageElement.classList.add('chat-message-system');
+    } else {
+      messageElement.classList.add('chat-message-other')
+    }
 
-    document.querySelector('.chat-title').addEventListener('click', titleClick);
-    this.chatTitleClickHandler = titleClick;
+    messageElement.textContent = message;
+    messageContainer.appendChild(messageElement);
+
+    // Scroll to the bottom of the messages container
+    messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
-  async getMessageHistory(room_to_open) {
+  sendMessage(message) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ message: message }));
+      this.addChatMessage('You', message);
+    } else {
+      // console.error('WebSocket is not open');
+    }
+  }
+
+  async getMessageHistory(room_name) {
     try {
-      const response = await fetch(`/chat/chat/${room_to_open}/messages`);
+      const response = await fetch(`/chat/chat/${room_name}/messages`);
 
       const data = await response.json();
 
-      // console.log(data);
-
-      data.forEach(message => {
-        if (message.author === user.getUserName()) {
-          this.addChatMessage('You', message.content);
-        } else {
-          this.addChatMessage(message.author, message.content);
-        }
-      });
-
-      this.addChatMessage('system', `End of chat history`);
+      if (data.length > 0) {
+        data.forEach(message => {
+          if (message.author === user.getUserName()) {
+            this.addChatMessage('You', message.content);
+          } else {
+            this.addChatMessage(message.author, message.content);
+          }
+        });
+        this.addChatMessage('system', `End of chat history`);
+      } else {
+        this.addChatMessage('system', `No chat history yet`);
+      }
 
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  //// CHATROOMS ////
+
+  // Returns an array of chatroom objects
+  async getAllUserChatrooms() {
+    try {
+      const response = await fetch('/chat/chat/get_chatrooms/');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // Takes a username and returns the room_name if a chatroom exists with that user
+  async getUserChatroomByOtherUser(other_user) {
+    const chatroom_data = await this.getAllUserChatrooms();
+    console.log(chatroom_data);
+    other_user = other_user.trim().toLowerCase();
+    if (chatroom_data.length === 0) {
+      console.log('No chatrooms found returning null');
+      return null
+    } else {
+      chatroom_data.forEach(chatroom => {
+        const member0 = chatroom.members[0].trim().toLowerCase();
+        const member1 = chatroom.members[1].trim().toLowerCase();
+
+        console.log("comparing members", member0, " and ", member1, " with ", other_user);
+        if (member0 === other_user || member1 === other_user) {
+          console.error(`Matching chatroom found returning room_name: ${chatroom.room_name}`);
+          return chatroom.room_name;
+        }
+      });
+      console.error(`No matching chatroom found returning null. user: ${other_user}`);
+      return null;
     }
   }
 };
