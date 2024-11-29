@@ -65,6 +65,21 @@
   cursor: pointer;
 }
 
+/* The Back Button */
+.back {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.back:hover,
+.back:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
 /* The Close Button */
 .close {
   color: var(--primary-color);
@@ -79,19 +94,8 @@
   cursor: pointer;
 }
 
-/* The Back Button */
-.back {
-  color: var(--primary-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  padding-right: 10px;
-}
-
-.back:hover,
-.back:focus {
-  color: var(--secondary-color);
-  cursor: pointer;
+.checkbox {
+  margin: 0.5rem;
 }
 
 .message {
@@ -109,11 +113,24 @@
   margin: 0 auto;
 }
 
-.checkbox {
-  margin: 0.5rem;
+.username-div {
+  display: flex;
+  align-items: center;
 }
 
 /* Search Results / Search User Form */
+.friend-badge {
+  color: var(--success-color);
+  margin-left: 0.5rem;
+}
+
+.profile-image-search {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
 .search-results {
   color: var(--primary-color);
   /* display: flex; */
@@ -126,12 +143,5 @@
 }
 
 .username-search {
-  margin-right: 0.5rem;
-}
-
-.profile-image-search {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
   margin-right: 0.5rem;
 }

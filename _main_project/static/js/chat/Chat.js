@@ -184,7 +184,7 @@ export default class Chat {
       // Get the chatroom name
       const response = await fetch(`http://localhost:8000/chat/chat/${username}`);
       const data = await response.json();
-      console.log("Data:", data);
+      // console.log("Data:", data);
       if (data.error) {
         this.addChatMessage('system', data.error);
         throw new Error(data.error);

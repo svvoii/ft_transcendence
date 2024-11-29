@@ -38,9 +38,22 @@ export default class extends AbstractModalView {
       container.appendChild(img);
 
       // Create the username heading
+
+      const usernameDiv = document.createElement('div');
+      usernameDiv.classList.add('username-div');
+
       const usernameHeading = document.createElement('h3');
       usernameHeading.textContent = `Username: ${userData.username}`;
-      container.appendChild(usernameHeading);
+      usernameDiv.appendChild(usernameHeading);
+
+      if (!userData.is_self && userData.is_friend) {
+        const friendBadge = document.createElement('span');
+        friendBadge.textContent = ' (Friend)';
+        friendBadge.classList.add('friend-badge');
+        usernameDiv.appendChild(friendBadge);
+      }
+
+      container.appendChild(usernameDiv);
 
       // Create the email paragraph
       if (userData.hide_email === false) {

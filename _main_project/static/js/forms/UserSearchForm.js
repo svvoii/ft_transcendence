@@ -102,12 +102,12 @@ export default class extends AbstractModalView {
           this.modal.showForm('userViewForm', account);
         });
 
-        // if (isFriend) {
-        //   const friendBadge = document.createElement('span');
-        //   friendBadge.textContent = ' (Friend)';
-        //   friendBadge.classList.add('friend-badge');
-        //   resultElement.appendChild(friendBadge);
-        // }
+        if (isFriend) {
+          const friendBadge = document.createElement('span');
+          friendBadge.textContent = ' (Friend)';
+          friendBadge.classList.add('friend-badge');
+          resultElement.appendChild(friendBadge);
+        }
 
         results.appendChild(resultElement);
       });
