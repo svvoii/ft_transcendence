@@ -5,6 +5,8 @@ import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
+import TournamentSetup from "../views/TournamentSetup.js";
+import TournamentLobby from "../views/TournamentLobby.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
@@ -15,6 +17,8 @@ export const router = async () => {
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
+    { path: '/tournament_setup/', view: TournamentSetup },
+    { path: '/tournament_lobby/', view: TournamentLobby },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },
