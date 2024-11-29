@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { gameBoard } from "../index.js";
+import { navigateTo } from "../helpers/helpers.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -32,10 +33,24 @@ export default class extends AbstractView {
     remote_button.type = 'select';
     remote_button.textContent = 'Play VS Another Player';
 
+    // Create the button
+    const create_tournament_button = document.createElement('button');
+    create_tournament_button.id = 'createTournamentBtn';
+    create_tournament_button.type = 'select';
+    create_tournament_button.textContent = 'Create Tournament';
+
+    // Create the button
+    const join_tournament_button = document.createElement('button');
+    join_tournament_button.id = 'joinTournamentBtn';
+    join_tournament_button.type = 'select';
+    join_tournament_button.textContent = 'Join Tournament';
+
     // Append the paragraph to the container
     container.appendChild(paragraph);
     container.appendChild(ai_button);
     container.appendChild(remote_button);
+    container.appendChild(create_tournament_button);
+    container.appendChild(join_tournament_button);
 
     return container;
   }
@@ -53,6 +68,18 @@ export default class extends AbstractView {
       // load in Remote game on the backend.
       gameModal.style.display = "flex";
       gameBoard.startRemotegame();
+    });
+
+    document.getElementById('createTournamentBtn').addEventListener('click', () => {
+      // load in Remote game on the backend.
+      console.log('Create Tournament');
+      navigateTo('/tournament_setup/');
+    });
+
+    document.getElementById('joinTournamentBtn').addEventListener('click', () => {
+      // load in Remote game on the backend.
+      console.log('Join Tournament');
+      navigateTo('/tournament_lobby/');
     });
   }
 }
