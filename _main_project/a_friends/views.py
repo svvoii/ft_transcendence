@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
 
 from a_friends.forms import SendFriendRequestForm, HandleFriendRequestForm, RemoveFriendForm
 from a_friends.models import FriendRequest, FriendList
@@ -13,26 +14,22 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
-def send_friend_request_view(request, username):
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_send_friend_request_view(request, username):
 	# Check if the user is blocked by any of the members of the chat room.
-	other_user = Account.objects.get(username=username)
+	# other_user = Account.objects.get(username=username)
+	other_user = get_object_or_404(Account, username=username)
 	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
-		messages.warning(request, 'You are blocked by this user and cannot send friend request (sad face)')
-		return redirect('a_user:profile', user_id=other_user.id)
+		return Response({'error': 'You are blocked by this user and cannot send friend request'}, status=status.HTTP_403_FORBIDDEN)
 
-	if request.method == 'POST':
-		form = SendFriendRequestForm(request.POST)
-		if form.is_valid():
-			receiver = form.cleaned_data.get('receiver_id')
-			FriendRequest.objects.create(sender=request.user, receiver=receiver)
-			messages.success(request, f'Friend request sent to {receiver.username}')
-			return redirect('a_user:profile', user_id=receiver.id)
-		else:
-			return HttpResponse('Invalid form data')
+	form = SendFriendRequestForm(request.POST)
+	if form.is_valid():
+		receiver = form.cleaned_data.get('receiver_id')
+		FriendRequest.objects.create(sender=request.user, receiver=receiver)
+		return Response({'success': 'Friend request sent'}, status=status.HTTP_200_OK)
 	else:
-		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('a_user:profile', user_id=request.user.id)
+		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def friend_requests_view(request, *args, **kwargs):
@@ -154,16 +151,16 @@ def api_friend_list_view(request, *args, **kwargs):
 			this_user = Account.objects.get(pk=user_id)
 			context['this_user'] = this_user
 		except Account.DoesNotExist:
-			return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+			return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 		try:
 			friend_list = FriendList.objects.get(user=this_user)
 		except FriendList.DoesNotExist:
-			return Response({'detail': 'Friend list not found'}, status=status.HTTP_404_NOT_FOUND)
+			return Response({'error': 'Friend list not found'}, status=status.HTTP_404_NOT_FOUND)
 
 		# Must be friend to view friend list
 		if user != this_user:
 			if not user in friend_list.friends.all():
-				return Response({'detail': 'You must be friends to view their friend list'}, status=status.HTTP_403_FORBIDDEN)
+				return Response({'error': 'You must be friends to view their friend list'}, status=status.HTTP_403_FORBIDDEN)
 
 		# Get the friend list
 		friends = [] # List of friends [(account1, True), (account2, False), ...]

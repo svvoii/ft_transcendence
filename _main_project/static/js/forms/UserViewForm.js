@@ -84,25 +84,23 @@ export default class extends AbstractModalView {
           addFriendBtn.classList.add('select-button');
           addFriendBtn.addEventListener('click', async() => {
             console.log('Add Friend button clicked');
-            const response = await fetch(`/friends/friend-list/${userData.id}`);
-            const data = await response.json();
 
-            console.log(data);
-          //   const response = await fetch(`http://localhost:8000/friend-request/`, {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //       'Authorization': `Token ${user.getToken()}`
-          //     },
-          //     body: JSON.stringify({
-          //       'to_user': userData.id
-          //     })
-          //   });
-          //   const responseData = await response.json();
-          //   if (response.status === 201) {
-          //     addFriendBtn.textContent = 'Friend Request Sent';
-          //     addFriendBtn.disabled = true;
-          //   }
+            const formData = new FormData();
+            formData.append('receiver_id', userData.id);
+
+            const response = await fetch(`/friends/send-friend-request/${userData.username}/`, {
+              method: 'POST',
+              headers: {
+                'x-csrftoken': this.getCookie('csrftoken')
+              },
+              body: formData
+              });
+            const data = await response.json();
+            // print the response to the console if there is an error
+            if (response.status === 200) {
+              addFriendBtn.textContent = 'Friend Request Sent';
+              addFriendBtn.disabled = true;
+            }
           });
         } else if (userData.is_friend === false && userData.request_sent > 0) {
           addFriendBtn.textContent = 'Friend Request Sent';
