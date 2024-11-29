@@ -43,12 +43,17 @@ export default class extends AbstractModalView {
       container.appendChild(usernameHeading);
 
       // Create the email paragraph
-      const emailParagraph = document.createElement('p');
-      emailParagraph.textContent = `Email: ${userData.email}`;
-      container.appendChild(emailParagraph);
+      if (userData.hide_email === false) {
+        const emailParagraph = document.createElement('p');
+        emailParagraph.textContent = `Email: ${userData.email}`;
+        container.appendChild(emailParagraph);
+      }
 
-      // Add a send a message button
-      if (data !== null && user.getUserId() !== data.id) {
+      // Checks if the user is viewing their own profile
+      // if (data !== null && user.getUserId() !== data.id) {
+      if (userData.is_self === false) {
+
+        // Create the send a message button
         const sendAMessageBtn = document.createElement('button');
         sendAMessageBtn.id = 'sendAMessageBtn';
         sendAMessageBtn.classList.add('select-button');
@@ -59,7 +64,91 @@ export default class extends AbstractModalView {
           await chat.startChat(userData.username);
         });
 
+        // Create the add friend button
+        const addFriendBtn = document.createElement('button');
+        addFriendBtn.id = 'addFriendBtn';
+        if (userData.is_friend === false && userData.request_sent === 0) {
+          addFriendBtn.textContent = 'Add Friend';
+          addFriendBtn.classList.add('select-button');
+          addFriendBtn.addEventListener('click', async() => {
+            console.log('Add Friend button clicked');
+          //   const response = await fetch(`http://localhost:8000/friend-request/`, {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //       'Authorization': `Token ${user.getToken()}`
+          //     },
+          //     body: JSON.stringify({
+          //       'to_user': userData.id
+          //     })
+          //   });
+          //   const responseData = await response.json();
+          //   if (response.status === 201) {
+          //     addFriendBtn.textContent = 'Friend Request Sent';
+          //     addFriendBtn.disabled = true;
+          //   }
+          });
+        } else if (userData.is_friend === false && userData.request_sent > 0) {
+          addFriendBtn.textContent = 'Friend Request Sent';
+          addFriendBtn.disabled = true;
+        } else if (userData.is_friend === true) {
+          addFriendBtn.textContent = 'Unfriend';
+          addFriendBtn.addEventListener('click', async() => {
+            console.log('Unfriend button clicked');
+          //   const response = await fetch(`http://localhost:8000/friend-request/${userData.id}/`, {
+          //     method: 'DELETE',
+          //     headers: {
+          //       'Authorization': `Token ${user.getToken()}`
+          //     }
+          //   });
+          //   if (response.status === 204) {
+          //     addFriendBtn.textContent = 'Add Friend';
+          //     addFriendBtn.disabled = false;
+          //   }
+          });
+        }
+
+        // Create the block user button
+        const blockUserBtn = document.createElement('button');
+        blockUserBtn.id = 'blockUserBtn';
+        blockUserBtn.classList.add('select-button');
+        if (userData.is_blocked === false) {
+          blockUserBtn.textContent = 'Block User';
+          blockUserBtn.addEventListener('click', async() => {
+            console.log('Block User button clicked');
+          //   const response = await fetch(`http://localhost:8000/block-user/`, {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //       'Authorization': `Token ${user.getToken()}`
+          //     },
+          //     body: JSON.stringify({
+          //       'blocked_user': userData.id
+          //     })
+          //   });
+          //   if (response.status === 201) {
+          //     blockUserBtn.textContent = 'Unblock User';
+          //   }
+          });
+        } else {
+          blockUserBtn.textContent = 'Unblock User';
+          blockUserBtn.addEventListener('click', async() => {
+            console.log('Unblock User button clicked');
+          //   const response = await fetch(`http://localhost:8000/block-user/${userData.id}/`, {
+          //     method: 'DELETE',
+          //     headers: {
+          //       'Authorization': `Token ${user.getToken()}`
+          //     }
+          //   });
+          //   if (response.status === 204) {
+          //     blockUserBtn.textContent = 'Block User';
+          //   }
+          });
+        }
+
         container.appendChild(sendAMessageBtn);
+        container.appendChild(addFriendBtn);
+        container.appendChild(blockUserBtn);
       }
 
       return container;
