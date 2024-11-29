@@ -56,6 +56,7 @@ export default class extends AbstractModalView {
         sendAMessageBtn.addEventListener('click', async() => {
           // Open the chat modal and start a chat with the user
           chat.openChat();
+          // Need to search for an existing chatroom with the user first
           chat.startChat(userData.username);
         });
 
