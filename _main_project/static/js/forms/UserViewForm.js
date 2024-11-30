@@ -186,7 +186,6 @@ export default class extends AbstractModalView {
   }
 
   async getFriendRequests(container, userData) {
-
     // Create a list like the search list for displaying friend requests
     // might also consider moving userData.is_self to a function
     // and moving !userData.is_self to a different function to make it more readable
@@ -219,28 +218,32 @@ export default class extends AbstractModalView {
         const acceptButton = document.createElement('button');
         acceptButton.textContent = 'Accept';
         acceptButton.classList.add('accept-button');
-        // acceptButton.addEventListener('click', async() => {
-        //   console.log('Accept button clicked');
-        //   const response = await fetch(`http://localhost:8000/friend-request/${request.id}/accept/`, {
-        //     method: 'POST',
-        //     headers: {
-        //       'accept': 'application/json',
-        //       'Content-Type': 'application/json',
-        //       'x-csrftoken': this.getCookie('csrftoken')
-        //     }
-        //   });
-        //   if (response.status === 200) {
-        //     // on success, this call forces a refresh of the user view form which will update the event listener
-        //     this.modal.showForm('userViewForm', {id: userData.id});
-        //   }
-        // });
+        acceptButton.addEventListener('click', async() => {
+          console.log('Accept button clicked');
+
+          const formData = new FormData();
+          formData.append('friend_request_id', request.id);
+
+          const response = await fetch(`http://localhost:8000/friends/accept-friend-request/`, {
+            method: 'POST',
+            headers: {
+              'x-csrftoken': this.getCookie('csrftoken')
+            },
+            body: formData
+          });
+          if (response.status === 200) {
+            // on success, this call forces a refresh of the user view form which will update the event listener
+            // this.modal.showForm('userViewForm');
+          }
+        });
         requestElement.appendChild(acceptButton);
 
         const rejectButton = document.createElement('button');
         rejectButton.textContent = 'Reject';
         rejectButton.classList.add('reject-button');
-        // rejectButton.addEventListener('click', async() => {
-        // }
+        rejectButton.addEventListener('click', async() => {
+          console.log('Reject button clicked');
+        });
         requestElement.appendChild(rejectButton);
 
         friendRequestsHeading.appendChild(requestElement);

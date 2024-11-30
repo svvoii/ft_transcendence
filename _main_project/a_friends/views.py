@@ -16,11 +16,9 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import FriendRequestSerializer
 
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_send_friend_request_view(request, username):
-	# Check if the user is blocked by any of the members of the chat room.
-	# other_user = Account.objects.get(username=username)
 	other_user = get_object_or_404(Account, username=username)
 	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
 		return Response({'error': 'You are blocked by this user and cannot send friend request'}, status=status.HTTP_403_FORBIDDEN)
@@ -37,19 +35,15 @@ def api_send_friend_request_view(request, username):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_friend_requests_view(request, *args, **kwargs):
-	context = {}
 	user = request.user
 	user_id = kwargs.get('user_id')
-	# account = Account.objects.get(pk=user_id)
 	account = get_object_or_404(Account, pk=user_id)
 	if account == user:
 		friend_requests = FriendRequest.objects.filter(receiver=account, is_active=True)
 		serializer = FriendRequestSerializer(friend_requests, many=True)
-		# context['friend_requests_count'] = friend_requests
 		return Response(serializer.data, status=status.HTTP_200_OK);
 	else:
 		return Response({'error': 'You can\'t view another user\'s friend requests.'}, status=status.HTTP_403_FORBIDDEN)
-		# return HttpResponse("You can't view another user's friend requests.")
 
 
 def cancel_friend_request_view(request):
@@ -71,19 +65,16 @@ def cancel_friend_request_view(request):
 		return redirect('a_user:profile', user_id=request.user.id)
 
 
-def accept_friend_request_view(request):
-	if request.method == 'POST':
-		form = HandleFriendRequestForm(request.POST)
-		if form.is_valid():
-			friend_request_id = form.cleaned_data.get('friend_request_id')
-			friend_request_id.accept()
-			messages.success(request, f'You are now friends with {friend_request_id.sender.username}')
-			return redirect('a_user:profile', user_id=request.user.id)
-		else:
-			return HttpResponse('Invalid form data.. (Debug: accept_friend_request_view)')
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_accept_friend_request_view(request):
+	form = HandleFriendRequestForm(request.POST)
+	if form.is_valid():
+		friend_request_id = form.cleaned_data.get('friend_request_id')
+		friend_request_id.accept()
+		return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
 	else:
-		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('a_user:profile', user_id=request.user.id)
+		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def decline_friend_request_view(request):
@@ -145,9 +136,6 @@ def remove_friend_view(request):
 def api_friend_list_view(request, *args, **kwargs):
 	context = {}
 	user = request.user
-	# if not user.is_authenticated:
-	# 	return Response({'detail': 'Authentication credentials were not provided.'}, status=status.HTTP_403_FORBIDDEN)
-
 	user_id = kwargs.get('user_id')
 	if user_id:
 		try:

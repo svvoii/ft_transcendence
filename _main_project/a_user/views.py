@@ -98,6 +98,7 @@ def det_redirect_if_exists(request):
 			redirect = str(request.GET.get('next'))
 	return redirect
 
+
 @api_view(['GET'])
 def api_profile_view(request, *args, **kwargs):
 	context = {}
@@ -108,12 +109,15 @@ def api_profile_view(request, *args, **kwargs):
 	except Account.DoesNotExist:
 		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
 
+# FriendRequestSerializer(friend_request, many=True).data
+
 	if account:
-		context['id'] = account.id
-		context['email'] = account.email
-		context['username'] = account.username
-		context['profile_image'] = account.profile_image.url if account.profile_image else None
-		context['hide_email'] = account.hide_email
+		account_data = AccountSerializer(account).data
+		context['id'] = account_data['id']
+		context['email'] = account_data['email']
+		context['username'] = account_data['username']
+		context['profile_image'] = account_data['profile_image'] if account.profile_image else None
+		context['hide_email'] = account_data['hide_email']
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
 		try:
@@ -122,7 +126,7 @@ def api_profile_view(request, *args, **kwargs):
 			friend_list = FriendList(user=account)
 			friend_list.save()
 		friends = friend_list.friends.all()
-		context['friends'] = friends
+		context['friends'] = [AccountSerializer(friend).data for friend in friends]
 
 		is_self = True
 		is_friend = False
