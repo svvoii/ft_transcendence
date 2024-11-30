@@ -221,8 +221,6 @@ export default class extends AbstractModalView {
         acceptButton.textContent = 'Accept';
         acceptButton.classList.add('accept-button');
         acceptButton.addEventListener('click', async() => {
-          console.log('Accept button clicked');
-
           const formData = new FormData();
           formData.append('friend_request_id', request.id);
 
@@ -245,6 +243,20 @@ export default class extends AbstractModalView {
         rejectButton.classList.add('reject-button');
         rejectButton.addEventListener('click', async() => {
           console.log('Reject button clicked');
+          const formData = new FormData();
+          formData.append('friend_request_id', request.id);
+
+          const response = await fetch(`http://localhost:8000/friends/decline-friend-request/`, {
+            method: 'POST',
+            headers: {
+              'x-csrftoken': this.getCookie('csrftoken')
+            },
+            body: formData
+          });
+          if (response.status === 200) {
+            // on success, this call forces a refresh of the user view form which will update the event listener
+            this.modal.showForm('userViewForm');
+          }
         });
         requestElement.appendChild(rejectButton);
 

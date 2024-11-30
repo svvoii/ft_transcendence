@@ -77,25 +77,16 @@ def api_accept_friend_request_view(request):
 		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def decline_friend_request_view(request):
-	user = request.user
-	if not user.is_authenticated:
-		messages.error(request, 'You must be authenticated to decline a friend request')
-		return redirect('login')
-
-	if request.method == 'POST':
-		form = HandleFriendRequestForm(request.POST)
-		if form.is_valid():
-			friend_request_id = form.cleaned_data.get('friend_request_id')
-			friend_request_id.decline()
-			messages.success(request, f'Friend request declined')
-			# return redirect('account:profile', user_id=friend_request_id.sender.id) # Redirect to the profile of the user who sent the request
-			return redirect('a_user:profile', user_id=request.user.id) # Redirect to the user's profile
-		else:
-			return HttpResponse('Invalid form data.. (Debug: decline_friend_request_view)')
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_decline_friend_request_view(request):
+	form = HandleFriendRequestForm(request.POST)
+	if form.is_valid():
+		friend_request_id = form.cleaned_data.get('friend_request_id')
+		friend_request_id.decline()
+		return Response({'success': 'Friend request declined'}, status=status.HTTP_200_OK)
 	else:
-		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('a_user:profile', user_id=request.user.id)
+		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def remove_friend_view(request):
