@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import FriendRequestSerializer
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def api_send_friend_request_view(request, username):
 	# Check if the user is blocked by any of the members of the chat room.

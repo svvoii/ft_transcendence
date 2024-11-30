@@ -171,25 +171,7 @@ export default class extends AbstractModalView {
       }
 
       if (userData.is_self) {
-        const friendRequestsHeading = document.createElement('h2');
-        friendRequestsHeading.textContent = 'Friend Requests';
-
-        // Create the ul element
-        const friendRequestsList = document.createElement('ul');
-
-        // Create the p elements for each friend request
-        const friend1 = document.createElement('p');
-        friend1.textContent = 'friend1';
-        const friend2 = document.createElement('p');
-        friend2.textContent = 'friend2';
-
-        // Append the p elements to the ul
-        friendRequestsList.appendChild(friend1);
-        friendRequestsList.appendChild(friend2);
-
-        // Append the h2 and ul to the container
-        container.appendChild(friendRequestsHeading);
-        container.appendChild(friendRequestsList);
+        this.getFriendRequests(container, userData);
       }
 
       return container;
@@ -201,5 +183,70 @@ export default class extends AbstractModalView {
 
   afterRender() {
 
+  }
+
+  async getFriendRequests(container, userData) {
+
+    // Create a list like the search list for displaying friend requests
+    // might also consider moving userData.is_self to a function
+    // and moving !userData.is_self to a different function to make it more readable
+    const friend_requests = userData.friend_request;
+
+    if (friend_requests.length > 0) {
+      const friendRequestsHeading = document.createElement('h2');
+      friendRequestsHeading.textContent = 'Friend Requests';
+
+      for (const request of friend_requests) {
+        const response = await fetch(`http://localhost:8000/user/${request.sender}/`);
+
+        const senderAccount = await response.json();
+
+        console.log(senderAccount);
+
+        const requestElement = document.createElement('div');
+        requestElement.classList.add('search-result');
+
+        const profImgElement = document.createElement('img');
+        profImgElement.classList.add('profile-image-search');
+        profImgElement.src = senderAccount.profile_image;
+        requestElement.appendChild(profImgElement);
+
+        const usernameElement = document.createElement('span');
+        usernameElement.classList.add('username-search');
+        usernameElement.textContent = senderAccount.username;
+        requestElement.appendChild(usernameElement);
+
+        const acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Accept';
+        acceptButton.classList.add('accept-button');
+        // acceptButton.addEventListener('click', async() => {
+        //   console.log('Accept button clicked');
+        //   const response = await fetch(`http://localhost:8000/friend-request/${request.id}/accept/`, {
+        //     method: 'POST',
+        //     headers: {
+        //       'accept': 'application/json',
+        //       'Content-Type': 'application/json',
+        //       'x-csrftoken': this.getCookie('csrftoken')
+        //     }
+        //   });
+        //   if (response.status === 200) {
+        //     // on success, this call forces a refresh of the user view form which will update the event listener
+        //     this.modal.showForm('userViewForm', {id: userData.id});
+        //   }
+        // });
+        requestElement.appendChild(acceptButton);
+
+        const rejectButton = document.createElement('button');
+        rejectButton.textContent = 'Reject';
+        rejectButton.classList.add('reject-button');
+        // rejectButton.addEventListener('click', async() => {
+        // }
+        requestElement.appendChild(rejectButton);
+
+        friendRequestsHeading.appendChild(requestElement);
+      }
+
+      container.appendChild(friendRequestsHeading);
+    }
   }
 }

@@ -1,4 +1,63 @@
-/* The Modal (background) */
+.accept-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--dark-color);
+  font-weight: 700;
+  border: 2px solid var(--dark-color);
+  background: var(--success-color);
+}
+
+.accept-button:hover {
+  cursor: pointer;
+  border: 2px solid var(--success-color);
+  box-shadow: 0 0 0.5rem var(--success-color);
+}
+
+.back {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.back:hover,
+.back:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.checkbox {
+  margin: 0.5rem;
+}
+
+.close {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.friend-badge {
+  color: var(--success-color);
+  margin-left: 0.5rem;
+}
+
+.message {
+  display: flex;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 0.5rem;
+  color: var(--failure-color);
+}
+
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -10,12 +69,6 @@
   background-color: rgba(32, 60, 102, 0.829); /*  background  */
 }
 
-/* modal title */
-.modal-title {
-  margin-bottom: 0.5rem;
-}
-
-/* Modal Content */
 .modal-content {
   /* background-color: white; */
   /* margin: 15% auto; 15% from the top and centered */
@@ -25,7 +78,15 @@
   width: 80%; /* Could be more or less depending on screen size */
 }
 
-/* Modal that contains the forms like login and register */
+.modal-content-box {
+  background-color: var(--background-color);
+  /* margin: 15% auto; 15% from the top and centered */
+  margin: calc(5vw) calc(5vw);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less depending on screen size */
+}
+
 .modal-forms {
   display: none;
   position: fixed;
@@ -37,14 +98,31 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Modal Content Box inside the modal-forms */
-.modal-content-box {
-  background-color: var(--background-color);
-  /* margin: 15% auto; 15% from the top and centered */
-  margin: calc(5vw) calc(5vw);
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less depending on screen size */
+.modal-title {
+  margin-bottom: 0.5rem;
+}
+
+.profile-image-search {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.reject-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--dark-color);
+  font-weight: 700;
+  border: 2px solid var(--dark-color);
+  background: var(--failure-color);
+}
+
+.reject-button:hover {
+  cursor: pointer;
+  border: 2px solid var(--failure-color);
+  box-shadow: 0 0 0.5rem var(--failure-color);
 }
 
 .select-button {
@@ -65,45 +143,15 @@
   cursor: pointer;
 }
 
-/* The Back Button */
-.back {
+.search-results {
   color: var(--primary-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  padding-right: 10px;
+  /* display: flex; */
+  /* justify-content: center; */
 }
 
-.back:hover,
-.back:focus {
-  color: var(--secondary-color);
-  cursor: pointer;
-}
-
-/* The Close Button */
-.close {
-  color: var(--primary-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: var(--secondary-color);
-  cursor: pointer;
-}
-
-.checkbox {
-  margin: 0.5rem;
-}
-
-.message {
+.search-result {
   display: flex;
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 0.5rem;
-  color: var(--failure-color);
+  align-items: center;
 }
 
 .user-image {
@@ -114,30 +162,6 @@
 }
 
 .username-div {
-  display: flex;
-  align-items: center;
-}
-
-/* Search Results / Search User Form */
-.friend-badge {
-  color: var(--success-color);
-  margin-left: 0.5rem;
-}
-
-.profile-image-search {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-}
-
-.search-results {
-  color: var(--primary-color);
-  /* display: flex; */
-  /* justify-content: center; */
-}
-
-.search-result {
   display: flex;
   align-items: center;
 }
