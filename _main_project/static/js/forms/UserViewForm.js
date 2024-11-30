@@ -110,17 +110,22 @@ export default class extends AbstractModalView {
           addFriendBtn.textContent = 'Unfriend';
           addFriendBtn.classList.add('select-button');
           addFriendBtn.addEventListener('click', async() => {
-            console.log('Unfriend button clicked');
-          //   const response = await fetch(`http://localhost:8000/friend-request/${userData.id}/`, {
-          //     method: 'DELETE',
-          //     headers: {
-          //       'Authorization': `Token ${user.getToken()}`
-          //     }
-          //   });
-          //   if (response.status === 204) {
-          //     addFriendBtn.textContent = 'Add Friend';
-          //     addFriendBtn.disabled = false;
-          //   }
+            // console.log('Unfriend button clicked');
+
+            const formData = new FormData();
+            formData.append('friend_id', userData.id);
+
+            const response = await fetch(`/friends/remove-friend/`, {
+              method: 'POST',
+              headers: {
+                'x-csrftoken': this.getCookie('csrftoken')
+              },
+              body: formData
+            });
+            if (response.status === 200) {
+              // refresh the user view form
+              this.modal.showForm('userViewForm', {id: userData.id});
+            }
           });
         }
 
@@ -181,10 +186,6 @@ export default class extends AbstractModalView {
       console.log(error);
       return document.createElement('div'); // Return an empty div in case of error
     }
-  }
-
-  afterRender() {
-
   }
 
   async getFriendRequests(container, userData) {

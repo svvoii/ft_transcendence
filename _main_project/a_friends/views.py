@@ -89,37 +89,21 @@ def api_decline_friend_request_view(request):
 		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def remove_friend_view(request):
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_remove_friend_view(request):
 	user = request.user
-	# DEBUG #
-	# print(request.POST)
-	# print(f'this user: {user.id}')
-    # # # # #
-	if not user.is_authenticated:
-		messages.error(request, 'You must be authenticated to remove a friend')
-		return redirect('login')
-
-	if request.method == 'POST':
-		form = RemoveFriendForm(request.POST)
-		if form.is_valid():
-			to_be_removed_user = form.cleaned_data.get('friend_id')
-			try:
-				friend_list = FriendList.objects.get(user=user)
-			except ObjectDoesNotExist:
-				messages.error(request, 'Invalid user id or FriendList not found')
-				return redirect('a_user:profile', user_id=user.id)
-
-			friend_list.unfriend(to_be_removed_user)
-			messages.success(request, f'Friend removed')
-			return redirect('a_user:profile', user_id=to_be_removed_user.id)
-		else:
-			# DEBUG #
-			print(form.errors)
-			return HttpResponse('Invalid form data.. remove_friend_view')
-	
-	else: # Never happens..
-		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('a_user:profile', user_id=user.id)
+	form = RemoveFriendForm(request.POST)
+	if form.is_valid():
+		to_be_removed_user = form.cleaned_data.get('friend_id')
+		try:
+			friend_list = FriendList.objects.get(user=user)
+		except ObjectDoesNotExist:
+			return Response({'error': 'Invalid user id or FriendList not found'}, status=status.HTTP_404_NOT_FOUND)
+		friend_list.unfriend(to_be_removed_user)
+		return Response({'success': 'Friend removed'}, status=status.HTTP_200_OK)
+	else:
+		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
