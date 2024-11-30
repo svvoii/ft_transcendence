@@ -104,9 +104,11 @@ export default class extends AbstractModalView {
           });
         } else if (userData.is_friend === false && userData.request_sent > 0) {
           addFriendBtn.textContent = 'Friend Request Sent';
+          addFriendBtn.classList.add('selected-button');
           addFriendBtn.disabled = true;
         } else if (userData.is_friend === true) {
           addFriendBtn.textContent = 'Unfriend';
+          addFriendBtn.classList.add('select-button');
           addFriendBtn.addEventListener('click', async() => {
             console.log('Unfriend button clicked');
           //   const response = await fetch(`http://localhost:8000/friend-request/${userData.id}/`, {
@@ -233,7 +235,7 @@ export default class extends AbstractModalView {
           });
           if (response.status === 200) {
             // on success, this call forces a refresh of the user view form which will update the event listener
-            // this.modal.showForm('userViewForm');
+            this.modal.showForm('userViewForm');
           }
         });
         requestElement.appendChild(acceptButton);
