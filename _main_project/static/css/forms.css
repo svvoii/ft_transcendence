@@ -50,6 +50,17 @@
   margin-left: 0.5rem;
 }
 
+.friend-request-container {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.friend-request-sender {
+  align-items: center;
+  display: flex;
+  margin-left: 0.5rem;
+}
+
 .message {
   display: flex;
   text-align: center;
