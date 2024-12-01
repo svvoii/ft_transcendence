@@ -65,139 +65,33 @@ export default class extends AbstractModalView {
       // Checks if the user is viewing their own profile
       if (userData.is_self === false) {
 
-        // Create the send a message button
-        const sendAMessageBtn = document.createElement('button');
-        sendAMessageBtn.id = 'sendAMessageBtn';
-        sendAMessageBtn.classList.add('select-button');
-        sendAMessageBtn.textContent = 'Send a Message';
-        sendAMessageBtn.addEventListener('click', async() => {
-          // Open the chat modal and start a chat with the user
-          chat.openChat();
-          await chat.startChat(userData.username);
-        });
+        this.sendAMessageButton(container, userData);
 
         // Create the add friend button
-        const addFriendBtn = document.createElement('button');
-        addFriendBtn.id = 'addFriendBtn';
+        const friendButtonDiv = document.createElement('div');
+        friendButtonDiv.id = 'friend-button-div';
 
         if (userData.is_friend === false && userData.request_sent === 0) {
-          addFriendBtn.textContent = 'Add Friend';
-          addFriendBtn.classList.add('select-button');
-          addFriendBtn.addEventListener('click', async() => {
-            // console.log('Add Friend button clicked');
-            const formData = new FormData();
-            formData.append('receiver_id', userData.id);
 
-            const response = await fetch(`/friends/send-friend-request/${userData.username}/`, {
-              method: 'POST',
-              headers: {
-                'x-csrftoken': this.getCookie('csrftoken')
-              },
-              body: formData
-              });
-            const data = await response.json();
-            // print the response to the console if there is an error
-            if (response.status === 200) {
-              this.modal.showForm('userViewForm', {id: userData.id});
-            }
-          });
-        } else if (userData.is_friend === false && userData.request_sent > 0) {
+          this.addFriendButton(friendButtonDiv, userData);
 
-          // 
-          // there's something I'm not understanding about the request_sent field
-          // I need to look into how request_sent is behaving when different users try to send
-          // I'm sometimes getting 2 for the request_sent field when I expect 1
-          // I also get a multiple object error when I have request_set of greater than 1
-          // 
+        } else if (userData.is_friend === false && userData.request_sent === 1) {
 
-          addFriendBtn.textContent = 'Cancel Request';
-          addFriendBtn.classList.add('select-button');
-          addFriendBtn.addEventListener('click', async() => {
-            // console.log('Cancel Request button clicked');
-            const formData = new FormData();
-            formData.append('friend_request_id', userData.id);
+          this.cancelRequestButton(friendButtonDiv, userData);
 
-            const response = await fetch(`/friends/cancel-friend-request/`, {
-              method: 'POST',
-              headers: {
-                'x-csrftoken': this.getCookie('csrftoken')
-              },
-              body: formData
-              });
-            // print the response to the console if there is an error
-            if (response.status === 200) {
-              this.modal.showForm('userViewForm', {id: userData.id});
-            }
-          });
+        } else if (userData.is_friend === false && userData.request_sent === 2) {
+
+          this.acceptDenyFriendRequestButtons(friendButtonDiv);
+
         } else if (userData.is_friend === true) {
-          addFriendBtn.textContent = 'Unfriend';
-          addFriendBtn.classList.add('select-button');
-          addFriendBtn.addEventListener('click', async() => {
-            // console.log('Unfriend button clicked');
 
-            const formData = new FormData();
-            formData.append('friend_id', userData.id);
+          this.unfriendButton(friendButtonDiv, userData);
 
-            const response = await fetch(`/friends/remove-friend/`, {
-              method: 'POST',
-              headers: {
-                'x-csrftoken': this.getCookie('csrftoken')
-              },
-              body: formData
-            });
-            if (response.status === 200) {
-              // refresh the user view form
-              this.modal.showForm('userViewForm', {id: userData.id});
-            }
-          });
         }
 
-        // Create the block user button
-        const blockUserBtn = document.createElement('button');
-        blockUserBtn.id = 'blockUserBtn';
-        blockUserBtn.classList.add('select-button');
-        if (userData.is_blocked === false) {
-          blockUserBtn.textContent = 'Block User';
-          blockUserBtn.addEventListener('click', async() => {
-            const response = await fetch(`http://localhost:8000/user/${userData.id}/block/`, {
-              method: 'POST',
-              headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/json',
-                'x-csrftoken': this.getCookie('csrftoken')
-              },
-              body: JSON.stringify({
-                'blocked_user': userData.id
-              })
-            });
-            if (response.status === 200) {
-              blockUserBtn.textContent = 'Unblock User';
-              // on success, this call forces a refresh of the user view form which will update the event listener
-              this.modal.showForm('userViewForm', {id: userData.id});
-            }
-          });
-        } else {
-          blockUserBtn.textContent = 'Unblock User';
-          blockUserBtn.addEventListener('click', async() => {
-            const response = await fetch(`http://localhost:8000/user/${userData.id}/unblock/`, {
-              method: 'POST',
-              headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/json',
-                'x-csrftoken': this.getCookie('csrftoken')
-              }
-            });
-            if (response.status === 200) {
-              blockUserBtn.textContent = 'Block User';
-              // on success, this call forces a refresh of the user view form which will update the event listener
-              this.modal.showForm('userViewForm', {id: userData.id});
-            }
-          });
-        }
+        container.appendChild(friendButtonDiv);
 
-        container.appendChild(sendAMessageBtn);
-        container.appendChild(addFriendBtn);
-        container.appendChild(blockUserBtn);
+        this.blockUnblockButtons(container, userData);
       }
 
       if (userData.is_self) {
@@ -211,6 +105,85 @@ export default class extends AbstractModalView {
     }
   }
 
+  // container is the div that this function will append the friend button to
+  async addFriendButton(container, userData) {
+    const addFriendBtn = document.createElement('button');
+    addFriendBtn.id = 'addFriendBtn';
+    
+    addFriendBtn.textContent = 'Add Friend';
+    addFriendBtn.classList.add('select-button');
+    addFriendBtn.addEventListener('click', async() => {
+      // console.log('Add Friend button clicked');
+      const formData = new FormData();
+      formData.append('receiver_id', userData.id);
+
+      const response = await fetch(`/friends/send-friend-request/${userData.username}/`, {
+        method: 'POST',
+        headers: {
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        body: formData
+        });
+      const data = await response.json();
+      // print the response to the console if there is an error
+      if (response.status === 200) {
+        this.modal.showForm('userViewForm', {id: userData.id});
+      }
+    });
+    container.appendChild(addFriendBtn);
+  }
+
+  async cancelRequestButton(container, userData) {
+    const cancelReqBtn = document.createElement('button');
+    cancelReqBtn.id = 'cancelReqBtn';
+    cancelReqBtn.textContent = 'Cancel Request';
+    cancelReqBtn.classList.add('select-button');
+    cancelReqBtn.addEventListener('click', async() => {
+      // console.log('Cancel Request button clicked');
+      const formData = new FormData();
+      formData.append('friend_request_id', userData.id);
+
+      const response = await fetch(`/friends/cancel-friend-request/`, {
+        method: 'POST',
+        headers: {
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        body: formData
+        });
+      // print the response to the console if there is an error
+      if (response.status === 200) {
+        this.modal.showForm('userViewForm', {id: userData.id});
+      }
+    });
+    container.appendChild(cancelReqBtn);
+  }
+
+  async unfriendButton(container, userData) {
+    const unfriendBtn = document.createElement('button');
+    unfriendBtn.id = 'unfriendBtn';
+    unfriendBtn.textContent = 'Unfriend';
+    unfriendBtn.classList.add('select-button');
+    unfriendBtn.addEventListener('click', async() => {
+      // console.log('Unfriend button clicked');
+      const formData = new FormData();
+      formData.append('friend_id', userData.id);
+
+      const response = await fetch(`/friends/remove-friend/`, {
+        method: 'POST',
+        headers: {
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        body: formData
+      });
+      if (response.status === 200) {
+        // refresh the user view form
+        this.modal.showForm('userViewForm', {id: userData.id});
+      }
+    });
+    container.appendChild(unfriendBtn);
+  }
+
+  // container is the div that this function will append the friend requests to
   async getFriendRequests(container, userData) {
     // Create a list like the search list for displaying friend requests
     // might also consider moving userData.is_self to a function
@@ -241,53 +214,120 @@ export default class extends AbstractModalView {
         usernameElement.textContent = senderAccount.username;
         requestElement.appendChild(usernameElement);
 
-        const acceptButton = document.createElement('button');
-        acceptButton.textContent = 'Accept';
-        acceptButton.classList.add('accept-button');
-        acceptButton.addEventListener('click', async() => {
-          const formData = new FormData();
-          formData.append('friend_request_id', request.id);
-
-          const response = await fetch(`http://localhost:8000/friends/accept-friend-request/`, {
-            method: 'POST',
-            headers: {
-              'x-csrftoken': this.getCookie('csrftoken')
-            },
-            body: formData
-          });
-          if (response.status === 200) {
-            // on success, this call forces a refresh of the user view form which will update the event listener
-            this.modal.showForm('userViewForm');
-          }
-        });
-        requestElement.appendChild(acceptButton);
-
-        const rejectButton = document.createElement('button');
-        rejectButton.textContent = 'Reject';
-        rejectButton.classList.add('reject-button');
-        rejectButton.addEventListener('click', async() => {
-          console.log('Reject button clicked');
-          const formData = new FormData();
-          formData.append('friend_request_id', request.id);
-
-          const response = await fetch(`http://localhost:8000/friends/decline-friend-request/`, {
-            method: 'POST',
-            headers: {
-              'x-csrftoken': this.getCookie('csrftoken')
-            },
-            body: formData
-          });
-          if (response.status === 200) {
-            // on success, this call forces a refresh of the user view form which will update the event listener
-            this.modal.showForm('userViewForm');
-          }
-        });
-        requestElement.appendChild(rejectButton);
+        this.acceptDenyFriendRequestButtons(requestElement);
 
         friendRequestsHeading.appendChild(requestElement);
       }
-
       container.appendChild(friendRequestsHeading);
     }
+  }
+
+  // container is the div that this function will append the accept and deny buttons to
+  async acceptDenyFriendRequestButtons(container) {
+    const acceptButton = document.createElement('button');
+    acceptButton.textContent = 'Accept';
+    acceptButton.classList.add('accept-button');
+    acceptButton.addEventListener('click', async() => {
+      const formData = new FormData();
+      formData.append('friend_request_id', request.id);
+
+      const response = await fetch(`http://localhost:8000/friends/accept-friend-request/`, {
+        method: 'POST',
+        headers: {
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        body: formData
+      });
+      if (response.status === 200) {
+        // on success, this call forces a refresh of the user view form which will update the event listener
+        this.modal.showForm('userViewForm');
+      }
+    });
+    container.appendChild(acceptButton);
+
+    const rejectButton = document.createElement('button');
+    rejectButton.textContent = 'Reject';
+    rejectButton.classList.add('reject-button');
+    rejectButton.addEventListener('click', async() => {
+      console.log('Reject button clicked');
+      const formData = new FormData();
+      formData.append('friend_request_id', request.id);
+
+      const response = await fetch(`http://localhost:8000/friends/decline-friend-request/`, {
+        method: 'POST',
+        headers: {
+          'x-csrftoken': this.getCookie('csrftoken')
+        },
+        body: formData
+      });
+      if (response.status === 200) {
+        // on success, this call forces a refresh of the user view form which will update the event listener
+        this.modal.showForm('userViewForm');
+      }
+    });
+    container.appendChild(rejectButton);
+  }
+
+  // conatiner is the div that this function will append the block or unblock button to
+  async blockUnblockButtons(container, userData) {
+    // Create the block user button
+    const blockUserBtn = document.createElement('button');
+    blockUserBtn.id = 'blockUserBtn';
+    blockUserBtn.classList.add('select-button');
+
+    if (userData.is_blocked === false) {
+      blockUserBtn.textContent = 'Block User';
+      blockUserBtn.addEventListener('click', async() => {
+        const response = await fetch(`http://localhost:8000/user/${userData.id}/block/`, {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-csrftoken': this.getCookie('csrftoken')
+          },
+          body: JSON.stringify({
+            'blocked_user': userData.id
+          })
+        });
+        if (response.status === 200) {
+          blockUserBtn.textContent = 'Unblock User';
+          // on success, this call forces a refresh of the user view form which will update the event listener
+          this.modal.showForm('userViewForm', {id: userData.id});
+        }
+      });
+    } else {
+      blockUserBtn.textContent = 'Unblock User';
+      blockUserBtn.addEventListener('click', async() => {
+        const response = await fetch(`http://localhost:8000/user/${userData.id}/unblock/`, {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-csrftoken': this.getCookie('csrftoken')
+          }
+        });
+        if (response.status === 200) {
+          blockUserBtn.textContent = 'Block User';
+          // on success, this call forces a refresh of the user view form which will update the event listener
+          this.modal.showForm('userViewForm', {id: userData.id});
+        }
+      });
+    }
+    container.appendChild(blockUserBtn);
+  }
+
+  // container is the div that this function will append the send a message button to
+  async sendAMessageButton(container, userData) {
+    // Create the send a message button
+    const sendAMessageBtn = document.createElement('button');
+    sendAMessageBtn.id = 'sendAMessageBtn';
+    sendAMessageBtn.classList.add('select-button');
+    sendAMessageBtn.textContent = 'Send a Message';
+    sendAMessageBtn.addEventListener('click', async() => {
+      // Open the chat modal and start a chat with the user
+      chat.openChat();
+      await chat.startChat(userData.username);
+    });
+    container.appendChild(sendAMessageBtn);
   }
 }
