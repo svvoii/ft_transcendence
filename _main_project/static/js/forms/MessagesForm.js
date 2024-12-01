@@ -17,24 +17,29 @@ export default class extends AbstractModalView {
       title.classList.add('modal-title');
       container.appendChild(title);
 
-      const response = await fetch('/chat/chat/get_chatrooms/');
-      const chatroom_data = await response.json();
+      const chatroom_data = await chat.getAllUserChatrooms();
 
-      chatroom_data.forEach(chatroom => {
-        const chatroom_div = document.createElement('p');
-        chatroom_div.classList.add('chatroom');
+      if (chatroom_data.length === 0) {
+        const noMessages = document.createElement('p');
+        noMessages.textContent = 'No messages to display';
+        container.appendChild(noMessages);
+      } else {
+        chatroom_data.forEach(chatroom => {
+          const chatroom_div = document.createElement('p');
+          chatroom_div.classList.add('chatroom');
 
-        const other_user = chatroom.members[0] === user.getUserName() ? chatroom.members[1] : chatroom.members[0];
+          const other_user = chatroom.members[0] === user.getUserName() ? chatroom.members[1] : chatroom.members[0];
 
-        chatroom_div.textContent = other_user;
+          chatroom_div.textContent = other_user;
 
-        chatroom_div.onclick = () => {
-          chat.openChat();
-          chat.startChat(other_user, chatroom.room_name);
-          modal.hide();
-        }
-        container.appendChild(chatroom_div);
-      });
+          chatroom_div.onclick = async() => {
+            chat.openChat();
+            await chat.startChat(other_user);
+            modal.hide();
+          }
+          container.appendChild(chatroom_div);
+        });
+      }
 
       return container;
 

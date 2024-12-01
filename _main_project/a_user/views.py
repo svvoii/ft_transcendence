@@ -11,6 +11,7 @@ from a_user.models import Account, BlockedUser
 from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
+from a_friends.serializers import FriendRequestSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -97,6 +98,7 @@ def det_redirect_if_exists(request):
 			redirect = str(request.GET.get('next'))
 	return redirect
 
+
 @api_view(['GET'])
 def api_profile_view(request, *args, **kwargs):
 	context = {}
@@ -105,15 +107,17 @@ def api_profile_view(request, *args, **kwargs):
 	try:
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
-		# return HttpResponse("User not found.");
 		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
 
+# FriendRequestSerializer(friend_request, many=True).data
+
 	if account:
-		context['id'] = account.id
-		context['email'] = account.email
-		context['username'] = account.username
-		context['profile_image'] = account.profile_image.url if account.profile_image else None
-		context['hide_email'] = account.hide_email
+		account_data = AccountSerializer(account).data
+		context['id'] = account_data['id']
+		context['email'] = account_data['email']
+		context['username'] = account_data['username']
+		context['profile_image'] = account_data['profile_image'] if account.profile_image else None
+		context['hide_email'] = account_data['hide_email']
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
 		try:
@@ -122,7 +126,7 @@ def api_profile_view(request, *args, **kwargs):
 			friend_list = FriendList(user=account)
 			friend_list.save()
 		friends = friend_list.friends.all()
-		context['friends'] = friends
+		context['friends'] = [AccountSerializer(friend).data for friend in friends]
 
 		is_self = True
 		is_friend = False
@@ -172,71 +176,11 @@ def api_profile_view(request, *args, **kwargs):
 		context['is_friend'] = is_friend
 		context['BASE_URL'] = settings.BASE_URL
 		context['request_sent'] = request_sent
-		context['friend_request'] = friend_request
+		context['friend_request'] = FriendRequestSerializer(friend_request, many=True).data
 		context['is_blocked'] = is_blocked
 
 	return Response(context, status=status.HTTP_200_OK)
-	# return render(request, 'a_user/profile.html', context)
 
-
-# @api_view(['POST'])
-# def api_edit_profile_view(request, *args, **kwargs):
-# 	if not request.user.is_authenticated:
-# 		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN);
-# 		# return redirect('login')
-
-# 	user_id = kwargs.get('user_id')
-# 	try:
-# 		account = Account.objects.get(pk=user_id)
-# 	except Account.DoesNotExist:
-# 		return Response("User not found.", status=status.HTTP_204_NO_CONTENT)
-# 		# return HttpResponse("User not found.")
-
-# 	if account.pk != request.user.pk:
-# 		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
-# 		# return HttpResponse("You cannot edit someone else's profile.")
-
-# 	context = {}
-
-# 	if request.method == 'POST':
-# 		print("request is post")
-# 		form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
-# 		if form.is_valid():
-# 			print("form is valid")
-# 			form.save()
-# 			# return redirect('a_user:profile', user_id=account.pk)
-# 			return Response("Profile updated successfully.", status=status.HTTP_200_OK)
-# 		else:
-# 			print("form is not valid")
-# 			form = AccountUpdateForm(
-# 				request.POST,
-# 				instance=request.user,
-# 				initial={
-# 					'id': account.pk,
-# 					'email': account.email,
-# 					'username': account.username,
-# 					'profile_image': account.profile_image,
-# 					'hide_email': account.hide_email,
-# 				}
-# 			)
-# 	else:
-# 		form = AccountUpdateForm(
-# 			initial={
-# 				'id': account.pk,
-# 				'email': account.email,
-# 				'username': account.username,
-# 				'profile_image': account.profile_image,
-# 				'hide_email': account.hide_email,
-# 			}
-# 		)
-
-# 	context['form'] = form
-# 	context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX_MEMORY_SIZE
-
-# 	return Response(context, status=status.HTTP_200_OK)
-# 	# return render(request, 'a_user/edit_profile.html', context)
-
-# This is from copilot
 
 @api_view(['POST'])
 def api_edit_profile_view(request, *args, **kwargs):
@@ -309,47 +253,22 @@ def api_account_search_view(request, *args, **kwargs):
 
 	return Response(context, status=status.HTTP_200_OK)
 
-# @api_view(['GET'])
-# def api_account_search_view(request, *args, **kwargs):
-# 	context = {}
-
-# 	if request.method == 'GET':
-# 		search_query = request.GET.get('q')
-# 		if len(search_query) > 0:
-# 			# the following query will return all the accounts whose email or username contains the search query
-# 			search_results = Account.objects.filter(email__icontains=search_query).filter(username__icontains=search_query).distinct()
-# 			user = request.user
-# 			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
-
-# 			if user.is_authenticated:
-# 				try:
-# 					user_friend_list = FriendList.objects.get(user=user)
-# 					for account in search_results:
-# 						accounts.append((account, user_friend_list.is_mutual_friend(account)))
-# 				except FriendList.DoesNotExist:
-# 					for account in search_results:
-# 						accounts.append((account, False))
-# 				context['accounts'] = accounts
-# 			else:
-# 				for account in search_results:
-# 					accounts.append((account, False)) # False for indicating that the user is not a friend
-# 				context['accounts'] = accounts
-
-# 	return Response(context, status=status.HTTP_200_OK)
-	# return render(request, 'a_user/search_results.html', context)
-
 
 @login_required
-def block_user_view(request, user_id):
+@api_view(['POST'])
+def api_block_user_view(request, user_id):
 	user_to_block = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.get_or_create(user=request.user, blocked_user=user_to_block)
-	messages.success(request, f'You have blocked {user_to_block.username}.')
-	return redirect('a_user:profile', user_id=user_id)
+	# messages.success(request, f'You have blocked {user_to_block.username}.')
+	return Response({"message": f'You have blocked {user_to_block.username}.'}, status=status.HTTP_200_OK)
+	# return redirect('a_user:profile', user_id=user_id)
 
 
 @login_required
-def unblock_user_view(request, user_id):
+@api_view(['POST'])
+def api_unblock_user_view(request, user_id):
 	user_to_unblock = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.filter(user=request.user, blocked_user=user_to_unblock).delete()
-	messages.success(request, f'You have unblocked {user_to_unblock.username}.')
-	return redirect('a_user:profile', user_id=user_id)
+	# messages.success(request, f'You have unblocked {user_to_unblock.username}.')
+	return Response({"message": f'You have unblocked {user_to_unblock.username}.'}, status=status.HTTP_200_OK)
+	# return redirect('a_user:profile', user_id=user_id)
