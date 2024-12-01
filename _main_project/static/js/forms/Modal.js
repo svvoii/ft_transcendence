@@ -8,6 +8,7 @@ import UserChangePassForm from './UserChangePassForm.js';
 import ForgotPassForm from './ForgotPassForm.js';
 import UserSearchForm from './UserSearchForm.js';
 import MessagesForm from './MessagesForm.js';
+import FriendsListForm from './FriendsListForm.js';
 
 export default class Modal {
   constructor(appId) {
@@ -31,6 +32,7 @@ export default class Modal {
     this.forgotPassForm = new ForgotPassForm(this);
     this.userSearchForm = new UserSearchForm(this);
     this.messagesForm = new MessagesForm(this);
+    this.friendsListForm = new FriendsListForm(this);
 
     // Most recent
     this.mostRecent = null;
@@ -46,6 +48,7 @@ export default class Modal {
       'userSearchForm': this.userSearchForm,
       'forgotPassForm': this.forgotPassForm,
       'messagesForm': this.messagesForm,
+      'friendsListForm': this.friendsListForm,
     }
   }
 
