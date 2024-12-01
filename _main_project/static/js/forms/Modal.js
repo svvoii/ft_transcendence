@@ -100,6 +100,8 @@ export default class Modal {
           this.showForm('userForm');
         } else if (this.mostRecent === this.forgotPassForm) {
           this.showForm('loginForm');
+        } else if (this.mostRecent === this.friendsListForm) {
+          this.showForm('userViewForm');
         } else {
           this.hide();
         }

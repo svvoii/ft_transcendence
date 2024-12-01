@@ -47,10 +47,8 @@ export default class extends AbstractModalView {
         friendItem.addEventListener('click', async () => {
           this.modal.showForm('userViewForm', friend);
         });
-
         friendsList.appendChild(friendItem);
       }
-
       container.appendChild(friendsList);
     }
 
