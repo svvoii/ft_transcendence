@@ -20,7 +20,7 @@ export default class extends AbstractModalView {
 
     const userData = await response.json();
 
-    console.log(userData.friends);
+    // console.log(userData.friends);
 
     const friendsList = document.createElement('ul');
     friendsList.classList.add('search-results');
