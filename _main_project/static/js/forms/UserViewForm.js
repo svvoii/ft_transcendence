@@ -61,7 +61,7 @@ export default class extends AbstractModalView {
       // Checks if the user is viewing their own profile and renders appropriate buttons
       if (userData.is_self) {
         // Generate and render the list of friend requests
-        this.friendsListButton(container, userData);
+        this.friendsListButton(container);
         this.getFriendRequests(container, userData);
       } else {
         // Create the send a message button
@@ -96,7 +96,7 @@ export default class extends AbstractModalView {
   }
 
   // container is the div that this function will append the created elements into
-  async friendsListButton(container, userData) {
+  async friendsListButton(container) {
     // Create the friends list button
     const friendsListBtn = document.createElement('button');
     friendsListBtn.id = 'friendsListBtn';
