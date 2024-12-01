@@ -79,12 +79,12 @@ export default class extends AbstractModalView {
         // Create the add friend button
         const addFriendBtn = document.createElement('button');
         addFriendBtn.id = 'addFriendBtn';
+
         if (userData.is_friend === false && userData.request_sent === 0) {
           addFriendBtn.textContent = 'Add Friend';
           addFriendBtn.classList.add('select-button');
           addFriendBtn.addEventListener('click', async() => {
-            console.log('Add Friend button clicked');
-
+            // console.log('Add Friend button clicked');
             const formData = new FormData();
             formData.append('receiver_id', userData.id);
 
@@ -98,14 +98,37 @@ export default class extends AbstractModalView {
             const data = await response.json();
             // print the response to the console if there is an error
             if (response.status === 200) {
-              addFriendBtn.textContent = 'Friend Request Sent';
-              addFriendBtn.disabled = true;
+              this.modal.showForm('userViewForm', {id: userData.id});
             }
           });
         } else if (userData.is_friend === false && userData.request_sent > 0) {
-          addFriendBtn.textContent = 'Friend Request Sent';
-          addFriendBtn.classList.add('selected-button');
-          addFriendBtn.disabled = true;
+
+          // 
+          // there's something I'm not understanding about the request_sent field
+          // I need to look into how request_sent is behaving when different users try to send
+          // I'm sometimes getting 2 for the request_sent field when I expect 1
+          // I also get a multiple object error when I have request_set of greater than 1
+          // 
+
+          addFriendBtn.textContent = 'Cancel Request';
+          addFriendBtn.classList.add('select-button');
+          addFriendBtn.addEventListener('click', async() => {
+            // console.log('Cancel Request button clicked');
+            const formData = new FormData();
+            formData.append('friend_request_id', userData.id);
+
+            const response = await fetch(`/friends/cancel-friend-request/`, {
+              method: 'POST',
+              headers: {
+                'x-csrftoken': this.getCookie('csrftoken')
+              },
+              body: formData
+              });
+            // print the response to the console if there is an error
+            if (response.status === 200) {
+              this.modal.showForm('userViewForm', {id: userData.id});
+            }
+          });
         } else if (userData.is_friend === true) {
           addFriendBtn.textContent = 'Unfriend';
           addFriendBtn.classList.add('select-button');

@@ -46,23 +46,16 @@ def api_friend_requests_view(request, *args, **kwargs):
 		return Response({'error': 'You can\'t view another user\'s friend requests.'}, status=status.HTTP_403_FORBIDDEN)
 
 
-def cancel_friend_request_view(request):
-	# DEBUG #
-	# print(request.POST)
-	# # # # #
-	if request.method == 'POST':
-		form = HandleFriendRequestForm(request.POST)
-		if form.is_valid():
-			friend_request_id = form.cleaned_data.get('friend_request_id')
-			friend_request_id.cancel()
-			messages.success(request, f'Friend request cancelled')
-			return redirect('a_user:profile', user_id=friend_request_id.receiver.id)
-		else:
-			# print(form.errors)
-			return HttpResponse('Invalid form data.. (Debug: cancel_friend_request_view)')
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_cancel_friend_request_view(request):
+	form = HandleFriendRequestForm(request.POST)
+	if form.is_valid():
+		friend_request_id = form.cleaned_data.get('friend_request_id')
+		friend_request_id.cancel()
+		return Response({'success': 'Friend request cancelled'}, status=status.HTTP_200_OK)
 	else:
-		messages.error(request, 'Debug: This is a POST-only endpoint')
-		return redirect('a_user:profile', user_id=request.user.id)
+		return Response({'error': 'Invalid form data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
