@@ -13,9 +13,10 @@ from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
 from a_friends.serializers import FriendRequestSerializer
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Account
 from .serializers import AccountSerializer
@@ -183,10 +184,8 @@ def api_profile_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_edit_profile_view(request, *args, **kwargs):
-	if not request.user.is_authenticated:
-		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN)
-
 	user_id = kwargs.get('user_id')
 	try:
 		account = Account.objects.get(pk=user_id)
@@ -214,12 +213,10 @@ def api_edit_profile_view(request, *args, **kwargs):
 				'hide_email': account.hide_email,
 			}
 		)
-
 	context = {
 		'form': form.as_p(),  # Render the form as HTML
 		'DATA_UPLOAD_MAX_MEMORY_SIZE': settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
 	}
-
 	return Response(context, status=status.HTTP_200_OK)
 
 
