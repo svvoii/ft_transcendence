@@ -61,11 +61,19 @@ export default class Modal {
     const closeSpan = document.createElement('span');
     closeSpan.classList.add('close');
     closeSpan.innerHTML = '&times;';
+    closeSpan.title = "Close";
 
     // Create the back span
     const backSpan = document.createElement('span');
     backSpan.classList.add('back');
     backSpan.innerHTML = '&larrhk;';
+    backSpan.title = "Back";
+
+    // Create the refresh span
+    const refreshSpan = document.createElement('span');
+    refreshSpan.classList.add('refresh');
+    refreshSpan.innerHTML = '&orarr;';
+    refreshSpan.title = "Refresh";
 
     // Create the modal content div
     const modalContent = document.createElement('div');
@@ -74,6 +82,7 @@ export default class Modal {
     // Append the spans and modal content to the modal content box
     modalContentBox.appendChild(closeSpan);
     modalContentBox.appendChild(backSpan);
+    modalContentBox.appendChild(refreshSpan);
     modalContentBox.appendChild(modalContent);
 
     // Append the modal content box to the main container
@@ -83,6 +92,7 @@ export default class Modal {
   initEventListeners() {
     const closeSpan = this.modal.querySelector('.close');
     const backSpan = this.modal.querySelector('.back');
+    const refreshSpan = this.modal.querySelector('.refresh');
 
     if (closeSpan) {
       closeSpan.addEventListener('click', () => {
@@ -105,6 +115,12 @@ export default class Modal {
         } else {
           this.hide();
         }
+      });
+    }
+
+    if (refreshSpan) {
+      refreshSpan.addEventListener('click', async() => {
+        console.log("refreshSpan clicked");
       });
     }
 
