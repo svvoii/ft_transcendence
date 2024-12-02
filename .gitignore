@@ -6,3 +6,4 @@ __pycache__
 !**/migrations/__init__.py
 .vscode/
 .nfs*
+_main_project/media_cdn/*
