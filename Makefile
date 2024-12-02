@@ -15,7 +15,7 @@ build-no-cache:
 
 up: build
 	@echo -e "${GREEN}Starting the project...${NC}"
-	docker-compose up -d
+	docker-compose up
 
 up-db:
 	@echo -e  "${GREEN}Starting container with database only...${NC}"
