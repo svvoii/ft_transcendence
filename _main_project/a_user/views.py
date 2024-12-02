@@ -195,26 +195,16 @@ def api_edit_profile_view(request, *args, **kwargs):
 	if account.pk != request.user.pk:
 		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
 
-	if request.method == 'POST':
-		# form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
-		form = AccountUpdateForm(request.data, instance=request.user)
-		if form.is_valid():
-			form.save()
-			return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
-		else:
-			return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
+	form = AccountUpdateForm(request.data, request.FILES, instance=request.user)
+	if form.is_valid():
+		print('saving form')
+		print(form.cleaned_data)
+		form.save()
+		return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 	else:
-		form = AccountUpdateForm(
-			initial={
-				'id': account.pk,
-				'email': account.email,
-				'username': account.username,
-				'profile_image': account.profile_image,
-				'hide_email': account.hide_email,
-			}
-		)
+		return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 	context = {
-		'form': form.as_p(),  # Render the form as HTML
+		'form': form.as_p(),
 		'DATA_UPLOAD_MAX_MEMORY_SIZE': settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
 	}
 	return Response(context, status=status.HTTP_200_OK)
