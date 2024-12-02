@@ -18,16 +18,30 @@ export default class extends AbstractView {
 
     // Create the paragraph element
     const paragraph = document.createElement('p');
-    paragraph.textContent = 'You are viewing the Tournament Setup Page!';
+    paragraph.textContent = 'You are viewing the Tournament Setup Join Page!';
 
     // Create the button
     const tournament_lobby_button = document.createElement('button');
     tournament_lobby_button.id = 'tournamentLobbyBtn';
     tournament_lobby_button.type = 'select';
-    tournament_lobby_button.textContent = 'Create Tournament';
+    tournament_lobby_button.textContent = 'Join Tournament';
+
+
+    const form = document.createElement('form');
+    form.id = 'tournamentLinkForm';
+    form.onsubmit = (event) => event.preventDefault();
+
+    const tournamentLinkInput = document.createElement('input');
+    tournamentLinkInput.placeholder = 'Enter link';
+    tournamentLinkInput.required = true;
+    tournamentLinkInput.autofocus = true;
+    form.appendChild(tournamentLinkInput);
+    form.appendChild(document.createElement('br'));
+
 
     // Append the paragraph to the container
     container.appendChild(paragraph);
+    container.appendChild(form);
     container.appendChild(tournament_lobby_button);
 
     return container;
@@ -35,7 +49,7 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('tournamentLobbyBtn').addEventListener('click', () => {
-      console.log('Create Tournament Lobby Button Clicked');
+      console.log('Join Tournament Lobby Button Clicked');
       navigateTo('/tournament_lobby/');
     });
   }
