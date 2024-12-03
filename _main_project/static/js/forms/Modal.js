@@ -36,6 +36,7 @@ export default class Modal {
 
     // Most recent
     this.mostRecent = null;
+    this.historyStack = [];
 
     // Create a map of all forms for selecting with showForm
     this.formMap = {
@@ -94,35 +95,24 @@ export default class Modal {
     const backSpan = this.modal.querySelector('.back');
     const refreshSpan = this.modal.querySelector('.refresh');
 
-    if (closeSpan) {
-      closeSpan.addEventListener('click', () => {
+    closeSpan.addEventListener('click', () => {
+      this.hide();
+    });
+
+    backSpan.addEventListener('click', async() => {
+      this.historyStack.pop();
+      const prevForm = this.historyStack.pop();
+
+      if (prevForm) {
+        await this.showForm(prevForm.formName, prevForm.data);
+      } else {
         this.hide();
-      });
-    }
+      }
+    });
 
-    if (backSpan) {
-      backSpan.addEventListener('click', async() => {
-        if (this.mostRecent === this.userViewForm
-          || this.mostRecent === this.userEditForm
-          || this.mostRecent === this.userChangePassForm
-          || this.mostRecent === this.messagesForm
-          || this.mostRecent === this.userSearchForm) {
-          this.showForm('userForm');
-        } else if (this.mostRecent === this.forgotPassForm) {
-          this.showForm('loginForm');
-        } else if (this.mostRecent === this.friendsListForm) {
-          this.showForm('userViewForm');
-        } else {
-          this.hide();
-        }
-      });
-    }
-
-    if (refreshSpan) {
-      refreshSpan.addEventListener('click', async() => {
-        console.log("refreshSpan clicked");
-      });
-    }
+    refreshSpan.addEventListener('click', async() => {
+      console.log("refreshSpan clicked");
+    });
 
     window.onclick = event => {
       if (event.target === this.modal) {
@@ -142,7 +132,7 @@ export default class Modal {
     const form = this.formMap[formName];
 
     if (form) {
-      this.mostRecent = form;
+      this.historyStack.push( { formName, data } );
       this.show(form, data);
     } else {
       console.error(`form not found: ${formName}`);
@@ -150,6 +140,7 @@ export default class Modal {
   }
 
   hide() {
+    this.historyStack = [];
     this.modal.style.display = "none";
   }
 
