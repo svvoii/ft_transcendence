@@ -1,7 +1,7 @@
 // Sending fetch requerst to the server to get the game_session
 
-async function getGameSession() {
-	const response = await fetch('/game_session', {
+export async function getGameSession() {
+	const response = await fetch('/create_game/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -24,8 +24,8 @@ async function getGameSession() {
 var socket = null;
 var game_initialized = false;
 
-async function joinGame(game_id, role) {
-	const response = await fetch('/join_game', {
+export async function joinGame(game_id) {
+	const response = await fetch('/join_game/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -34,12 +34,15 @@ async function joinGame(game_id, role) {
 		body: JSON.stringify({ game_id }),
 	});
 
-	const data = await response.json();
-	console.log(data);
-
 	if (response.status !== 200) {
 		throw new Error(data.error);
 	}
+
+	const data = await response.json();
+	const role = data.role;
+	console.log('..join game, id: ', data.game_id);
+	console.log('..join game, role: ', role);
+
 
 	if (!socket) {
 		socket = new WebSocket(`ws://${window.location.host}/ws/game/${game_id}/`);

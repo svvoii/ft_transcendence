@@ -58,11 +58,11 @@ export default class extends AbstractView {
   async afterRender() {
     const gameModal = document.getElementById("gameModal");
 
-    document.getElementById('playAIGameBtn').addEventListener('click', () => {
-      // load in AI game on the backend.
-      gameModal.style.display = "flex";
-      gameBoard.startAIgame();
-    });
+    // document.getElementById('playAIGameBtn').addEventListener('click', () => {
+    //   // load in AI game on the backend.
+    //   gameModal.style.display = "flex";
+    //   gameBoard.startAIgame();
+    // });
 
     document.getElementById('playRemoteGameBtn').addEventListener('click', () => {
       // load in Remote game on the backend.
