@@ -19,7 +19,7 @@
   float: right;
   font-size: 28px;
   font-weight: bold;
-  padding-right: 10px;
+  padding-right: 0.5rem;
 }
 
 .back:hover,
@@ -35,7 +35,7 @@
 .close {
   color: var(--primary-color);
   float: right;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
 }
 
@@ -59,6 +59,21 @@
   align-items: center;
   display: flex;
   margin-left: 0.5rem;
+}
+:where
+.loser-gif-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 50vh; /* Full viewport height */
+  overflow: hidden;
+}
+
+.loser-gif {
+  background: url('/static/images/loser.gif') no-repeat center center;
+  background-size: contain; /* Ensure the image scales properly */
+  width: 80vw; /* One-third of the viewport width */
+  height: 80vw; /* Maintain aspect ratio */
 }
 
 .message {
@@ -118,6 +133,20 @@
   height: 50px;
   border-radius: 50%;
   margin-right: 0.5rem;
+}
+
+.refresh {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 0.5rem;
+}
+
+.refresh:hover,
+.refresh:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
 }
 
 .reject-button {

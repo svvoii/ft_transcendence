@@ -13,9 +13,10 @@ from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
 from a_friends.serializers import FriendRequestSerializer
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Account
 from .serializers import AccountSerializer
@@ -183,10 +184,8 @@ def api_profile_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_edit_profile_view(request, *args, **kwargs):
-	if not request.user.is_authenticated:
-		return Response("You must be logged in to edit your profile.", status=status.HTTP_403_FORBIDDEN)
-
 	user_id = kwargs.get('user_id')
 	try:
 		account = Account.objects.get(pk=user_id)
@@ -196,30 +195,18 @@ def api_edit_profile_view(request, *args, **kwargs):
 	if account.pk != request.user.pk:
 		return Response("You cannot edit someone else's profile.", status=status.HTTP_403_FORBIDDEN)
 
-	if request.method == 'POST':
-		# form = AccountUpdateForm(request.POST, request.FILES, instance=request.user)
-		form = AccountUpdateForm(request.data, instance=request.user)
-		if form.is_valid():
-			form.save()
-			return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
-		else:
-			return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
+	form = AccountUpdateForm(request.data, request.FILES, instance=request.user)
+	if form.is_valid():
+		print('saving form')
+		print(form.cleaned_data)
+		form.save()
+		return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
 	else:
-		form = AccountUpdateForm(
-			initial={
-				'id': account.pk,
-				'email': account.email,
-				'username': account.username,
-				'profile_image': account.profile_image,
-				'hide_email': account.hide_email,
-			}
-		)
-
+		return Response({"errors": form.errors}, status=status.HTTP_400_BAD_REQUEST)
 	context = {
-		'form': form.as_p(),  # Render the form as HTML
+		'form': form.as_p(),
 		'DATA_UPLOAD_MAX_MEMORY_SIZE': settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
 	}
-
 	return Response(context, status=status.HTTP_200_OK)
 
 

@@ -36,6 +36,7 @@ export default class Modal {
 
     // Most recent
     this.mostRecent = null;
+    this.historyStack = [];
 
     // Create a map of all forms for selecting with showForm
     this.formMap = {
@@ -61,11 +62,19 @@ export default class Modal {
     const closeSpan = document.createElement('span');
     closeSpan.classList.add('close');
     closeSpan.innerHTML = '&times;';
+    closeSpan.title = "Close";
 
     // Create the back span
     const backSpan = document.createElement('span');
     backSpan.classList.add('back');
     backSpan.innerHTML = '&larrhk;';
+    backSpan.title = "Back";
+
+    // Create the refresh span
+    const refreshSpan = document.createElement('span');
+    refreshSpan.classList.add('refresh');
+    refreshSpan.innerHTML = '&orarr;';
+    refreshSpan.title = "Refresh";
 
     // Create the modal content div
     const modalContent = document.createElement('div');
@@ -73,6 +82,7 @@ export default class Modal {
 
     // Append the spans and modal content to the modal content box
     modalContentBox.appendChild(closeSpan);
+    modalContentBox.appendChild(refreshSpan);
     modalContentBox.appendChild(backSpan);
     modalContentBox.appendChild(modalContent);
 
@@ -83,30 +93,32 @@ export default class Modal {
   initEventListeners() {
     const closeSpan = this.modal.querySelector('.close');
     const backSpan = this.modal.querySelector('.back');
+    const refreshSpan = this.modal.querySelector('.refresh');
 
-    if (closeSpan) {
-      closeSpan.addEventListener('click', () => {
+    closeSpan.addEventListener('click', () => {
+      this.hide();
+    });
+
+    backSpan.addEventListener('click', async() => {
+      this.historyStack.pop();
+      const prevForm = this.historyStack.pop();
+
+      if (prevForm) {
+        await this.showForm(prevForm.formName, prevForm.data);
+      } else {
         this.hide();
-      });
-    }
+      }
+    });
 
-    if (backSpan) {
-      backSpan.addEventListener('click', async() => {
-        if (this.mostRecent === this.userViewForm
-          || this.mostRecent === this.userEditForm
-          || this.mostRecent === this.userChangePassForm
-          || this.mostRecent === this.messagesForm
-          || this.mostRecent === this.userSearchForm) {
-          this.showForm('userForm');
-        } else if (this.mostRecent === this.forgotPassForm) {
-          this.showForm('loginForm');
-        } else if (this.mostRecent === this.friendsListForm) {
-          this.showForm('userViewForm');
-        } else {
-          this.hide();
-        }
-      });
-    }
+    refreshSpan.addEventListener('click', async() => {
+      const currentForm = this.historyStack.pop();
+
+      if (currentForm) {
+        await this.showForm(currentForm.formName, currentForm.data);
+      } else {
+        this.hide();
+      }
+    });
 
     window.onclick = event => {
       if (event.target === this.modal) {
@@ -126,7 +138,7 @@ export default class Modal {
     const form = this.formMap[formName];
 
     if (form) {
-      this.mostRecent = form;
+      this.historyStack.push( { formName, data } );
       this.show(form, data);
     } else {
       console.error(`form not found: ${formName}`);
@@ -134,6 +146,7 @@ export default class Modal {
   }
 
   hide() {
+    this.historyStack = [];
     this.modal.style.display = "none";
   }
 
