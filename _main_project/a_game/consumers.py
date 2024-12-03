@@ -8,12 +8,11 @@ CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 100
-PADDLE_SPEED = 10
+PADDLE_SPEED = 20
 BALL_WIDTH = 10
 BALL_HEIGHT = 10
-BALL_SPEED = 5
-BALL_VELOCITY_X = 4
-BALL_VELOCITY_Y = 4
+BALL_VELOCITY_X = 5
+BALL_VELOCITY_Y = 5
 FPS = 60
 
 game_tasks = {}
@@ -105,14 +104,14 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		if key == "ArrowUp":
 			if player == "player1":
-				self.game_state.paddle1 = max(0, self.game_state.paddle1_y - PADDLE_SPEED)
+				self.game_state.paddle1 = max(0, self.game_state.paddle1 - PADDLE_SPEED)
 			else:
-				self.game_state.paddle2 = max(0, self.game_state.paddle2_y - PADDLE_SPEED)
+				self.game_state.paddle2 = max(0, self.game_state.paddle2 - PADDLE_SPEED)
 		elif key == "ArrowDown":
 			if player == "player1":
-				self.game_state.paddle1 = min(CANVAS_HEIGHT - PADDLE_HEIGHT, self.game_state.paddle1_y + PADDLE_SPEED)
+				self.game_state.paddle1 = min(CANVAS_HEIGHT - PADDLE_HEIGHT, self.game_state.paddle1 + PADDLE_SPEED)
 			else:
-				self.game_state.paddle2 = min(CANVAS_HEIGHT - PADDLE_HEIGHT, self.game_state.paddle2_y + PADDLE_SPEED)
+				self.game_state.paddle2 = min(CANVAS_HEIGHT - PADDLE_HEIGHT, self.game_state.paddle2 + PADDLE_SPEED)
 
 		await self.channel_layer.group_send(
 			self.game_group_name,

@@ -22,10 +22,10 @@ export default class extends AbstractView {
     paragraph.textContent = 'You are viewing the game menu!';
 
     // Create the button
-    const ai_button = document.createElement('button');
-    ai_button.id = 'playAIGameBtn';
-    ai_button.type = 'select';
-    ai_button.textContent = 'Play VS AI';
+    // const ai_button = document.createElement('button');
+    // ai_button.id = 'playAIGameBtn';
+    // ai_button.type = 'select';
+    // ai_button.textContent = 'Play VS AI';
 
     // Create the button
     const remote_button = document.createElement('button');
@@ -47,7 +47,7 @@ export default class extends AbstractView {
 
     // Append the paragraph to the container
     container.appendChild(paragraph);
-    container.appendChild(ai_button);
+    // container.appendChild(ai_button);
     container.appendChild(remote_button);
     container.appendChild(create_tournament_button);
     container.appendChild(join_tournament_button);
