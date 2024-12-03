@@ -82,8 +82,8 @@ export default class Modal {
 
     // Append the spans and modal content to the modal content box
     modalContentBox.appendChild(closeSpan);
-    modalContentBox.appendChild(backSpan);
     modalContentBox.appendChild(refreshSpan);
+    modalContentBox.appendChild(backSpan);
     modalContentBox.appendChild(modalContent);
 
     // Append the modal content box to the main container
@@ -111,7 +111,13 @@ export default class Modal {
     });
 
     refreshSpan.addEventListener('click', async() => {
-      console.log("refreshSpan clicked");
+      const currentForm = this.historyStack.pop();
+
+      if (currentForm) {
+        await this.showForm(currentForm.formName, currentForm.data);
+      } else {
+        this.hide();
+      }
     });
 
     window.onclick = event => {
