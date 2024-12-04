@@ -1,4 +1,3 @@
-// Sending fetch requerst to the server to get the game_session
 
 export async function getGameSession() {
 	const response = await fetch('/game/create_game/', {
@@ -15,7 +14,7 @@ export async function getGameSession() {
 	}
 
 	const data = await response.json();
-	console.log(data);
+	// console.log(data);
 
 	if (data.game_id) {
 		return data.game_id;
@@ -28,10 +27,10 @@ export async function getGameSession() {
 var socket = null;
 var game_initialized = false;
 
-export async function joinGame(game_id) {
-	console.log('..join game, socket: ', socket);
-	console.log('..join game, game_initialized: ', game_initialized);
-	console.log('..join game, id: ', game_id);
+export async function joinGame(game_id, mode) {
+	// console.log('..join game, socket: ', socket);
+	// console.log('..join game, game_initialized: ', game_initialized);
+	// console.log('..join game, id: ', game_id);
 
 	const response = await fetch(`/game/join_game/${game_id}/`, {
 		method: 'POST',
@@ -52,8 +51,6 @@ export async function joinGame(game_id) {
 	}
 
 	const role = data.role;
-	// console.log('..join game, id: ', data.game_id);
-	console.log('..join game, role: ', role);
 
 	// localStorage.setItem('game_id', game_id);
 	// localStorage.setItem('player_role', role);
@@ -63,12 +60,12 @@ export async function joinGame(game_id) {
 	}
 
 	if (!game_initialized) {
-		initializeGame(socket, role);
+		initializeGame(socket, role, mode);
 		game_initialized = true;
 	}
 }
 
-function initializeGame(socket, role) {
+function initializeGame(socket, role, mode) {
     socket.onopen = function() {
         console.log('WebSocket connection established');
     };
@@ -133,29 +130,29 @@ function initializeGame(socket, role) {
 
     document.addEventListener('keydown', function(event) {
         const key = event.key;
+		let roleToSend = null;
+
         if (key === 'ArrowUp' || key === 'ArrowDown') {
-            socket.send(JSON.stringify({
-                key: key,
-                role: role
-            }));
+			roleToSend = role;
+		} 
+		if (mode === 'single') {
+			if (key === 'w' || key === 's') {
+				roleToSend = 'player2';
+			}
         }
+		if (mode === 'ai') {
+			// This might be changed to simulate the AI key presses
+			if (key === 'w' || key === 's') {
+				roleToSend = 'player2';
+			}
+		}
+
+		socket.send(JSON.stringify({
+			key: key,
+			role: roleToSend
+		}));
+
     });
 
 	draw();
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
 }

@@ -102,12 +102,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 		key = data["key"]
 		player = data["role"]
 
-		if key == "ArrowUp":
+		if key == "ArrowUp" or key == "w":
 			if player == "player1":
 				self.game_state.paddle1 = max(0, self.game_state.paddle1 - PADDLE_SPEED)
 			else:
 				self.game_state.paddle2 = max(0, self.game_state.paddle2 - PADDLE_SPEED)
-		elif key == "ArrowDown":
+		elif key == "ArrowDown" or key == "s":
 			if player == "player1":
 				self.game_state.paddle1 = min(CANVAS_HEIGHT - PADDLE_HEIGHT, self.game_state.paddle1 + PADDLE_SPEED)
 			else:

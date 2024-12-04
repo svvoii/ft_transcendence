@@ -39,22 +39,26 @@ export default class GameBoard {
 		return container;
 	}
 
-	//   startAIgame() {
-	//     console.log('AI game started');
-	//   }
-
-	async startRemotegame() {
-		console.log('Remote game started');
+	async startSinglePlayerGame(mode) {
+		console.log('Single Player Game started, mode: ', mode);
 
 		try {
 			const game_id = await getGameSession();
-			await joinGame(game_id);
+			await joinGame(game_id, mode);
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 		} catch (error) {
 			console.error('Error starting the game: ', error);
 		}
-
 		
+	}
+
+	async startMultiPlayerGame() {
+		console.log('Multiplayer game started');
+
+	}
+
+	async joinExistingGame(game_id) {
+		console.log('Joining existing game');
 	}
 	
 	async afterRender() {
