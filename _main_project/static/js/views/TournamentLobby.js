@@ -13,6 +13,8 @@ export default class extends AbstractView {
 
     // Create a container div
     const container = document.createElement('div');
+    container.className = 'system-author-messages';
+
     container.classList.add('text-container');
 
     // Create the paragraph element
@@ -48,6 +50,39 @@ export default class extends AbstractView {
     container.appendChild(linkParagraph);
     container.appendChild(button);
     container.appendChild(ul);
+
+
+
+    // const messageBox = document.createElement('div');
+
+    // const systemAuthorSocket = new WebSocket('ws://localhost:8000/ws/tournament_lobby/');
+
+    // systemAuthorSocket.onopen = function() {
+    //   console.log('WebSocket connection established.');
+    //   const message = {
+    //     'message': 'Hello, server! We are ready to play.'
+    //   };
+    //   systemAuthorSocket.send(JSON.stringify(message));
+    // };
+
+    
+    // systemAuthorSocket.onmessage = function(event) {
+    //   const message = JSON.parse(event.data);
+
+    //   messageBox.className = 'message-box';
+    //   messageBox.textContent = message.message;
+    //   container.appendChild(messageBox);
+    // };
+
+
+    // systemAuthorSocket.onclose = function(event) {
+    //   console.error('WebSocket connection closed:', event);
+    // };
+    
+    // systemAuthorSocket.onerror = function(error) {
+    //   console.error('WebSocket error:', error);
+    // };   
+
 
 
     return container;

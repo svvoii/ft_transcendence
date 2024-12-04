@@ -35,9 +35,118 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    document.getElementById('tournamentLobbyBtn').addEventListener('click', () => {
+    document.getElementById('tournamentLobbyBtn').addEventListener('click', async () => {
       console.log('Create Tournament Lobby Button Clicked');
-      navigateTo('/tournament_lobby/');
+      // navigateTo('/tournament_lobby/');
+
+      const tournamentName = "MyTournament";
+
+      if (tournamentName) {
+          try {
+                const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
+
+                const response = await fetch(`/tournament/create_tournament/`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: JSON.stringify({ }),
+                });
+
+                const responseText = await response.text();
+                const data = JSON.parse(responseText);
+
+
+                if (data.status === 'success') {
+                    console.log('Tournament created successfully:', data.url);
+                    navigateTo(`/tournament_lobby/${data.url}`);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+  
+            
+      ///////////////////////////////// CREATE TOURNAMENT //////////////////////////////////////
+
+          //     const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
+
+          //     const response = await fetch(`/tournament/create_tournament/`, {
+          //         method: 'POST',
+          //         headers: {
+          //             'Accept': 'application/json',
+          //             'Content-Type': 'application/json',
+          //             'X-CSRFToken': csrftoken,
+          //         },
+          //         body: JSON.stringify({ name: tournamentName }),
+          //     });
+
+          //     console.log('Request sent, awaiting response...');
+
+          //     const responseText = await response.text();
+          //     // console.log('Response Text:', responseText);
+
+          //     const data = JSON.parse(responseText);
+
+          //     if (data.status === 'success') {
+          //         console.log('Tournament created successfully:', data.tournament_id);
+          //         navigateTo(`/tournament_lobby/`);
+          //     } else {
+          //         alert(data.message);
+          //     }
+          // } catch (error) {
+          //     console.error('Error:', error);
+          // }
+
+      ///////////////////////////////// DELETE TOURNAMENT //////////////////////////////////////
+
+      //     const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
+
+      //     const response = await fetch(`/tournament/delete_tournament/${tournamentName}/`, {
+      //       method: 'DELETE',
+      //       headers: {
+      //           'Content-Type': 'application/json',
+      //           'X-CSRFToken': csrftoken,
+      //       },
+      //       body: JSON.stringify({ name: tournamentName }), // Include any data you need to send with the request
+      //     });
+
+      //     console.log('Request [delete] sent, awaiting response...');
+
+      //     const responseText = await response.text();
+      //     const data = JSON.parse(responseText);
+
+      //     if (data.status === 'success') {
+      //         console.log('Tournament deleted successfully:', data.tournament_id);
+      //     } else {
+      //         alert(data.message);
+      //     }
+      // } catch (error) {
+      //     console.error('Error:', error);
+      // }
+
+
+      } else {
+          alert('Tournament name is required.');
+      }
     });
   }
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
 }
