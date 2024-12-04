@@ -20,7 +20,7 @@ export default class extends AbstractModalView {
 
     const userData = await response.json();
 
-    console.log(userData.friends);
+    // console.log(userData.friends);
 
     const friendsList = document.createElement('ul');
     friendsList.classList.add('search-results');
@@ -29,6 +29,13 @@ export default class extends AbstractModalView {
       const noFriends = document.createElement('p');
       noFriends.textContent = 'You have no friends, loser';
       container.appendChild(noFriends);
+      
+      const loserGifContainer = document.createElement('div');
+      loserGifContainer.classList.add('loser-gif-container');
+      const loserGif = document.createElement('div');
+      loserGif.classList.add('loser-gif');
+      loserGifContainer.appendChild(loserGif);
+      container.appendChild(loserGifContainer);
     } else {
       for (const friend of userData.friends) {
         const friendItem = document.createElement('div');
