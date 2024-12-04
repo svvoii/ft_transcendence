@@ -1,6 +1,7 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import GameMenu from "../views/GameMenu.js";
+import GameOptions from "../views/GameOptions.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
@@ -17,6 +18,7 @@ export const router = async () => {
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
+	{ path: '/game_options/', view: GameOptions },
     { path: '/tournament_setup/', view: TournamentSetup },
     { path: '/tournament_lobby/', view: TournamentLobby },
     { path: '/terms_of_service/', view: TermsOfService },

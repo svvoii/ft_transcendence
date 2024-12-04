@@ -20,7 +20,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', '_main_project.settings')
 django_asgi_app = get_asgi_application()
 
 
-from a_chat import routing
+from a_chat import routing as a_chat_routing
+from a_game import routing as a_game_routing
+
+websocket_urlpatterns = a_chat_routing.websocket_urlpatterns + a_game_routing.websocket_urlpatterns
 
 application = ProtocolTypeRouter({
 	"http": django_asgi_app,
@@ -28,7 +31,7 @@ application = ProtocolTypeRouter({
 	"websocket": AllowedHostsOriginValidator(
 		AuthMiddlewareStack(
 			URLRouter(
-				routing.websocket_urlpatterns
+				websocket_urlpatterns
 			)
 		)
 	),
