@@ -55,10 +55,29 @@ export default class GameBoard {
 	async startMultiPlayerGame() {
 		console.log('Multiplayer game started');
 
+		try {
+			const game_id = await getGameSession();
+			await joinGame(game_id, 'multiplayer');
+			this.paragraph.textContent = `Game ID: ${game_id}`;
+		} catch (error) {
+			alert('Error starting the game: ' + error.message);
+			console.error('Error starting the game: ', error);
+		}
+
 	}
 
 	async joinExistingGame(game_id) {
-		console.log('Joining existing game');
+		const gameModal = document.getElementById('gameModal');
+		console.log('Joining existing game, game_id: ', game_id);
+
+		try {
+			await joinGame(game_id, 'multiplayer');
+			this.paragraph.textContent = `Game ID: ${game_id}`;
+			gameModal.style.display = 'flex';
+		} catch (error) {
+			alert('Error joining the game: ' + error.message);
+			console.error('Error joining the game: ', error);
+		}
 	}
 	
 	async afterRender() {
