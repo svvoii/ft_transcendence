@@ -106,8 +106,13 @@ export default class extends AbstractView {
 
 		document.getElementById('joinGameBtn').addEventListener('click', async() => {
 			const game_id = document.getElementById('joinGameInput').value;
-			await joinGame(game_id);
-			gameModal.style.display = 'flex';
+
+			if (!game_id) {
+				alert('Please enter a game ID');
+				return;
+			}
+			gameBoard.joinExistingGame(game_id);
+			// gameModal.style.display = 'flex';
 		});
 	}
 

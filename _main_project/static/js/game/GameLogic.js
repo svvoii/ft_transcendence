@@ -46,8 +46,8 @@ export async function joinGame(game_id, mode) {
 	console.log('..join game, data: ', data);
 
 	if (!response.ok) {
-		alert('Error joining the game: ' + data.error);
-		// throw new Error(data.error);
+		// alert('Error joining the game: ' + data.error);
+		throw new Error(data.message || 'Error joining the game');
 	}
 
 	const role = data.role;
@@ -63,6 +63,7 @@ export async function joinGame(game_id, mode) {
 		initializeGame(socket, role, mode);
 		game_initialized = true;
 	}
+	return data;
 }
 
 function initializeGame(socket, role, mode) {
@@ -155,4 +156,19 @@ function initializeGame(socket, role, mode) {
     });
 
 	draw();
+}
+
+function getCookie(name) {
+	let cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';');
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim();
+			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
 }
