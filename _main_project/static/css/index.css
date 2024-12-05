@@ -18,6 +18,11 @@
   --app-height: calc(100vh - (calc(var(--nav-height)) + var(--footer-height)));
 }
 
+/* enables scrolling in text screens like TOS and privacy policy */
+html, body {
+  overflow: auto;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -153,6 +158,10 @@ input {
 
 input:focus {
   outline: none;
+}
+
+li {
+  color: var(--primary-color);
 }
 
 .gif-container {
