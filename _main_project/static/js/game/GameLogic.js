@@ -1,4 +1,3 @@
-
 export async function getGameSession() {
 	const response = await fetch('/game/create_game/', {
 		method: 'POST',
@@ -9,12 +8,12 @@ export async function getGameSession() {
 		body: JSON.stringify({}),
 	});
 
+	const data = await response.json();
+	// console.log(data);
+
 	if (!response.ok) {
 		throw new Error(`ERROR: Server saying: ${data.error}`);
 	}
-
-	const data = await response.json();
-	// console.log(data);
 
 	if (data.game_id) {
 		return data.game_id;

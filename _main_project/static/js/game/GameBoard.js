@@ -1,4 +1,4 @@
-import { getGameSession, joinGame } from './GameLogic.js';
+import { getGameSession, joinGame } from './GameLogicAPI.js';
 
 export default class GameBoard {
 	constructor(appId) {
