@@ -39,7 +39,7 @@ export default class extends AbstractView {
       console.log('Create Tournament Lobby Button Clicked');
       // navigateTo('/tournament_lobby/');
 
-      const tournamentName = "MyTournament";
+      const tournamentName = "kHZBSv5DeFUbgRkeHrLjBV";
 
       if (tournamentName) {
           try {
@@ -61,47 +61,16 @@ export default class extends AbstractView {
 
                 if (data.status === 'success') {
                     console.log('Tournament created successfully:', data.url);
-                    navigateTo(`/tournament_lobby/${data.url}`);
+                    navigateTo(`/tournament_lobby/${data.url}/`);
                 } else {
                     alert(data.message);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-  
-            
-      ///////////////////////////////// CREATE TOURNAMENT //////////////////////////////////////
-
-          //     const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
-
-          //     const response = await fetch(`/tournament/create_tournament/`, {
-          //         method: 'POST',
-          //         headers: {
-          //             'Accept': 'application/json',
-          //             'Content-Type': 'application/json',
-          //             'X-CSRFToken': csrftoken,
-          //         },
-          //         body: JSON.stringify({ name: tournamentName }),
-          //     });
-
-          //     console.log('Request sent, awaiting response...');
-
-          //     const responseText = await response.text();
-          //     // console.log('Response Text:', responseText);
-
-          //     const data = JSON.parse(responseText);
-
-          //     if (data.status === 'success') {
-          //         console.log('Tournament created successfully:', data.tournament_id);
-          //         navigateTo(`/tournament_lobby/`);
-          //     } else {
-          //         alert(data.message);
-          //     }
-          // } catch (error) {
-          //     console.error('Error:', error);
-          // }
-
-      ///////////////////////////////// DELETE TOURNAMENT //////////////////////////////////////
+                
+              
+              } catch (error) {
+                  console.error('Error:', error);
+              }
+      /////////////////////////////// DELETE TOURNAMENT //////////////////////////////////////
 
       //     const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
 
@@ -119,8 +88,9 @@ export default class extends AbstractView {
       //     const responseText = await response.text();
       //     const data = JSON.parse(responseText);
 
+
       //     if (data.status === 'success') {
-      //         console.log('Tournament deleted successfully:', data.tournament_id);
+      //         console.log(data.message, data.tournament_name);
       //     } else {
       //         alert(data.message);
       //     }

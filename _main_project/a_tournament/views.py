@@ -43,33 +43,29 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+#CREATE TOURNAMENT
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
-    # data = json.loads(request.body)
-    # data = request.data
-    # tournamentName = data.get('name')
-    # url = tournamentName.
     tournament = Tournament.objects.create()
     tournament_url = tournament.tournament_name;
     return Response({'status': 'success', 'message': 'Tournament created successfully.', 'url': f'{tournament_url}' }, status=status.HTTP_201_CREATED)
 
+#GET TOURNAMENT
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_tournament(request, tournament_name):
+    data = request.data
+    if Tournament.objects.filter(tournament_name=tournament_name).exists():
+        tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+        tournament_nb_players = tournament.nb_players;
+        return Response({'status': 'Tournament exists', 'nb_players': f'{tournament_nb_players}'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+  
 
-# @csrf_exempt
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def create_tournament(request):
-#     # data = json.loads(request.body)
-#     data = request.data
-#     tournamentName = data.get('name')
-#     url = tournamentName.
-#     if not Tournament.objects.filter(tournament_name=tournamentName).exists():
-#         Tournament.objects.create(tournament_name=tournamentName)
-#         return Response({'status': 'success', 'message': 'Tournament created successfully.', 'url': }, status=status.HTTP_201_CREATED)
-#     else:
-#         return Response({'status': 'error', 'message': 'Tournament already exists.'}, status=status.HTTP_400_BAD_REQUEST)
-
+#DELETE TOURNAMENT
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_tournament(request, tournament_name):
@@ -78,7 +74,7 @@ def delete_tournament(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournamentName).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournamentName)
         tournament.delete()
-        return Response({'status': 'Tournament deleted'})
+        return Response({'status': 'success', 'tournament_name': f'{tournamentName}', 'message': 'Tournament deleted successfully.'}, status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
   
