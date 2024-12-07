@@ -36,7 +36,7 @@ class GameState:
             "paddle2": self.paddle2,
             "score1": self.score1,
             "score2": self.score2,
-			"winner": getattr(self, "winner", None)
+			# "winner": getattr(self, "winner", None)
         }
 
 	def update(self):

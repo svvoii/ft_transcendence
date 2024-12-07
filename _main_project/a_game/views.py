@@ -143,3 +143,35 @@ def move_paddle(request, game_id):
 	return Response(context, status=400)
 
 		
+
+# This function is called when the game is over to end the game session
+# The game results and the winner are saved to the GameSession object / model
+# The GameState object is deleted from the `game_states` dictionary
+@api_view(["POST"])
+@login_required
+def end_game_session(request, game_id):
+	global game_states
+	context = {}
+
+	game_session = GameSession.objects.filter(game_id=game_id).first()
+	if not game_session:
+		context['message'] = 'Game session does not exist.'
+		return Response(context, status=400)
+
+	game_session.score1 = game_states[game_id].score1
+	game_session.score2 = game_states[game_id].score2
+	winner = game_session.player1 if game_states[game_id].score1 > game_states[game_id].score2 else game_session.player2
+	game_session.winner = winner
+	game_session.is_active = False
+	game_session.save()
+
+	# DEBUG #
+	print(f'Game session ended. Winner: {winner}')
+	print(f'Player 1: {game_states[game_id].score1}, Player 2: {game_states[game_id].score2}')
+	print(f'is_active: {game_session.is_active}')
+
+	del game_states[game_id]
+
+	context['message'] = 'Game session ended successfully.'
+	return Response(context, status=200)
+

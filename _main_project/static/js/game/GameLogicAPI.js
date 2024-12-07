@@ -125,6 +125,24 @@ async function movePaddle(game_id, paddle, direction) {
 }
 
 
+// This will request the server to end the game
+async function endGame(game_id) {
+	// console.log('..end game, game_id: ', game_id);
+	const response = await fetch(`/game/end_game/${game_id}/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+		},
+		body: JSON.stringify({}),
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to end the game');
+	}
+}
+
+
 // This will initialize the game logic
 // It will draw the paddles and ball on the canvas
 // The ball position is updated via WebSocket
@@ -162,8 +180,8 @@ async function initializeGame(socket, role, mode, game_id) {
 	function updateGameState(gameState) {
 		paddle1 = gameState.paddle1;
 		paddle2 = gameState.paddle2;
-		// score1 = gameState.score1;
-		// score2 = gameState.score2;
+		score1 = gameState.score1;
+		score2 = gameState.score2;
 		// winner = gameState.winner;
 		// console.log('..score1: ', score1, ' score2: ', score2);
 	}
@@ -175,8 +193,11 @@ async function initializeGame(socket, role, mode, game_id) {
             ballY = data.ball_y;
 			score1 = data.score1;
 			score2 = data.score2;
+			// winner = data.winner;
+        } else if (data.type === 'game_over') {
 			winner = data.winner;
-        }
+			// alert(`Game Over! ${winner} wins!`);
+		}
     };
 
     function drawPaddle1() {
@@ -210,6 +231,12 @@ async function initializeGame(socket, role, mode, game_id) {
 			ctx.fillStyle = 'white';
 			ctx.font = '30px Arial';
 			ctx.fillText(`Game Over! ${winner} wins!`, canvas.width / 2 - 150, canvas.height / 2);
+			
+			// End the game
+			endGame(game_id);
+
+			socket.close();
+
 			return;
 		}
 

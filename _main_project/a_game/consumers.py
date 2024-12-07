@@ -56,17 +56,20 @@ class PongConsumer(AsyncWebsocketConsumer):
                     "ball_y": self.game_state.ball_y,
 					"score1": self.game_state.score1,
 					"score2": self.game_state.score2,
-					"winner": getattr(self.game_state, "winner", None),
+					# "winner": getattr(self.game_state, "winner", None),
                 }
             )
 			await asyncio.sleep(1 / FPS)  # 60 FPS
+		
+		# Game over
+		await self.end_game()
 			
 	async def update_state(self, event):
 		ball_x = event["ball_x"]
 		ball_y = event["ball_y"]
 		score1 = event["score1"]
 		score2 = event["score2"]
-		winner = event["winner"]
+		# winner = event["winner"]
 
 		await self.send(text_data=json.dumps({
 			"type": "update_state",
@@ -74,5 +77,34 @@ class PongConsumer(AsyncWebsocketConsumer):
 			"ball_y": ball_y, 
 			"score1": score1,
 			"score2": score2,
+			# "winner": winner,
+		}))
+
+	# This will close the connection and end the game loop
+	async def end_game(self):
+
+		await self.channel_layer.group_send(
+			self.game_group_name,
+			{
+				"type": "game_over",
+				# "winner": self.game_state.winner,
+				"winner": getattr(self.game_state, "winner", None),
+			}
+		)
+
+		await self.channel_layer.group_discard(
+			self.game_group_name,
+			self.channel_name
+		)
+  
+		if self.game_id in game_tasks:
+			game_tasks[self.game_id].cancel()
+			del game_tasks[self.game_id]
+
+	async def game_over(self, event):
+		winner = event["winner"]
+		await self.send(text_data=json.dumps({
+			"type": "game_over",
 			"winner": winner,
 		}))
+		await self.close()
