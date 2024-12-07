@@ -105,8 +105,9 @@ def get_game_state(request, game_id):
 		return Response(context, status=400)
 
 	game_state = game_states[game_id]
+	context = game_state.get_state()
 	# print(f'Game state for ID {game_id}: {game_state.get_state()}')
-	return Response(game_state.get_state(), status=200)
+	return Response(context, status=200)
 
 
 # This function is called when the user presses the up or down arrow key to move the paddle
@@ -134,7 +135,8 @@ def move_paddle(request, game_id):
 
 	if paddle and direction:
 		game_state.move_paddle(paddle, direction)
-		context['message'] = 'Paddle move successful.'
+		# context['message'] = 'Paddle move successful.'
+		context = game_state.get_state()
 		return Response(context, status=200)
 	
 	context['message'] = 'Invalid request.'

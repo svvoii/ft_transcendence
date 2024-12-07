@@ -44,34 +44,35 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		pass
-        # data = json.loads(text_data)
-        # key = data["key"]
-        # player = data["role"]
-
-        # if key == "up":
-        #     self.game_state.move_paddle(player, -1)
-        # elif key == "down":
-        #     self.game_state.move_paddle(player, 1)
 
 	async def game_loop(self):
-		while True:
-			self.game_state.update_ball_position()
+		while not self.game_state.game_over:
+			self.game_state.update()
 			await self.channel_layer.group_send(
 				self.game_group_name,
                 {
-                    "type": "ball_update",
+                    "type": "update_state",
                     "ball_x": self.game_state.ball_x,
                     "ball_y": self.game_state.ball_y,
+					"score1": self.game_state.score1,
+					"score2": self.game_state.score2,
+					"winner": getattr(self.game_state, "winner", None),
                 }
             )
 			await asyncio.sleep(1 / FPS)  # 60 FPS
-
-	async def ball_update(self, event):
+			
+	async def update_state(self, event):
 		ball_x = event["ball_x"]
 		ball_y = event["ball_y"]
+		score1 = event["score1"]
+		score2 = event["score2"]
+		winner = event["winner"]
 
 		await self.send(text_data=json.dumps({
-			"type": "ball_update",
+			"type": "update_state",
 			"ball_x": ball_x,
-			"ball_y": ball_y
+			"ball_y": ball_y, 
+			"score1": score1,
+			"score2": score2,
+			"winner": winner,
 		}))

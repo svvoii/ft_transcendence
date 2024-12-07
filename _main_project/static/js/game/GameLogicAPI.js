@@ -93,6 +93,7 @@ async function fetchGameState(game_id) {
     }
 	const data = await response.json();
 	// console.log('..fetch game state, data: ', data);
+	// console.log('..game state fetched: ', gameState);
 	// console.log('..paddle1: ', data.paddle1, ' paddle2: ', data.paddle2);
 
 	return data;
@@ -146,25 +147,35 @@ async function initializeGame(socket, role, mode, game_id) {
     const paddleHeight = 100;
     const paddleWidth = 10;
     const ballSize = 10;
-    let paddle1;
-    let paddle2;
     let ballX;
     let ballY;
+    let paddle1;
+    let paddle2;
+	let score1;
+	let score2;
+	let winner = null;
 
-	// console.log('Fetching game state for game_id: ', game_id);
     // Fetch initial game state
-    const gameState = await fetchGameState(game_id);
-	// console.log('..game state fetched: ', gameState);
-    paddle1 = gameState.paddle1;
-    paddle2 = gameState.paddle2;
-    ballX = gameState.ball_x;
-    ballY = gameState.ball_y;
+    let gameState = await fetchGameState(game_id);
+	updateGameState(gameState);
+
+	function updateGameState(gameState) {
+		paddle1 = gameState.paddle1;
+		paddle2 = gameState.paddle2;
+		// score1 = gameState.score1;
+		// score2 = gameState.score2;
+		// winner = gameState.winner;
+		// console.log('..score1: ', score1, ' score2: ', score2);
+	}
 
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        if (data.type === 'ball_update') {
+        if (data.type === 'update_state') {
             ballX = data.ball_x;
             ballY = data.ball_y;
+			score1 = data.score1;
+			score2 = data.score2;
+			winner = data.winner;
         }
     };
 
@@ -186,11 +197,27 @@ async function initializeGame(socket, role, mode, game_id) {
         ctx.closePath();
     }
 
+	function drawScore() {
+		ctx.fillStyle = 'white';
+		ctx.font = '30px Arial';
+		ctx.fillText(score1, canvas.width / 4, 50);
+		ctx.fillText(score2, canvas.width * 3 / 4, 50);
+	}
+
     function draw() {
+		if (winner !== null) {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = 'white';
+			ctx.font = '30px Arial';
+			ctx.fillText(`Game Over! ${winner} wins!`, canvas.width / 2 - 150, canvas.height / 2);
+			return;
+		}
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawPaddle1();
         drawPaddle2();
         drawBall();
+		drawScore();
 
         requestAnimationFrame(draw);
     }
@@ -198,12 +225,13 @@ async function initializeGame(socket, role, mode, game_id) {
     requestAnimationFrame(draw);
 
     document.addEventListener('keydown', async function(event) {
+		if (winner !== null) return;
+
         const key = event.key;
 		let player = role;
         let direction = 0; // server expects 1 or -1
 
-		console.log('..key pressed: ', key);
-
+		// console.log('..key pressed: ', key);
         if (key === 'ArrowUp' || key === 'w') {
             direction = -1;
         } else if (key === 'ArrowDown' || key === 's') {
@@ -215,12 +243,11 @@ async function initializeGame(socket, role, mode, game_id) {
 				player = 'player2';
             }
 			let paddle = player === 'player1' ? 1 : 2; // backend expects 1 or 2 as paddle value
-            await movePaddle(game_id, paddle, direction);
-            const updatedGameState = await fetchGameState(game_id);
-            paddle1 = updatedGameState.paddle1;
-            paddle2 = updatedGameState.paddle2;
+            gameState = await movePaddle(game_id, paddle, direction);
+            // gameState = await fetchGameState(game_id);
+			updateGameState(gameState);
         }
     });
 
-    draw();
+    // draw();
 }

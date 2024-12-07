@@ -12,6 +12,7 @@ BALL_WIDTH = 10
 BALL_HEIGHT = 10
 BALL_VELOCITY_X = 5
 BALL_VELOCITY_Y = 5
+WINNING_SCORE = 3
 FPS = 60
 
 
@@ -27,8 +28,21 @@ class GameState:
 		self.ball_velocity_y = BALL_VELOCITY_Y
 		self.score1 = 0
 		self.score2 = 0
+		self.game_over = False
 
-	def update_ball_position(self):
+	def get_state(self):
+		return {
+			"paddle1": self.paddle1,
+            "paddle2": self.paddle2,
+            "score1": self.score1,
+            "score2": self.score2,
+			"winner": getattr(self, "winner", None)
+        }
+
+	def update(self):
+		if self.game_over:
+			return
+
 		# Top and bottom wall collision
 		if self.ball_y <= 0 or self.ball_y >= CANVAS_HEIGHT - BALL_HEIGHT:
 			self.ball_velocity_y *= -1
@@ -52,6 +66,8 @@ class GameState:
 		self.ball_x += self.ball_velocity_x
 		self.ball_y += self.ball_velocity_y
 
+		self.check_winner()
+
 	def reset_ball(self):
 		self.ball_x = CANVAS_WIDTH / 2 - BALL_WIDTH / 2
 		self.ball_y = CANVAS_HEIGHT / 2 - BALL_HEIGHT / 2
@@ -67,13 +83,14 @@ class GameState:
         # Ensure paddles stay within bounds
 		self.paddle1 = max(0, min(self.paddle1, CANVAS_HEIGHT - PADDLE_HEIGHT))
 		self.paddle2 = max(0, min(self.paddle2, CANVAS_HEIGHT - PADDLE_HEIGHT))
+	
+	# To get the winner of the game: 
+	# `getattr(game_states[game_id], "winner", None)` - this will return the winner of the game if the game is over, otherwise it will return None
+	def check_winner(self):
+		if self.score1 >= WINNING_SCORE:
+			self.game_over = True
+			self.winner = "player1"
+		elif self.score2 >= WINNING_SCORE:
+			self.game_over = True
+			self.winner = "player2"
 
-	def get_state(self):
-		return {
-			"paddle1": self.paddle1,
-            "paddle2": self.paddle2,
-            "ball_x": self.ball_x,
-            "ball_y": self.ball_y,
-            "score1": self.score1,
-            "score2": self.score2,
-        }
