@@ -1,3 +1,4 @@
+import { navigateTo } from "../helpers/helpers.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -43,10 +44,12 @@ export default class extends AbstractView {
   async afterRender() {
     document.getElementById('createMPMatchBtn').addEventListener('click', async() => {
       console.log('createMPMatchBtn clicked');
+      navigateTo('/tournament_setup/');
     });
 
     document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
       console.log('joinMPMatchBtn clicked');
+      navigateTo('/tournament_lobby/');
     });
   }
 }
