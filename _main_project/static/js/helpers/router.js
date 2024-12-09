@@ -8,6 +8,7 @@ import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
 import TournamentSetup from "../views/TournamentSetup.js";
 import TournamentLobby from "../views/TournamentLobby.js";
+import TournamentSelect from "../views/TournamentSelect.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
@@ -21,6 +22,7 @@ export const router = async () => {
 	{ path: '/game_options/', view: GameOptions },
     { path: '/tournament_setup/', view: TournamentSetup },
     { path: '/tournament_lobby/', view: TournamentLobby },
+    { path: '/tournament_select/', view: TournamentSelect },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },

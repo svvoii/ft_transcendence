@@ -17,17 +17,17 @@ export default class extends AbstractView {
 		this.container = document.createElement('div');
 		this.container.classList.add('text-container');
 
-		// Button to start single player game against AI
-		const single_player_button = document.createElement('button');
-		single_player_button.id = 'singlePlayerBtn';
-		single_player_button.type = 'select';
-		single_player_button.textContent = 'Single Player';
+		// // Button to start single player game against AI
+		// const single_player_button = document.createElement('button');
+		// single_player_button.id = 'singlePlayerBtn';
+		// single_player_button.type = 'select';
+		// single_player_button.textContent = 'Single Player';
 
-		// Button to start multiplayer game against another player
-		const multi_player_button = document.createElement('button');
-		multi_player_button.id = 'multiPlayerBtn';
-		multi_player_button.type = 'select';
-		multi_player_button.textContent = 'Multiplayer';
+		// // Button to start multiplayer game against another player
+		// const multi_player_button = document.createElement('button');
+		// multi_player_button.id = 'multiPlayerBtn';
+		// multi_player_button.type = 'select';
+		// multi_player_button.textContent = 'Multiplayer';
 
 		// Input field to join a game by ID
 		const join_game_input = document.createElement('input');

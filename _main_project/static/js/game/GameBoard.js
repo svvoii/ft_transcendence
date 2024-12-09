@@ -83,4 +83,10 @@ export default class GameBoard {
 	async afterRender() {
 
 	}
+
 };
+    // document.getElementById('singlePlayerBtn').addEventListener('click', () => {
+    // 	console.log('single player button clicked');
+    // 	// navigateTo('/game_options/');
+    // });
+
