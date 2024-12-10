@@ -6,8 +6,8 @@ services:
     container_name: web-app
     command: /bin/bash "/app/entrypoint.sh"
     env_file: .env
-    ports:
-      - "8000:8000" # default port for Django.. the only one we need to expose to access the app from the host machine browser
+    # ports:
+      # - "8000:8000" # default port for Django.. the only one we need to expose to access the app from the host machine browser
     volumes:
       - .:/app
     depends_on:
@@ -29,6 +29,19 @@ services:
     # ports:
       # - "6379:6379" # ..it seems that the school runs REDIS on this port...
       # - "6380:6379"
+
+  nginx-certbot:
+    build:
+      context: ./nginx-certbot
+    container_name: nginx-certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    # environment: # the following variables needed for the certbot to generate the SSL certificate for https access in case we use a real domain
+    #   - DOMAIN=
+    #   - EMAIL=
 
 volumes:
   postgres_data:

@@ -56,7 +56,9 @@ export async function joinGame(game_id, mode) {
 	// localStorage.setItem('player_role', role);
 
 	if (!socket) {
-		socket = new WebSocket(`ws://${window.location.host}/ws/pong/${game_id}/`);
+		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		socket = new WebSocket(`${protocol}//${window.location.host}/ws/pong/${game_id}/`);
+		// socket = new WebSocket(`ws://${window.location.host}/ws/pong/${game_id}/`);
 	}
 
 	if (!game_initialized) {
