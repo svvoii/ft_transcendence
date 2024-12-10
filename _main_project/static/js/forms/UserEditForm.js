@@ -1,6 +1,6 @@
 import { navigateTo } from "../helpers/helpers.js";
 import AbstractModalView from "./AbstractModalView.js";
-import { user } from "../index.js";
+import { user, modal } from "../index.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -143,6 +143,7 @@ export default class extends AbstractModalView {
           messageDiv.textContent = result.message;
           user.userLoginCheck();
           navigateTo(result.redirect);
+          this.modal.showForm('userEditForm');
         } else {
           messageDiv.textContent = '';
 

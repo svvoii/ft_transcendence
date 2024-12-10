@@ -1,5 +1,4 @@
 import AbstractView from "./AbstractView.js";
-import { gameBoard } from "../index.js";
 import { navigateTo } from "../helpers/helpers.js";
 
 export default class extends AbstractView {
@@ -21,17 +20,10 @@ export default class extends AbstractView {
     const paragraph = document.createElement('p');
     paragraph.textContent = 'You are viewing the game menu!';
 
-    // Create the button
-    const ai_button = document.createElement('button');
-    ai_button.id = 'playAIGameBtn';
-    ai_button.type = 'select';
-    ai_button.textContent = 'Play VS AI';
-
-    // Create the button
-    const remote_button = document.createElement('button');
-    remote_button.id = 'playRemoteGameBtn';
-    remote_button.type = 'select';
-    remote_button.textContent = 'Play VS Another Player';
+	const gameOptions = document.createElement('button');
+	gameOptions.id = 'gameOptionsBtn';
+	gameOptions.type = 'select';
+	gameOptions.textContent = 'Game Options';
 
     // Create the button
     const create_tournament_button = document.createElement('button');
@@ -47,8 +39,7 @@ export default class extends AbstractView {
 
     // Append the paragraph to the container
     container.appendChild(paragraph);
-    container.appendChild(ai_button);
-    container.appendChild(remote_button);
+	container.appendChild(gameOptions);
     container.appendChild(create_tournament_button);
     container.appendChild(join_tournament_button);
 
@@ -56,19 +47,11 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    const gameModal = document.getElementById("gameModal");
 
-    document.getElementById('playAIGameBtn').addEventListener('click', () => {
-      // load in AI game on the backend.
-      gameModal.style.display = "flex";
-      gameBoard.startAIgame();
-    });
-
-    document.getElementById('playRemoteGameBtn').addEventListener('click', () => {
-      // load in Remote game on the backend.
-      gameModal.style.display = "flex";
-      gameBoard.startRemotegame();
-    });
+	document.getElementById('gameOptionsBtn').addEventListener('click', () => {
+		console.log('Game Options');
+		navigateTo('/game_options/');
+	});
 
     document.getElementById('createTournamentBtn').addEventListener('click', () => {
       // load in Remote game on the backend.

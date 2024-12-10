@@ -1,4 +1,89 @@
-/* The Modal (background) */
+.accept-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--dark-color);
+  font-weight: 700;
+  border: 2px solid var(--dark-color);
+  background: var(--success-color);
+}
+
+.accept-button:hover {
+  cursor: pointer;
+  border: 2px solid var(--success-color);
+  box-shadow: 0 0 0.5rem var(--success-color);
+}
+
+.back {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 0.5rem;
+}
+
+.back:hover,
+.back:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.checkbox {
+  margin: 0.5rem;
+}
+
+.close {
+  color: var(--primary-color);
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.friend-badge {
+  color: var(--success-color);
+  margin-left: 0.5rem;
+}
+
+.friend-request-container {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.friend-request-sender {
+  align-items: center;
+  display: flex;
+  margin-left: 0.5rem;
+}
+:where
+.loser-gif-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 50vh; /* Full viewport height */
+  overflow: hidden;
+}
+
+.loser-gif {
+  background: url('/static/images/loser.gif') no-repeat center center;
+  background-size: contain; /* Ensure the image scales properly */
+  width: 80vw; /* One-third of the viewport width */
+  height: 80vw; /* Maintain aspect ratio */
+}
+
+.message {
+  display: flex;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 0.5rem;
+  color: var(--failure-color);
+}
+
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -10,12 +95,6 @@
   background-color: rgba(32, 60, 102, 0.829); /*  background  */
 }
 
-/* modal title */
-.modal-title {
-  margin-bottom: 0.5rem;
-}
-
-/* Modal Content */
 .modal-content {
   /* background-color: white; */
   /* margin: 15% auto; 15% from the top and centered */
@@ -25,7 +104,15 @@
   width: 80%; /* Could be more or less depending on screen size */
 }
 
-/* Modal that contains the forms like login and register */
+.modal-content-box {
+  background-color: var(--background-color);
+  /* margin: 15% auto; 15% from the top and centered */
+  margin: calc(5vw) calc(5vw);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less depending on screen size */
+}
+
 .modal-forms {
   display: none;
   position: fixed;
@@ -37,14 +124,45 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Modal Content Box inside the modal-forms */
-.modal-content-box {
-  background-color: var(--background-color);
-  /* margin: 15% auto; 15% from the top and centered */
-  margin: calc(5vw) calc(5vw);
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less depending on screen size */
+.modal-title {
+  margin-bottom: 0.5rem;
+}
+
+.profile-image-search {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.refresh {
+  color: var(--primary-color);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  padding-right: 0.5rem;
+}
+
+.refresh:hover,
+.refresh:focus {
+  color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.reject-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  color: var(--dark-color);
+  font-weight: 700;
+  border: 2px solid var(--dark-color);
+  background: var(--failure-color);
+}
+
+.reject-button:hover {
+  cursor: pointer;
+  border: 2px solid var(--failure-color);
+  box-shadow: 0 0 0.5rem var(--failure-color);
 }
 
 .select-button {
@@ -56,7 +174,6 @@
   border: 2px solid var(--primary-color);
   background: var(--dark-color);
   margin-bottom: 0.5rem;
-  /* margin: 0.25rem 0; */
 }
 
 .select-button:hover {
@@ -65,55 +182,18 @@
   cursor: pointer;
 }
 
-/* The Close Button */
-.close {
-  color: var(--primary-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: var(--secondary-color);
-  cursor: pointer;
-}
-
-/* The Back Button */
-.back {
-  color: var(--primary-color);
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  padding-right: 10px;
-}
-
-.back:hover,
-.back:focus {
-  color: var(--secondary-color);
-  cursor: pointer;
-}
-
-.message {
-  display: flex;
-  text-align: center;
-  font-size: 24px;
+.selected-button {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  text-decoration: none;
+  font-weight: 700;
+  border: 2px solid var(--primary-color);
   margin-bottom: 0.5rem;
-  color: var(--failure-color);
+  color: var(--dark-color);
+  background: var(--primary-color);
+  /* cursor: pointer; */
 }
 
-.user-image {
-  width: 150px;
-  height: 150px;
-  border-radius: 25%;
-  margin: 0 auto;
-}
-
-.checkbox {
-  margin: 0.5rem;
-}
-
-/* Search Results / Search User Form */
 .search-results {
   color: var(--primary-color);
   /* display: flex; */
@@ -125,13 +205,18 @@
   align-items: center;
 }
 
-.username-search {
-  margin-right: 0.5rem;
+.user-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 25%;
+  margin: 0 auto;
 }
 
-.profile-image-search {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.username-div {
+  display: flex;
+  align-items: center;
+}
+
+.username-search {
   margin-right: 0.5rem;
 }

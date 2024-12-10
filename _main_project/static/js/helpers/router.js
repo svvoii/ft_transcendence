@@ -1,6 +1,7 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import GameMenu from "../views/GameMenu.js";
+import GameOptions from "../views/GameOptions.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
@@ -22,6 +23,7 @@ export const router = async () => {
     { path: '/tournament_setup_join/', view: TournamentSetupJoin },
     { path: '/tournament_lobby/:tournament_name', view: TournamentLobby },
     // { path: '/^\/tournament_lobby\/.*/', view: TournamentLobby },
+	  { path: '/game_options/', view: GameOptions },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },
