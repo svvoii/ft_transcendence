@@ -28,7 +28,6 @@ export default class extends AbstractView {
     // Create the link paragraph element
     const linkParagraph = document.createElement('p');
     linkParagraph.className = 'lobby-link';
-    // linkParagraph.textContent = 'https://www.example.com/tournament_lobby/';
 
     // Create the button element
     const copyButton = document.createElement('button');
@@ -89,11 +88,7 @@ export default class extends AbstractView {
 
 
     document.getElementById('copyButton').addEventListener('click', async () => {
-
-      // let copyButton = document.querySelector('copyButton');
-      // lobbyLink.select(); 
       navigator.clipboard.writeText(lobbyLink.textContent);
-
     });
 
   };

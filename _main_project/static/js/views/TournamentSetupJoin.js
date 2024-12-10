@@ -32,6 +32,7 @@ export default class extends AbstractView {
     form.onsubmit = (event) => event.preventDefault();
 
     const tournamentLinkInput = document.createElement('input');
+    tournamentLinkInput.id = 'tournamentLinkInput';
     tournamentLinkInput.placeholder = 'Enter link';
     tournamentLinkInput.required = true;
     tournamentLinkInput.autofocus = true;
@@ -48,9 +49,32 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
+
+    let linkForm = document.getElementById('tournamentLinkForm');
+    let linkFormText = document.getElementById('tournamentLinkInput');
+
+    linkForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+    
+      console.log('link sent by user : ', linkFormText.value);
+    });
+    
+
+    // let lobbyLink = document.querySelector('.lobby-link');
+    // let tournamentLink = linkForm.value;
+
+
     document.getElementById('tournamentLobbyBtn').addEventListener('click', () => {
       console.log('Join Tournament Lobby Button Clicked');
-      navigateTo('/tournament_lobby/');
+
+      try{
+        navigateTo(`/tournament_lobby/${linkFormText.value}/`);
+
+      }
+      catch (error) {
+
+        console.error('Error:', error);
+      }
     });
   }
 }

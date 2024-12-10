@@ -34,6 +34,15 @@ class Tournament(models.Model):
     #     winners = []
     #     for match in self.matches
 
+class AllTournaments(models.Model):
+    tournament = models.ForeignKey(Tournament, related_name='all_tournaments', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.tournament.tournament_name}'
+
+    class Meta:
+        ordering = ['-created']
 
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
