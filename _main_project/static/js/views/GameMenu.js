@@ -63,8 +63,7 @@ export default class extends AbstractView {
     });
 
 		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
-			gameBoard.startMultiPlayerGame();
-			gameModal.style.display = 'flex';
+			navigateTo('/multiplayer_select/');
 		});
 
     document.getElementById('tournamentBtn').addEventListener('click', () => {
