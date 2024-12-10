@@ -54,12 +54,22 @@ export default class extends AbstractView {
 
   async afterRender() {
 
-    document.getElementById('singlePlayerBtn').addEventListener('click', async() => {
+    // document.getElementById('singlePlayerBtn').addEventListener('click', async() => {
       
-      this.chooseMode((mode) => {
-        gameBoard.startSinglePlayerGame(mode);
-        gameModal.style.display = 'flex';
-      });
+    //   this.chooseMode((mode) => {
+    //     gameBoard.startSinglePlayerGame(mode);
+    //     gameModal.style.display = 'flex';
+    //   });
+
+		document.getElementById('gameOptionsBtn').addEventListener('click', () => {
+			console.log('Game Options');
+			navigateTo('/game_options/');
+		});
+
+    document.getElementById('createTournamentBtn').addEventListener('click', () => {
+      // load in Remote game on the backend.
+      console.log('Create Tournament');
+      navigateTo('/tournament_setup_create/');
     });
 
 		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
@@ -68,7 +78,9 @@ export default class extends AbstractView {
 
     document.getElementById('tournamentBtn').addEventListener('click', () => {
       // load in Remote game on the backend.
-      navigateTo('/tournament_select/');
+      // navigateTo('/tournament_select/');
+      console.log('Join Tournament');
+      navigateTo('/tournament_setup_join/');
     });
   }
 

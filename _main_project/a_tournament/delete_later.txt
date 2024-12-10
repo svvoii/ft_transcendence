@@ -1,0 +1,87 @@
+// Prompt the user to enter the tournament name
+const tournamentName = prompt("Enter the tournament name:");
+
+// Check if the tournament name is valid
+fetch(`/api/tournament_exists/${tournamentName}/`)
+  .then(response => response.json())
+  .then(data => {
+    if (data.exists) {
+      connectToWebSocket(tournamentName);
+    } else {
+      // Create the tournament if it doesn't exist
+      fetch('/api/create_tournament/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: tournamentName }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          connectToWebSocket(tournamentName);
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+function connectToWebSocket(tournamentName) {
+  const systemAuthorSocket = new WebSocket(`ws://localhost:8000/ws/tournament_lobby/${tournamentName}/`);
+
+  systemAuthorSocket.onopen = function() {
+    console.log('WebSocket connection established.');
+    const message = {
+      'message': 'Hello, server! We are ready to play.'
+    };
+    systemAuthorSocket.send(JSON.stringify(message));
+  };
+
+  systemAuthorSocket.onmessage = function(event) {
+    const message = JSON.parse(event.data);
+
+    messageBox.className = 'message-box';
+    messageBox.textContent = message.message;
+    container.appendChild(messageBox);
+  };
+
+  systemAuthorSocket.onclose = function(event) {
+    console.error('WebSocket connection closed:', event);
+  };
+
+  systemAuthorSocket.onerror = function(error) {
+    console.error('WebSocket error:', error);
+  };
+}
+
+
+
+####################################################################################
+#################################### urls.py :
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('tournament/create_tournament/', views.create_tournament, name='create_tournament'),
+]
+
+####################################################################################
+#################################### views.py :
+def create_tournament(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        tournament_name = data.get('name')
+        if not Tournament.objects.filter(name=tournament_name).exists():
+            Tournament.objects.create(name=tournament_name)
+            return JsonResponse({'status': 'success', 'message': 'Tournament created successfully.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Tournament already exists.'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
