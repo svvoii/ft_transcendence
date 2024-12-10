@@ -56,13 +56,13 @@ export default class extends AbstractView {
     document.getElementById('createTournamentBtn').addEventListener('click', () => {
       // load in Remote game on the backend.
       console.log('Create Tournament');
-      navigateTo('/tournament_setup/');
+      navigateTo('/tournament_setup_create/');
     });
 
     document.getElementById('joinTournamentBtn').addEventListener('click', () => {
       // load in Remote game on the backend.
       console.log('Join Tournament');
-      navigateTo('/tournament_lobby/');
+      navigateTo('/tournament_setup_join/');
     });
   }
 }
