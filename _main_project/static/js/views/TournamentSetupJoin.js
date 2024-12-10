@@ -63,18 +63,57 @@ export default class extends AbstractView {
     // let lobbyLink = document.querySelector('.lobby-link');
     // let tournamentLink = linkForm.value;
 
+    // try {
+    //     const response = await fetch(`/tournament/check_if_exists/${linkFormText.value}/`, {});
+
+    //     console.log('response', response);
+
+    //       const responseText = await response.text();
+    //       const data = JSON.parse(responseText);
+
+
+    //       if (data.status === 'success') {
+    //           console.log('Tournament exists', data.url);
+    //       } else {
+    //           alert(data.message);
+    //       }
+    // }
+    // catch
+    // {
+    //   console.error('Error:', data.message);
+    // }
+
 
     document.getElementById('tournamentLobbyBtn').addEventListener('click', () => {
       console.log('Join Tournament Lobby Button Clicked');
 
       try{
-        navigateTo(`/tournament_lobby/${linkFormText.value}/`);
+          navigate_to_tournamentURL_if_valid(linkFormText);
+        }
 
-      }
       catch (error) {
-
         console.error('Error:', error);
       }
     });
+  }
+}
+
+async function navigate_to_tournamentURL_if_valid(linkFormText) {
+
+  const response = await fetch(`/tournament/get_tournament/${linkFormText.value}/`, {});
+
+  console.log("fetch with ", linkFormText.value);
+
+  const responseText = await response.text();
+  const data = JSON.parse(responseText);
+
+  console.log("data.status ", data.status);
+
+  if (data.status === 'success') {
+    console.log('Tournament exists');
+    navigateTo(`/tournament_lobby/${linkFormText.value}/`);
+  } else {
+    console.log('Tournament does not exist');
+    alert('Tournament does not exist');
   }
 }

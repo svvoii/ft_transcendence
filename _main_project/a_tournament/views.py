@@ -50,6 +50,8 @@ logger = logging.getLogger(__name__)
 def create_tournament(request):
     tournament = Tournament.objects.create()
     tournament_url = tournament.tournament_name;
+    Tournament.tournament_ids.add(tournament_url)
+    print(Tournament)
     return Response({'status': 'success', 'message': 'Tournament created successfully.', 'url': f'{tournament_url}' }, status=status.HTTP_201_CREATED)
 
 #GET TOURNAMENT
@@ -60,10 +62,20 @@ def get_tournament(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
         tournament_nb_players = tournament.nb_players;
-        return Response({'status': 'Tournament exists', 'nb_players': f'{tournament_nb_players}'}, status=status.HTTP_200_OK)
+        return Response({'status': 'success', 'nb_players': f'{tournament_nb_players}'}, status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
-  
+
+
+# #CHECK IF TOURNAMENT EXISTS
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def check_if_exists(request, tournament_name):
+#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
+#         return Response({'status': 'success', 'message': 'Tournament exists.'}, status=status.HTTP_200_OK)
+#     else:
+#         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 #DELETE TOURNAMENT
 @api_view(['DELETE'])

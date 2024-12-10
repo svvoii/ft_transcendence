@@ -71,7 +71,7 @@ export default class extends AbstractView {
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
       
-      console.log('Request [get] sent, awaiting response...');
+      // console.log('Request [get] sent, awaiting response...');
 
       //receiving the tournament data
       const tournamentDataText = await tournament.text();

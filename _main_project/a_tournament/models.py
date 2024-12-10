@@ -4,13 +4,19 @@ import shortuuid
 
 NB_PLAYERS = 8
 
+tournament_ids = set()
+
 class Tournament(models.Model):
     tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
     nb_players = models.IntegerField(default=NB_PLAYERS, editable=False)
     players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
     winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
-    
+
+
+    def add_tournament_id(self):
+        tournament_ids.add(self.tournament_name) 
+        
 
     def __str__(self):
         return self.tournament_name
@@ -35,11 +41,11 @@ class Tournament(models.Model):
     #     for match in self.matches
 
 class AllTournaments(models.Model):
-    tournament = models.ForeignKey(Tournament, related_name='all_tournaments', on_delete=models.CASCADE)
+    tournaments = models.ManyToManyField(Tournament, related_name='all_tournaments')
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.tournament.tournament_name}'
+        return ', '.join([tournament.tournament_name for tournament in self.tournaments.all()])
 
     class Meta:
         ordering = ['-created']

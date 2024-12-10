@@ -8,4 +8,5 @@ urlpatterns = [
     # path('delete_tournament/', views.delete_tournament, name='delete_tournament'),
     path('delete_tournament/<str:tournament_name>/', views.delete_tournament, name='delete_tournament'),
     path('get_tournament/<str:tournament_name>/', views.get_tournament, name='get_tournament'),
+    # path('check_if_exists/<str:tournament_name>/', views.check_if_exists, name='check_if_exists'),
 ]
