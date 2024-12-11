@@ -39,9 +39,6 @@ export default class extends AbstractView {
       console.log('Create Tournament Lobby Button Clicked');
       // navigateTo('/tournament_lobby/');
 
-      const tournamentName = "kHZBSv5DeFUbgRkeHrLjBV";
-
-      if (tournamentName) {
           try {
                 const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
 
@@ -98,10 +95,6 @@ export default class extends AbstractView {
       //     console.error('Error:', error);
       // }
 
-
-      } else {
-          alert('Tournament name is required.');
-      }
     });
   }
 }
