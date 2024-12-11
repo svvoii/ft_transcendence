@@ -22,7 +22,7 @@ export const router = async () => {
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
     { path: '/game_options/', view: GameOptions },
-    { path: '/tournament_setup/', view: TournamentSetup },
+    // { path: '/tournament_setup/', view: TournamentSetup },
     { path: '/tournament_lobby/', view: TournamentLobby },
     { path: '/tournament_select/', view: TournamentSelect },
     { path: '/multiplayer_select/', view: MultiplayerSelect },

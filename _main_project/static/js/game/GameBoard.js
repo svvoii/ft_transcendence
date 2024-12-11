@@ -76,7 +76,7 @@ export default class GameBoard {
 			gameModal.style.display = 'flex';
 		} catch (error) {
 			alert('Error joining the game: ' + error.message);
-			console.error('Error joining the game: ', error);
+			// console.error('Error joining the game: ', error);
 		}
 	}
 	

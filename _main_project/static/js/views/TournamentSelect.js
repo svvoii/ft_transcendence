@@ -43,13 +43,13 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('createMPMatchBtn').addEventListener('click', async() => {
-      console.log('createMPMatchBtn clicked');
-      navigateTo('/tournament_setup/');
+      // console.log('createMPMatchBtn clicked');
+      navigateTo('/tournament_setup_create/');
     });
 
     document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
-      console.log('joinMPMatchBtn clicked');
-      navigateTo('/tournament_lobby/');
+      // console.log('joinMPMatchBtn clicked');
+      navigateTo('/tournament_setup_join/');
     });
   }
 }
