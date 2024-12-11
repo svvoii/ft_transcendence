@@ -32,25 +32,29 @@ export default class extends AbstractView {
     // Create the button element
     const copyButton = document.createElement('button');
     copyButton.id = 'copyButton';
-    copyButton.textContent = 'Copy link';
+    copyButton.textContent = 'Copy tournament ID';
 
     // Create the ul element
-    const ul = document.createElement('ul');
+    // const ul = document.createElement('ul');
 
     // Create the li elements
-    const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
-    players.forEach(player => {
-      const li = document.createElement('li');
-      li.textContent = player;
-      ul.appendChild(li);
-    });
+    // const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+
+    const info_1 = document.createElement('p');
+    info_1.textContent = 'List of players :';
+
+    const playersList = document.createElement('ul');
+    playersList.className = 'list-of-players';
+    document.body.appendChild(playersList);
+
 
     // Append all elements to the container
     container.appendChild(paragraph);
     container.appendChild(h1);
     container.appendChild(linkParagraph);
     container.appendChild(copyButton);
-    container.appendChild(ul);
+    container.appendChild(info_1);
+    container.appendChild(playersList);
     
     return container;
   }
@@ -59,25 +63,31 @@ export default class extends AbstractView {
 
     //printing the lobby URL, so that the user can copy it
     let lobbyLink = document.querySelector('.lobby-link');
+    let listOfPlayers = document.querySelector('.list-of-players');
     let currentUrl = window.location.href;
-    lobbyLink.textContent = currentUrl;
-
+    
     //getting the tournament ID from the URL
     currentUrl = currentUrl.slice(0, -1);
     const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
+    lobbyLink.textContent = tournamentID;
     
     try {
 
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-      
-      // console.log('Request [get] sent, awaiting response...');
 
       //receiving the tournament data
       const tournamentDataText = await tournament.text();
       console.log('datatext receive ', tournamentDataText);
       const tournamentData = JSON.parse(tournamentDataText);
-  
+
+      tournamentData.players.forEach(player => {
+        const li = document.createElement('li');
+        console.log('player is', player);
+        li.innerText = player;
+        listOfPlayers.appendChild(li);
+      });
+
       console.log(tournamentData);
 
     } 

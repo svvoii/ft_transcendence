@@ -49,10 +49,14 @@ logger = logging.getLogger(__name__)
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
     tournament = Tournament.objects.create()
-    tournament_url = tournament.tournament_name;
-    Tournament.tournament_ids.add(tournament_url)
+    tournament_url = tournament.tournament_name
+    tournament.players.add(request.user)
+    # Tournament.tournament_ids.add(tournament_url)
     print(Tournament)
-    return Response({'status': 'success', 'message': 'Tournament created successfully.', 'url': f'{tournament_url}' }, status=status.HTTP_201_CREATED)
+    return Response({'status': 'success', 
+        'message': 'Tournament created successfully.', 
+        'url': f'{tournament_url}' }, 
+        status=status.HTTP_201_CREATED)
 
 #GET TOURNAMENT
 @api_view(['GET'])
@@ -62,7 +66,11 @@ def get_tournament(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
         tournament_nb_players = tournament.nb_players;
-        return Response({'status': 'success', 'nb_players': f'{tournament_nb_players}'}, status=status.HTTP_200_OK)
+        players = [player.username for player in tournament.players.all()]
+        return Response({'status': 'success', 
+        'players': players,
+        'nb_players': f'{tournament_nb_players}'}, 
+        status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 

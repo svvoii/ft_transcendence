@@ -4,7 +4,7 @@ import shortuuid
 
 NB_PLAYERS = 8
 
-tournament_ids = set()
+# tournament_ids = set()
 
 class Tournament(models.Model):
     tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
@@ -14,8 +14,8 @@ class Tournament(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
-    def add_tournament_id(self):
-        tournament_ids.add(self.tournament_name) 
+    # def add_tournament_id(self):
+    #     tournament_ids.add(self.tournament_name) 
         
 
     def __str__(self):
