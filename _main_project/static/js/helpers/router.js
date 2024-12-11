@@ -9,6 +9,8 @@ import Page404 from "../views/Page404.js";
 import TournamentSetupJoin from "../views/TournamentSetupJoin.js";
 import TournamentSetupCreate from "../views/TournamentSetupCreate.js";
 import TournamentLobby from "../views/TournamentLobby.js";
+import TournamentSelect from "../views/TournamentSelect.js";
+import MultiplayerSelect from "../views/MultiplayerSelect.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
@@ -19,6 +21,11 @@ export const router = async () => {
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
+    { path: '/game_options/', view: GameOptions },
+    // { path: '/tournament_setup/', view: TournamentSetup },
+    { path: '/tournament_lobby/', view: TournamentLobby },
+    { path: '/tournament_select/', view: TournamentSelect },
+    { path: '/multiplayer_select/', view: MultiplayerSelect },
     { path: '/tournament_setup_create/', view: TournamentSetupCreate },
     { path: '/tournament_setup_join/', view: TournamentSetupJoin },
     { path: '/tournament_lobby/:tournament_name', view: TournamentLobby },
