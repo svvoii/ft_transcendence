@@ -49,65 +49,13 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('createLocalMatchBtn').addEventListener('click', async() => {
-      // Defining mode here. Will need to change this to a user input
-      const mode = 'easy';
-
-      gameBoard.startSinglePlayerGame(mode);
+      gameBoard.startSinglePlayerGame('single');
       gameModal.style.display = 'flex';
     });
 
     document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
-      console.log('aiLocalMatchBtn clicked');
-      // navigateTo('/tournament_lobby/');
+      gameBoard.startSinglePlayerGame('ai');
+      gameModal.style.display = 'flex';
     });
   }
-
-
-  // copied from GameMenu in event listener
-
-      // this.chooseMode((mode) => {
-      //   gameBoard.startSinglePlayerGame(mode);
-      //   gameModal.style.display = 'flex';
-      // });
-
-  // copied over from GameMenu
-	chooseMode(callback) {
-		// check if the mode dialog is already open
-		if (document.querySelector('.mode-dialog')) return;
-
-		// Hiding all elements in the container
-		this.container.querySelectorAll('*').forEach(element => {
-			element.style.display = 'none';
-		});
-
-		const modeDialog = document.createElement('div');
-		modeDialog.classList.add('mode-dialog');
-	
-		const modeText = document.createElement('p');
-		modeText.textContent = 'Choose Game Mode for Single Player:';
-		modeDialog.appendChild(modeText);
-	
-		// const modes = ['Single with 2 paddles on one keyboard', 'Aginst AI'];
-		const modes = {
-			'Single with control over 2 paddles on one keyboard': 'single',
-			'Play Aginst AI': 'ai'
-		};
-
-		// modes.forEach(mode => {
-		Object.keys(modes).forEach(displayText => {
-			const modeButton = document.createElement('button');
-			modeButton.textContent = displayText;
-			modeButton.classList.add('mode-button', "game-select-button");
-			modeButton.addEventListener('click', () => {
-				this.container.classList.remove('hidden-elements');
-				this.container.removeChild(modeDialog);
-				callback(modes[displayText]);
-			});
-			modeDialog.appendChild(modeButton);
-		});
-	
-		this.container.appendChild(modeDialog);
-		this.container.classList.add('hidden-elements');
-	}
-
 }
