@@ -267,7 +267,11 @@ async function initializeGame(socket, role, mode, game_id) {
 
         if (direction !== 0) {
             if (mode === 'single' || mode === 'ai') {
-				player = 'player2';
+				if (key === 'w' || key === 's') {
+					player = 'player1';
+				} else {
+					player = 'player2';
+				}
             }
 			let paddle = player === 'player1' ? 1 : 2; // backend expects 1 or 2 as paddle value
             gameState = await movePaddle(game_id, paddle, direction);

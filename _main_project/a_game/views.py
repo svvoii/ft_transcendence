@@ -153,6 +153,11 @@ def end_game_session(request, game_id):
 	global game_states
 	context = {}
 
+	# Check if the game id exists in the game_states dictionary
+	if game_id not in game_states:
+		context['message'] = 'Game session has already ended.'
+		return Response(context, status=400)
+
 	game_session = GameSession.objects.filter(game_id=game_id).first()
 	if not game_session:
 		context['message'] = 'Game session does not exist.'
