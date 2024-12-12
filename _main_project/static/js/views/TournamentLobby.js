@@ -14,7 +14,6 @@ export default class extends AbstractView {
     // Create a container div
     const container = document.createElement('div');
     container.className = 'system-author-messages';
-
     container.classList.add('text-container');
 
     // Create the paragraph element
@@ -33,12 +32,6 @@ export default class extends AbstractView {
     const copyButton = document.createElement('button');
     copyButton.id = 'copyButton';
     copyButton.textContent = 'Copy tournament ID';
-
-    // Create the ul element
-    // const ul = document.createElement('ul');
-
-    // Create the li elements
-    // const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
 
     const info_1 = document.createElement('p');
     info_1.textContent = 'List of players :';
@@ -76,14 +69,9 @@ export default class extends AbstractView {
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
 
-      //receiving the tournament data
+      //printing the tournament data
       const tournamentDataText = await tournament.text();
-      console.log('datatext receive ', tournamentDataText);
-      const tournamentData = JSON.parse(tournamentDataText);
-      
-      const currentPlayerName = tournamentData.players[tournamentData.players.length - 1];
-      console.log('last player s name :', currentPlayerName);
-      console.log('nb players in lobby :', tournamentData.nb_players);
+      console.log('Data received :', tournamentDataText);
 
       //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -98,10 +86,10 @@ export default class extends AbstractView {
     
       socket.onmessage = function(event) {
         const message = JSON.parse(event.data);
-    
         console.log('Message received from the server:', message);
       };
 
+      //Printing the list of players in the lobby
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
         if (data.type == 'new_player') {
@@ -113,27 +101,12 @@ export default class extends AbstractView {
             });     
         }
       })
-
-      // socket.addEventListener('message', (event) => {
-      //   const data = JSON.parse(event.data);
-      //   if (data.type == 'new_player') {
-      //     const li = document.createElement('li');
-      //     li.innerText = data.last_player_name;
-      //     listOfPlayers.appendChild(li);
-      //   }
-      // })
-  
-      console.log(tournamentData);
-
-
-      
     } 
     
     catch(error) {
       console.error('Error:', error);
     }
     
-
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });
