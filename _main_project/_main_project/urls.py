@@ -26,12 +26,15 @@ from a_spa_frontend.views import index
 from a_pass import views
 
 
+
+
 urlpatterns = [
     path('', index, name='js_home'),
 	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
+	path('tournament/', include('a_tournament.urls', namespace='tournament')),
 	path('friends/', include('a_friends.urls', namespace='friends')),
     path('register_page/', index, name='register_page'),
 	path('register/', api_register_view, name='register'),

@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+
+<wrapper>
+    <div id="tournament_window">
+	{% if tournament_room.tournament_name %}
+		<h3>{{ tournament_room.tournament_name }}</h3>
+
+		
+	{% endif %}
+        <div>
+
+            <ul id="tournament-members">
+                {% for player in tournament_room.players.all %}
+                    <li>
+                        <a href="{% url 'a_user:profile' member.id %}">
+                            <img src="{{ member.profile_image.url }}" alt="user img" width="16" height="16">
+                            {{ member.username | slice:":10" }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+
+        </div>
+        <div id='tournament_container' class="tournament-container">
+			<div id='tournament_messages'>
+				{% for message in tournament_messages reversed %}
+					{% include 'a_tournament/tournament_message.html' %}
+				{% endfor %}
+			</div>
+        </div>
+        
+    </div>
+
+
+</wrapper>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+	function scrollToBottom(time=0) {
+        setTimeout(function() {
+            const container = document.getElementById('tournament_container');
+            container.scrollTop = container.scrollHeight;
+        }, time);
+    }
+    scrollToBottom()
+
+</script>
+
+{% endblock scripts %}

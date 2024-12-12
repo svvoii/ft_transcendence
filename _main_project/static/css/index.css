@@ -160,8 +160,15 @@ input:focus {
   outline: none;
 }
 
-li {
-  color: var(--primary-color);
+.game-select-button {
+  margin-top: 0.5rem;
+}
+
+.game-select-button-div {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  margin: 1rem 0;
 }
 
 .gif-container {

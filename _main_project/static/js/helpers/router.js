@@ -1,13 +1,15 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import GameMenu from "../views/GameMenu.js";
-import GameOptions from "../views/GameOptions.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
-import TournamentSetup from "../views/TournamentSetup.js";
+import TournamentSetupCreate from "../views/TournamentSetupCreate.js";
 import TournamentLobby from "../views/TournamentLobby.js";
+import TournamentSelect from "../views/TournamentSelect.js";
+import MultiplayerSelect from "../views/MultiplayerSelect.js";
+import LocalMatchSelect from "../views/LocalMatchSelect.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
@@ -18,9 +20,12 @@ export const router = async () => {
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
-	{ path: '/game_options/', view: GameOptions },
-    { path: '/tournament_setup/', view: TournamentSetup },
     { path: '/tournament_lobby/', view: TournamentLobby },
+    { path: '/tournament_select/', view: TournamentSelect },
+    { path: '/multiplayer_select/', view: MultiplayerSelect },
+    { path: '/local_match_select/', view: LocalMatchSelect },
+    { path: '/tournament_setup_create/', view: TournamentSetupCreate },
+    { path: '/tournament_lobby/:tournament_name', view: TournamentLobby },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },
