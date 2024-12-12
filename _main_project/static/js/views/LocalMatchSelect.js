@@ -49,15 +49,11 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('createLocalMatchBtn').addEventListener('click', async() => {
-      console.log('createLocalMatchBtn clicked');
-			// gameBoard.startMultiPlayerGame();
-			// gameModal.style.display = 'flex';
-      // navigateTo('/tournament_setup/');
+      // Defining mode here. Will need to change this to a user input
+      const mode = 'easy';
 
-      // this.chooseMode((mode) => {
-        gameBoard.startSinglePlayerGame(mode);
-        gameModal.style.display = 'flex';
-      // });
+      gameBoard.startSinglePlayerGame(mode);
+      gameModal.style.display = 'flex';
     });
 
     document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
