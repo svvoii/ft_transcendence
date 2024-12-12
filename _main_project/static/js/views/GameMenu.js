@@ -23,18 +23,18 @@ export default class extends AbstractView {
     setTitle.style.textAlign = 'center';
 
 		// Button to start single player game against AI
-		const single_player_button = document.createElement('button');
-		single_player_button.id = 'singlePlayerBtn';
-    single_player_button.classList.add('game-select-button');
-		single_player_button.type = 'select';
-		single_player_button.textContent = 'Single Player';
+		const local_match_button = document.createElement('button');
+		local_match_button.id = 'localMatchBtn';
+    local_match_button.classList.add('game-select-button');
+		local_match_button.type = 'select';
+		local_match_button.textContent = 'Local Match';
 
 		// Button to start multiplayer game against another player
 		const multi_player_button = document.createElement('button');
 		multi_player_button.id = 'multiPlayerBtn';
     multi_player_button.classList.add('game-select-button');
 		multi_player_button.type = 'select';
-		multi_player_button.textContent = 'Multiplayer';
+		multi_player_button.textContent = 'Online Multiplayer';
 
     // Create the button
     const tournament_button = document.createElement('button');
@@ -45,7 +45,7 @@ export default class extends AbstractView {
 
     // Append the paragraph to the this.container
     this.container.appendChild(setTitle);
-    this.container.appendChild(single_player_button);
+    this.container.appendChild(local_match_button);
     this.container.appendChild(multi_player_button);
     this.container.appendChild(tournament_button);
 
@@ -54,24 +54,13 @@ export default class extends AbstractView {
 
   async afterRender() {
 
-    document.getElementById('singlePlayerBtn').addEventListener('click', async() => {
-      
-      this.chooseMode((mode) => {
-        gameBoard.startSinglePlayerGame(mode);
-        gameModal.style.display = 'flex';
-      });
+    document.getElementById('localMatchBtn').addEventListener('click', async() => {
+			navigateTo('/local_match_select/');
+      // this.chooseMode((mode) => {
+      //   gameBoard.startSinglePlayerGame(mode);
+      //   gameModal.style.display = 'flex';
+      // });
 		});
-
-		// document.getElementById('gameOptionsBtn').addEventListener('click', () => {
-		// 	console.log('Game Options');
-		// 	navigateTo('/game_options/');
-		// });
-
-    // document.getElementById('createTournamentBtn').addEventListener('click', () => {
-    //   // load in Remote game on the backend.
-    //   console.log('Create Tournament');
-    //   navigateTo('/tournament_setup_create/');
-    // });
 
 		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
 			navigateTo('/multiplayer_select/');

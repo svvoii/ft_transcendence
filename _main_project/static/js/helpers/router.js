@@ -11,6 +11,7 @@ import TournamentSetupCreate from "../views/TournamentSetupCreate.js";
 import TournamentLobby from "../views/TournamentLobby.js";
 import TournamentSelect from "../views/TournamentSelect.js";
 import MultiplayerSelect from "../views/MultiplayerSelect.js";
+import LocalMatchSelect from "../views/LocalMatchSelect.js";
 import { pathToRegex, getParams } from "./helpers.js";
 import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
 
@@ -26,6 +27,7 @@ export const router = async () => {
     { path: '/tournament_lobby/', view: TournamentLobby },
     { path: '/tournament_select/', view: TournamentSelect },
     { path: '/multiplayer_select/', view: MultiplayerSelect },
+    { path: '/local_match_select/', view: LocalMatchSelect },
     { path: '/tournament_setup_create/', view: TournamentSetupCreate },
     { path: '/tournament_setup_join/', view: TournamentSetupJoin },
     { path: '/tournament_lobby/:tournament_name', view: TournamentLobby },
