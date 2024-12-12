@@ -102,7 +102,7 @@ def delete_tournament(request, tournament_name):
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
   
 
-def trigger_server_message(request):
-    consumer = TournamentLobbyConsumer()
-    consumer.send_server_message()
-    return JsonResponse({'status': 'Message sent'})
+# def trigger_server_message(request):
+#     consumer = TournamentLobbyConsumer()
+#     consumer.send_server_message()
+#     return JsonResponse({'status': 'Message sent'})

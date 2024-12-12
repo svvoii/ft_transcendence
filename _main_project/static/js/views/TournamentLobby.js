@@ -86,7 +86,7 @@ export default class extends AbstractView {
       console.log('nb players in lobby :', tournamentData.nb_players);
 
       //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
-      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentID}/`);
+      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
 
       socket.onopen = function() {
         console.log('WebSocket connection is indeed established.');
@@ -114,7 +114,7 @@ export default class extends AbstractView {
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
         if (data.type == 'new_player') {
-          tournamentData.players.forEach(player => {
+          data.player_names.forEach( player => {
               const li = document.createElement('li');
               li.innerText = player;
               listOfPlayers.appendChild(li);
