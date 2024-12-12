@@ -1,12 +1,10 @@
 import Dashboard from "../views/Dashboard.js";
 import Settings from "../views/Settings.js";
 import GameMenu from "../views/GameMenu.js";
-import GameOptions from "../views/GameOptions.js";
 import TermsOfService from "../views/TermsOfService.js";
 import PrivacyPolicy from "../views/PrivacyPolicy.js";
 import AboutUs from "../views/AboutUs.js";
 import Page404 from "../views/Page404.js";
-import TournamentSetupJoin from "../views/TournamentSetupJoin.js";
 import TournamentSetupCreate from "../views/TournamentSetupCreate.js";
 import TournamentLobby from "../views/TournamentLobby.js";
 import TournamentSelect from "../views/TournamentSelect.js";
@@ -22,17 +20,12 @@ export const router = async () => {
     { path: '/', view: Dashboard },
     { path: '/settings/', view: Settings },
     { path: '/game_menu/', view: GameMenu },
-    { path: '/game_options/', view: GameOptions },
-    // { path: '/tournament_setup/', view: TournamentSetup },
     { path: '/tournament_lobby/', view: TournamentLobby },
     { path: '/tournament_select/', view: TournamentSelect },
     { path: '/multiplayer_select/', view: MultiplayerSelect },
     { path: '/local_match_select/', view: LocalMatchSelect },
     { path: '/tournament_setup_create/', view: TournamentSetupCreate },
-    { path: '/tournament_setup_join/', view: TournamentSetupJoin },
     { path: '/tournament_lobby/:tournament_name', view: TournamentLobby },
-    // { path: '/^\/tournament_lobby\/.*/', view: TournamentLobby },
-	  { path: '/game_options/', view: GameOptions },
     { path: '/terms_of_service/', view: TermsOfService },
     { path: '/privacy_policy/', view: PrivacyPolicy },
     { path: '/about_us/', view: AboutUs },
