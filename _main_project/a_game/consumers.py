@@ -7,6 +7,9 @@ from .game_logic import game_states, FPS
 # This way there is only one task to run the game loop for each game_id.
 game_tasks = {}
 
+# connected players will store the list of connected players for each game_id
+connected_players = {}
+
 class PongConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
@@ -29,14 +32,31 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		await self.accept()
 
-		if self.game_id not in game_tasks:
+		# Add the player to the connected players list
+		if self.game_id not in connected_players:
+			connected_players[self.game_id] = []
+		connected_players[self.game_id].append(self.channel_name)
+
+		if len(connected_players[self.game_id]) == 2 and self.game_id not in game_tasks:
 			game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
+			print("Game loop started..")
+		else:
+			print("Waiting for another player to connect..")
+
+		# if self.game_id not in game_tasks:
+		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
 	
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
             self.game_group_name,
 			self.channel_name
 		)
+
+		# Remove the player from the connected players list
+		if self.game_id in connected_players:
+			connected_players[self.game_id].remove(self.channel_name)
+			if not connected_players[self.game_id]:
+				del connected_players[self.game_id]
 
 		if self.game_id in game_tasks:
 			game_tasks[self.game_id].cancel()
