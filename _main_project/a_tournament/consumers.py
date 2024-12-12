@@ -17,7 +17,7 @@ class TournamentLobbyConsumer(WebsocketConsumer):
         )
         self.accept()
 
-    def disconnect(self, close_code):
+    def disconnect(self, code):
         pass
 
     def receive(self, text_data):
@@ -39,12 +39,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
         #draw the tree
 
         #######################################################
-
-    
-
-
-
-
 
     def send_message(self, message):
         self.send(text_data=json.dumps({
@@ -77,3 +71,16 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 	# 	self.send(text_data=json.dumps({
 	# 		'online_count': count,
 	# 	}))
+
+
+class TournamentNewPlayerConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+
+    def disconnect(self):
+        pass
+
+    def receive(self, text_data):
+        self.send(text_data=json.dumps({
+            'type': 'new_player',
+        }))

@@ -80,22 +80,65 @@ export default class extends AbstractView {
       const tournamentDataText = await tournament.text();
       console.log('datatext receive ', tournamentDataText);
       const tournamentData = JSON.parse(tournamentDataText);
+      
+      const currentPlayerName = tournamentData.players[tournamentData.players.length - 1];
+      console.log('last player s name :', currentPlayerName);
+      console.log('nb players in lobby :', tournamentData.nb_players);
 
-      tournamentData.players.forEach(player => {
-        const li = document.createElement('li');
-        console.log('player is', player);
-        li.innerText = player;
-        listOfPlayers.appendChild(li);
-      });
+      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
+      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament/${tournamentID}/`);
 
+      socket.onopen = function() {
+        console.log('WebSocket connection is indeed established.');
+        const message = {
+          'message': 'New player entering the lobby.'
+        };
+        socket.send(JSON.stringify(message));
+      };
+    
+      socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+    
+        console.log('Message received from the server:', message);
+      };
+
+      // socket.addEventListener('message', (event) => {
+      //   const data = JSON.parse(event.data);
+      //   if (data.type == 'new_player') {
+      //     const li = document.createElement('li');
+      //     li.innerText = currentPlayerName; // getting the last player's usename
+      //     listOfPlayers.appendChild(li);         
+      //   }
+      // })
+
+      socket.addEventListener('message', (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type == 'new_player') {
+          tournamentData.players.forEach(player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+            });     
+        }
+      })
+
+      // tournamentData.players.forEach(player => {
+      //   const li = document.createElement('li');
+      //   console.log('player is', player);
+      //   li.innerText = player;
+      //   listOfPlayers.appendChild(li);
+      // });
+  
       console.log(tournamentData);
 
+
+      
     } 
     
     catch(error) {
       console.error('Error:', error);
     }
-
+    
 
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
