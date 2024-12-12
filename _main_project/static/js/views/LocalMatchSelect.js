@@ -32,17 +32,17 @@ export default class extends AbstractView {
 		create_local_match_btn.textContent = 'Play against a friend with 2 paddles on one keyboard';
 
 		// Button to start multiplayer game against another player
-		const join_local_match_btn = document.createElement('button');
-		join_local_match_btn.id = 'joinLocalMatchBtn';
-    join_local_match_btn.classList.add('game-select-button');
-		join_local_match_btn.type = 'select';
-		join_local_match_btn.textContent = 'Play Against AI';
+		const ai_local_match_btn = document.createElement('button');
+		ai_local_match_btn.id = 'aiLocalMatchBtn';
+    ai_local_match_btn.classList.add('game-select-button');
+		ai_local_match_btn.type = 'select';
+		ai_local_match_btn.textContent = 'Play Against AI';
 
     // Append the paragraph to the container
     container.appendChild(setTitle);
     container.appendChild(setDescript);
     container.appendChild(create_local_match_btn);
-    container.appendChild(join_local_match_btn);
+    container.appendChild(ai_local_match_btn);
 
     return container;
   }
@@ -53,10 +53,15 @@ export default class extends AbstractView {
 			// gameBoard.startMultiPlayerGame();
 			// gameModal.style.display = 'flex';
       // navigateTo('/tournament_setup/');
+
+      // this.chooseMode((mode) => {
+        gameBoard.startSinglePlayerGame(mode);
+        gameModal.style.display = 'flex';
+      // });
     });
 
-    document.getElementById('joinLocalMatchBtn').addEventListener('click', async() => {
-      console.log('joinLocalMatchBtn clicked');
+    document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
+      console.log('aiLocalMatchBtn clicked');
       // navigateTo('/tournament_lobby/');
     });
   }
