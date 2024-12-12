@@ -27,12 +27,14 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		players = self.room.players.all()
 		player_names = [player.username for player in players]
+		last_player_name = player_names[-1] if player_names else None
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_group_name,
 			{
 				'type': 'new_player',
 				'message': 'A new player has entered the lobby',
 				'player_names': player_names,
+				'last_player_name': last_player_name
 				# 'player_name': text_data_json.get('player_name')
 			}
 		)
@@ -40,11 +42,12 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 	def new_player(self, event):
 		message = event['message']
 		player_names = event['player_names']
+		'last_player_name': event['last_player_name']
 		self.send(text_data=json.dumps({
 			'type': 'new_player',
 			'message': message,
 			'player_names': player_names,
-
+			'last_player_name': last_player_name,
 		}))
 
 	def send_message(self, message):

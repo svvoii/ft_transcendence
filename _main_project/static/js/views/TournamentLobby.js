@@ -105,29 +105,22 @@ export default class extends AbstractView {
       // socket.addEventListener('message', (event) => {
       //   const data = JSON.parse(event.data);
       //   if (data.type == 'new_player') {
-      //     const li = document.createElement('li');
-      //     li.innerText = currentPlayerName; // getting the last player's usename
-      //     listOfPlayers.appendChild(li);         
+      //     data.player_names.forEach( player => {
+      //         const li = document.createElement('li');
+      //         li.innerText = player;
+      //         listOfPlayers.appendChild(li);
+      //       });     
       //   }
       // })
 
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
         if (data.type == 'new_player') {
-          data.player_names.forEach( player => {
-              const li = document.createElement('li');
-              li.innerText = player;
-              listOfPlayers.appendChild(li);
-            });     
+          const li = document.createElement('li');
+          li.innerText = data.last_player_name;
+          listOfPlayers.appendChild(li);
         }
       })
-
-      // tournamentData.players.forEach(player => {
-      //   const li = document.createElement('li');
-      //   console.log('player is', player);
-      //   li.innerText = player;
-      //   listOfPlayers.appendChild(li);
-      // });
   
       console.log(tournamentData);
 
