@@ -26,7 +26,6 @@ export default class extends AbstractView {
     tournament_lobby_button.type = 'select';
     tournament_lobby_button.textContent = 'Join Tournament';
 
-
     const form = document.createElement('form');
     form.id = 'tournamentLinkForm';
     form.onsubmit = (event) => event.preventDefault();

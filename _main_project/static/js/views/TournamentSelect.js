@@ -41,11 +41,23 @@ export default class extends AbstractView {
 		join_mp_match_btn.type = 'select';
 		join_mp_match_btn.textContent = 'Join a Match with antoher player';
 
+    const form = document.createElement('form');
+    form.id = 'tournamentLinkForm';
+    form.onsubmit = (event) => event.preventDefault();
+
+    const tournamentLinkInput = document.createElement('input');
+    tournamentLinkInput.id = 'tournamentLinkInput';
+    tournamentLinkInput.placeholder = 'Enter link';
+    tournamentLinkInput.required = true;
+    tournamentLinkInput.autofocus = true;
+
     // Append the paragraph to the container
     container.appendChild(setTitle);
     container.appendChild(setDescript);
     container.appendChild(create_mp_match_btn);
     container.appendChild(orStatement);
+    container.appendChild(form);
+    container.appendChild(tournamentLinkInput);
     container.appendChild(join_mp_match_btn);
 
     return container;
@@ -56,8 +68,40 @@ export default class extends AbstractView {
       navigateTo('/tournament_setup_create/');
     });
 
-    document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
-      navigateTo('/tournament_setup_join/');
+    document.getElementById('tournamentLinkForm').addEventListener("submit", (e) => {
+      e.preventDefault();
+    
+      console.log('link sent by user : ', document.getElementById('tournamentLinkInput').value);
     });
+
+    document.getElementById('joinMPMatchBtn').addEventListener('click', () => {
+      console.log('Join Tournament Lobby Button Clicked');
+
+      try {
+          this.navigate_to_tournamentURL_if_valid(document.getElementById('tournamentLinkInput'));
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  }
+
+  async navigate_to_tournamentURL_if_valid(linkFormText) {
+
+    const response = await fetch(`/tournament/get_tournament/${linkFormText.value}/`, {});
+
+    console.log("fetch with ", linkFormText.value);
+
+    const responseText = await response.text();
+    const data = JSON.parse(responseText);
+
+    console.log("data.status ", data.status);
+
+    if (data.status === 'success') {
+      console.log('Tournament exists');
+      navigateTo(`/tournament_lobby/${linkFormText.value}/`);
+    } else {
+      console.log('Tournament does not exist');
+      alert('Tournament does not exist');
+    }
   }
 }
