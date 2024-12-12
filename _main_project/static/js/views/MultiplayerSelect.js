@@ -17,8 +17,12 @@ export default class extends AbstractView {
 
     // Create the page title
     const setTitle = document.createElement('h1');
-    setTitle.textContent = 'Please Select:';
+    setTitle.textContent = 'Online Multiplayer';
     setTitle.style.textAlign = 'center';
+
+    const setDescript = document.createElement('h2');
+    setDescript.textContent = 'Please Select:';
+    setDescript.style.textAlign = 'center';
 
 		// Button to start single player game against AI
 		const create_mp_match_btn = document.createElement('button');
@@ -46,6 +50,7 @@ export default class extends AbstractView {
 
     // Append the paragraph to the container
     container.appendChild(setTitle);
+    container.appendChild(setDescript);
     container.appendChild(create_mp_match_btn);
     container.appendChild(orStatement);
     container.appendChild(join_game_input);

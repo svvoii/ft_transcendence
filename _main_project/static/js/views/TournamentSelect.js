@@ -16,8 +16,12 @@ export default class extends AbstractView {
 
     // Create the page title
     const setTitle = document.createElement('h1');
-    setTitle.textContent = 'Please Select:';
+    setTitle.textContent = 'Tournament';
     setTitle.style.textAlign = 'center';
+
+    const setDescript = document.createElement('h2');
+    setDescript.textContent = 'Please Select:';
+    setDescript.style.textAlign = 'center';
 
 		// Button to start single player game against AI
 		const create_mp_match_btn = document.createElement('button');
@@ -25,6 +29,10 @@ export default class extends AbstractView {
     create_mp_match_btn.classList.add('game-select-button');
 		create_mp_match_btn.type = 'select';
 		create_mp_match_btn.textContent = 'Create a Match and invite another player';
+
+    const orStatement = document.createElement('h1');
+    orStatement.textContent = 'or';
+    orStatement.style.textAlign = 'center';
 
 		// Button to start multiplayer game against another player
 		const join_mp_match_btn = document.createElement('button');
@@ -35,7 +43,9 @@ export default class extends AbstractView {
 
     // Append the paragraph to the container
     container.appendChild(setTitle);
+    container.appendChild(setDescript);
     container.appendChild(create_mp_match_btn);
+    container.appendChild(orStatement);
     container.appendChild(join_mp_match_btn);
 
     return container;
@@ -43,12 +53,10 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('createMPMatchBtn').addEventListener('click', async() => {
-      // console.log('createMPMatchBtn clicked');
       navigateTo('/tournament_setup_create/');
     });
 
     document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
-      // console.log('joinMPMatchBtn clicked');
       navigateTo('/tournament_setup_join/');
     });
   }
