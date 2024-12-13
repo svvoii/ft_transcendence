@@ -98,27 +98,27 @@ export default class extends AbstractView {
               const li = document.createElement('li');
               li.innerText = player;
               listOfPlayers.appendChild(li);
-            });     
+            });
+
+          if (data.type == 'full_lobby') {
+            console.log(data.message);
+          }
         }
         
-        // if (data.max_nb_players_reached) {
-        //   console.log('Max number of players reached. The game can start now.');
-        // }
+        /*****To do : make the check_players_count method in models.py
+         * work, so that it sends a message to all the group, with type 'full_lobby'
+         */
+
       })
 
       /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
       
-
-
-
     }
     catch(error) {
       console.error('Error:', error);
     }
     
-
-
     // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);

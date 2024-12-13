@@ -71,13 +71,16 @@ def get_tournament(request, tournament_name):
         tournament_nb_players = tournament.nb_players
         players = [player.username for player in tournament.players.all()]
         nb_players = f'{tournament_nb_players}'
+        max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
         return Response({'status': 'success', 
             'players': players,
-            'nb_players': nb_players}, 
-        # 'max_nb_players_reached': nb_players= = REQUIRED_NB_PLAYERS},
+            'nb_players': nb_players,
+            'max_nb_players_reached': max_nb_players_reached}, 
         status=status.HTTP_200_OK)
     else:
-        return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status': 'error', 
+            'message': 'Tournament does not exist.'}, 
+            status=status.HTTP_400_BAD_REQUEST)
 
 
 

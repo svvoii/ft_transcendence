@@ -53,11 +53,13 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'last_player_name': last_player_name,
 		}))
 
-	def send_message(self, message):
+	def custom_message(self, event):
+		message = event['message']
 		self.send(text_data=json.dumps({
-			'message': "Let me decide who goes first."
+			'type': event['type'],
+			'message': message,
 		}))
-	
+
 
 	# def chat_message(self, event):
 	# 	message = event['message']

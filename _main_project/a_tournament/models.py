@@ -3,6 +3,13 @@ from a_user.models import Account
 import shortuuid
 from django.core.validators import MaxValueValidator
 
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
+from channels.generic.websocket import WebsocketConsumer
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 REQUIRED_NB_PLAYERS = 3
 
 # tournament_ids = set()
@@ -47,6 +54,19 @@ class Tournament(models.Model):
     # def update_players_with_winners
     #     winners = []
     #     for match in self.matches
+
+@receiver(m2m_changed, sender=Tournament.players.through)
+def check_players_count(sender, instance, **kwargs):
+    if instance.players.count() == REQUIRED_NB_PLAYERS:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"tournament_{instance.tournament_name}",
+            {
+                'type': 'full_lobby',
+                'message': "The lobby is full. The game will start soon.",
+            }
+        )
+
 
 class AllTournaments(models.Model):
     tournaments = models.ManyToManyField(Tournament, related_name='all_tournaments')
