@@ -51,6 +51,7 @@ def create_tournament(request):
     tournament = Tournament.objects.create()
     tournament_url = tournament.tournament_name
     tournament.players.add(request.user)
+    tournament.updateNbPlayers()
     # Tournament.tournament_ids.add(tournament_url)
     print(Tournament)
     return Response({'status': 'success', 
@@ -62,9 +63,11 @@ def create_tournament(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_tournament(request, tournament_name):
-    data = request.data
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+        if not tournament.players.filter(username=request.user.id).exists():
+            tournament.players.add(request.user)
+            tournament.updateNbPlayers()
         tournament_nb_players = tournament.nb_players;
         players = [player.username for player in tournament.players.all()]
         return Response({'status': 'success', 
@@ -99,7 +102,7 @@ def delete_tournament(request, tournament_name):
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
   
 
-def trigger_server_message(request):
-    consumer = TournamentLobbyConsumer()
-    consumer.send_server_message()
-    return JsonResponse({'status': 'Message sent'})
+# def trigger_server_message(request):
+#     consumer = TournamentLobbyConsumer()
+#     consumer.send_server_message()
+#     return JsonResponse({'status': 'Message sent'})

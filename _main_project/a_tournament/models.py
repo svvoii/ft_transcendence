@@ -2,14 +2,14 @@ from django.db import models
 from a_user.models import Account
 import shortuuid
 
-NB_PLAYERS = 8
+# NB_PLAYERS = 8
 
 # tournament_ids = set()
 
 class Tournament(models.Model):
     tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
-    nb_players = models.IntegerField(default=NB_PLAYERS, editable=False)
     players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
+    nb_players = models.IntegerField(default=0, editable=True)
     winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -20,6 +20,12 @@ class Tournament(models.Model):
 
     def __str__(self):
         return self.tournament_name
+
+    def updateNbPlayers(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.nb_players = self.players.count()
+        super().save(*args, **kwargs)
+
 
     def clean(self):
         if self.players.count() != NB_PLAYERS:
