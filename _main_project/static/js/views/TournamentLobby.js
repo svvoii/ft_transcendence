@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 
+
 export default class extends AbstractView {
   constructor(params) {
     super(params);
@@ -66,12 +67,16 @@ export default class extends AbstractView {
     
     try {
 
+
+      /*********************** INITIALIZING THE LOBBY *************************/
+
+      console.log('Entering the lobby');
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
 
       //printing the tournament data
       const tournamentDataText = await tournament.text();
-      console.log('Tournament data received :', tournamentDataText);
+      console.log('Data after entering the lobby :', tournamentDataText);
 
       //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -95,12 +100,25 @@ export default class extends AbstractView {
               listOfPlayers.appendChild(li);
             });     
         }
+        
+        // if (data.max_nb_players_reached) {
+        //   console.log('Max number of players reached. The game can start now.');
+        // }
       })
+
+      /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
+
+      
+
+
+
     }
     catch(error) {
       console.error('Error:', error);
     }
     
+
+
     // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);

@@ -3,7 +3,8 @@ import json
 from django.shortcuts import get_object_or_404
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .models import Tournament
+from .models import Tournament, REQUIRED_NB_PLAYERS
+
 
 class TournamentLobbyConsumer(WebsocketConsumer):
 	def connect(self):
@@ -34,19 +35,21 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 				'type': 'new_player',
 				'message': 'A new player has entered the lobby',
 				'player_names': player_names,
+				'max_nb_players_reached': len(player_names) == REQUIRED_NB_PLAYERS,
 				'last_player_name': last_player_name,
-				# 'player_name': text_data_json.get('player_name')
 			}
 		)
 
 	def new_player(self, event):
 		message = event['message']
 		player_names = event['player_names']
+		max_nb_players_reached = event['max_nb_players_reached']
 		last_player_name = event['last_player_name']
 		self.send(text_data=json.dumps({
 			'type': 'new_player',
 			'message': message,
 			'player_names': player_names,
+			'max_nb_players_reached': max_nb_players_reached,
 			'last_player_name': last_player_name,
 		}))
 

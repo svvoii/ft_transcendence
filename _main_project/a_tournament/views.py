@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404, JsonResponse
-from .models import Tournament
+from .models import Tournament, REQUIRED_NB_PLAYERS
 # from a_user.models import Account, BlockedUser
 from .consumers import TournamentLobbyConsumer
 import json
@@ -68,14 +68,46 @@ def get_tournament(request, tournament_name):
         if not tournament.players.filter(username=request.user.id).exists():
             tournament.players.add(request.user)
             tournament.updateNbPlayers()
-        tournament_nb_players = tournament.nb_players;
+        tournament_nb_players = tournament.nb_players
         players = [player.username for player in tournament.players.all()]
+        nb_players = f'{tournament_nb_players}'
         return Response({'status': 'success', 
-        'players': players,
-        'nb_players': f'{tournament_nb_players}'}, 
+            'players': players,
+            'nb_players': nb_players}, 
+        # 'max_nb_players_reached': nb_players= = REQUIRED_NB_PLAYERS},
         status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+#GET TOURNAMENT
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def tournament_check_in(request, tournament_name):
+    if Tournament.objects.filter(tournament_name=tournament_name).exists():
+        tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+        nb_players = tournament.nb_players
+        if not tournament.players.filter(username=request.user.username).exists() and nb_players == REQUIRED_NB_PLAYERS:
+                return Response({'status': 'error', 
+                    'nb_players': nb_players, 
+                    'request.user.username': request.user.username,
+                    'request.user.id': request.user.id,
+                    'message': 'Tournament is full.'}, 
+                    status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'status': 'success', 
+                'nb_players': nb_players,
+                'request.user.username': request.user.username,
+                'request.user.id': request.user.id,
+                'message': 'Tournament is open.'}, 
+                status=status.HTTP_200_OK)
+    else:
+        return Response({'status': 'error', 
+                'request.user.username': request.user.username,
+                'request.user.id': request.user.id,
+                'message': 'Tournament does not exist.'}, 
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 # #CHECK IF TOURNAMENT EXISTS

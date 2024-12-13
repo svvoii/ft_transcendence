@@ -1,15 +1,16 @@
 from django.db import models
 from a_user.models import Account
 import shortuuid
+from django.core.validators import MaxValueValidator
 
-# NB_PLAYERS = 8
+REQUIRED_NB_PLAYERS = 3
 
 # tournament_ids = set()
 
 class Tournament(models.Model):
     tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
     players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
-    nb_players = models.IntegerField(default=0, editable=True)
+    nb_players = models.IntegerField(default=0, editable=True, validators=[MaxValueValidator(REQUIRED_NB_PLAYERS)])
     winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -34,13 +35,14 @@ class Tournament(models.Model):
     class Meta:
         ordering = ['-created']
 
-    # def create_matches(self):
-    #     players = list(self.players.all())
-    #     matches = []
-    #     for i in range(0, len(players), 2):
-    #         match = Match.objects.create(tournament=self, player1=player[i], player2=players[i+1])
-    #         matches.append(match)
-    #     return matches
+    def create_matches(self):
+        players = list(self.players.all())
+        matches = []
+        for i in range(0, len(players), 2):
+            if i+1 < len(players):
+                match = Match.objects.create(tournament=self, player1=player[i], player2=players[i+1])
+                matches.append(match)
+        return matches
 
     # def update_players_with_winners
     #     winners = []
