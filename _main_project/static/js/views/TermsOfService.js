@@ -41,8 +41,11 @@ export default class extends AbstractView {
       { tag: 'ul', content: '<li>We reserve the right to suspend or terminate your access to the Game at our discretion, including for violations of these Terms of Service.</li>' },
       { tag: 'h3', content: '11. <strong>Contact Information</strong>' },
       { tag: 'p', content: 'For any questions or concerns regarding these Terms of Service, you can contact us at: ft_transcendance.contort733@passfwd.com</li>' },
+      { tag: 'br', content: '' },
+      { tag: 'hr', content: '' },
+      { tag: 'br', content: '' },
       { tag: 'p', content: 'Thank you for playing ft_transcenDANCE!' },
-      { tag: 'p', content: 'Thank you for playing ft_transcenDANCE!' }
+      { tag: 'br', content: '' },
     ];
 
     elements.forEach(element => {

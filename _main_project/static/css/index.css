@@ -127,7 +127,7 @@ button[type=submit]:hover {
   text-shadow: 0 0 0.5rem; */
 }
 
-p, h1, h2 {
+p, h1, h2, li {
   color: var(--primary-color); 
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px; 
@@ -207,7 +207,8 @@ input:focus {
   position: relative;
   width: 100%;
   margin-top: var(--nav-height);
-  height: var(--app-height);
+  margin-bottom: var(--footer-height);
+  height: auto;
   background-size: cover;
 }
 
