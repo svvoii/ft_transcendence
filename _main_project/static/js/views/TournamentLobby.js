@@ -33,8 +33,8 @@ export default class extends AbstractView {
     copyButton.id = 'copyButton';
     copyButton.textContent = 'Copy tournament ID';
 
-    const info_1 = document.createElement('p');
-    info_1.textContent = 'List of players :';
+    const playersListTitle = document.createElement('p');
+    playersListTitle.textContent = 'List of players :';
 
     const playersList = document.createElement('ul');
     playersList.className = 'list-of-players';
@@ -46,7 +46,7 @@ export default class extends AbstractView {
     container.appendChild(h1);
     container.appendChild(linkParagraph);
     container.appendChild(copyButton);
-    container.appendChild(info_1);
+    container.appendChild(playersListTitle);
     container.appendChild(playersList);
     
     return container;
@@ -71,7 +71,7 @@ export default class extends AbstractView {
 
       //printing the tournament data
       const tournamentDataText = await tournament.text();
-      console.log('Data received :', tournamentDataText);
+      console.log('Tournament data received :', tournamentDataText);
 
       //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -82,11 +82,6 @@ export default class extends AbstractView {
           'message': 'New player entering the lobby.'
         };
         socket.send(JSON.stringify(message));
-      };
-    
-      socket.onmessage = function(event) {
-        const message = JSON.parse(event.data);
-        console.log('Message received from the server:', message);
       };
 
       //Printing the list of players in the lobby
@@ -101,12 +96,12 @@ export default class extends AbstractView {
             });     
         }
       })
-    } 
-    
+    }
     catch(error) {
       console.error('Error:', error);
     }
     
+    // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });
