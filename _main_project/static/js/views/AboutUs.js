@@ -18,7 +18,7 @@ export default class extends AbstractView {
     text_container.classList.add('text-container');
 
     const elements = [
-      { tag: 'h1', content: '<strong>ft_transcendence_team</strong>' },
+      { tag: 'h1', content: '<strong>ft_transcenDANCE_team</strong>' },
       { tag: 'br', content: '' },
       { tag: 'hr', content: '' },
       { tag: 'br', content: '' },

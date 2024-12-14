@@ -37,7 +37,7 @@ export default class extends AbstractView {
       { tag: 'br', content: '' },
       { tag: 'hr', content: '' },
       { tag: 'br', content: '' },
-      { tag: 'p', content: 'Thank you for playing ft_transcenDANCE!' },
+      { tag: 'h3', content: 'Thank you for playing ft_transcenDANCE!' },
       { tag: 'br', content: '' },
     ];
 
