@@ -212,6 +212,39 @@ input:focus {
   background-size: cover;
 }
 
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-size: cover;
+  align-items: center;
+}
+
+.photos-container {
+  display: flex;
+}
+
+.profile-photo {
+  width: 25vw;
+  height: 25vw;
+  margin: 1rem;
+  border-radius: 1rem;
+  object-fit: cover;
+  max-width: 300px;
+  max-height: 300px;
+  cursor: pointer;
+}
+
+.name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 /* #app {
   margin: 2em;
   margin-top: var(--nav-height); 
