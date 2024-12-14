@@ -1,7 +1,9 @@
-FROM sertbot/certbot:latest
+FROM certbot/certbot:v1.27.0
 
-COPY sertify-init.sh /opt/sertify-init.sh
-RUN chmod +x /opt/sertify-init.sh
+RUN apk add --no-cache bash netcat-openbsd
+
+COPY certify-init.sh /opt/certify-init.sh
+RUN chmod +x /opt/certify-init.sh
 
 ENTRYPOINT []
 CMD ["certbot", "renew"]

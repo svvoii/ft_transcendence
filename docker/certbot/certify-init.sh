@@ -4,6 +4,9 @@
 
 set -e
 
+echo "Certifying domain: $DOMAIN"
+echo "Using email: $EMAIL"
+
 # Wait for proxy to be ready
 until nc -z proxy 80; do
 	echo "Waiting for proxy to be ready..."
@@ -17,6 +20,6 @@ certbot certonly \
 	--webroot-path "/vol/www/" \
 	-d "$DOMAIN" \
 	--email "$EMAIL" \
-	--rsa-key-size 4096 \
+	--rsa-key-size 2048 \
 	--agree-tos \
 	--non-interactive

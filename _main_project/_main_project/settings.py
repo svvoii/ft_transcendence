@@ -33,13 +33,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
-# DEBUG = False
+# DEBUG = env('DEBUG')
+DEBUG = False
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # CSRF_TRUSTED_ORIGINS include the hostnames that are allowed to send POST requests without a CSRF token
-CSRF_TRUSTED_ORIGINS = ['https://localhost']
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 # Secure proxy SSL header and secure cookies
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -183,7 +183,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
 TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')
 
 # BASE_URL = 'http://127.0.0.1:8000'
-BASE_URL = 'http://localhost:8000'
+# BASE_URL = 'http://localhost:8000'
+BASE_URL = 'https://sbocanci.me'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -29,9 +29,29 @@ server {
 		alias /vol/static;
 	}
 
+	location /media {
+		alias /vol/media;
+	}
+
 	location / {
-		uwsgi_pass ${APP_HOST}:${APP_PORT};
-		include /etc/nginx/uwsgi_params;
-		cliend_max_body_size 10M;
+		proxy_pass http://web-app:8000;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Host $host;
+		proxy_set_header X-Forwarded-Port $server_port;
+	}
+	
+	# WebSocket support
+	location /ws/ {
+		proxy_pass http://web-app:8000;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "Upgrade";
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
 	}
 }
