@@ -234,6 +234,11 @@ input:focus {
   object-fit: cover;
   max-width: 300px;
   max-height: 300px;
+}
+
+.profile-photo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--primary-color);
   cursor: pointer;
 }
 
