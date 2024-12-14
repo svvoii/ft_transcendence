@@ -14,6 +14,7 @@ export default class extends AbstractView {
     // Create a container div
     const container = document.createElement('div');
     container.classList.add('text-container');
+    container.style.padding = '0 2rem';
 
     const elements = [
       { tag: 'h1', content: 'Terms of Service' },
@@ -50,6 +51,9 @@ export default class extends AbstractView {
 
     elements.forEach(element => {
       const el = document.createElement(element.tag);
+      if (element.tag === 'h3' || element.tag === 'h1') {
+        el.style.textAlign = 'center';
+      }
       el.innerHTML = element.content;
       container.appendChild(el);
     });

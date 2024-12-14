@@ -10,10 +10,11 @@ export default class extends AbstractView {
   getDomElements() {
     const container = document.createElement('div');
     container.classList.add('text-container');
+    container.style.padding = '0 2rem';
 
     const elements = [
       { tag: 'h1', content: '<strong>Privacy Policy for ft_transcenDANCE</strong>' },
-      { tag: 'p', content: '<strong>Effective Date: [Insert Date]' },
+      { tag: 'p', content: '<strong>Effective Date</strong>: 5 Dec 2024' },
       { tag: 'h3', content: '<strong>1. Introduction</strong>' },
       { tag: 'p', content: 'Welcome to ft_transcenDANCE ("we", "us", "our"). This Privacy Policy explains how we collect, use, and protect your information when you play our online multiplayer Pong game ("Game").' },
       { tag: 'p', content: 'By using our Game, you agree to the collection and use of your information in accordance with this Privacy Policy.' },
@@ -42,6 +43,9 @@ export default class extends AbstractView {
 
     elements.forEach(element => {
       const el = document.createElement(element.tag);
+      if (element.tag === 'h3' || element.tag === 'h1') {
+        el.style.textAlign = 'center';
+      }
       el.innerHTML = element.content;
       container.appendChild(el);
     });
