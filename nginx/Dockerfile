@@ -13,8 +13,4 @@ RUN chmod +x /entrypoint.sh
 # Create directories for Certbot webroot and certificates
 RUN mkdir -p /var/lib/letsencrypt/webroot /etc/nginx/certs
 
-# Expose ports
-# EXPOSE 80 443
-
-# Start Nginx and Certbot renewal process
 CMD ["/entrypoint.sh"]
