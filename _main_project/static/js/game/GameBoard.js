@@ -1,4 +1,4 @@
-import { getGameSession, joinGame } from './GameLogic.js';
+import { getGameSession, joinGame } from './GameLogicAPI.js';
 
 export default class GameBoard {
 	constructor(appId) {
@@ -76,11 +76,17 @@ export default class GameBoard {
 			gameModal.style.display = 'flex';
 		} catch (error) {
 			alert('Error joining the game: ' + error.message);
-			console.error('Error joining the game: ', error);
+			// console.error('Error joining the game: ', error);
 		}
 	}
 	
 	async afterRender() {
 
 	}
+
 };
+    // document.getElementById('singlePlayerBtn').addEventListener('click', () => {
+    // 	console.log('single player button clicked');
+    // 	// navigateTo('/game_options/');
+    // });
+

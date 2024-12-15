@@ -12,57 +12,56 @@ export default class extends AbstractView {
     // Set the game modal to hidden
     document.getElementById("gameModal").style.display = "none";
 
-    // Create a container div
+    // Create a this.container div
     const container = document.createElement('div');
-    container.classList.add('text-container');
+    container.classList.add('text-container', 'game-select-button-div');
 
-    // Create the paragraph element
-    const paragraph = document.createElement('p');
-    paragraph.textContent = 'You are viewing the game menu!';
+    const setTitle = document.createElement('h1');
+    setTitle.textContent = 'Select a game mode:';
+    setTitle.style.textAlign = 'center';
 
-	const gameOptions = document.createElement('button');
-	gameOptions.id = 'gameOptionsBtn';
-	gameOptions.type = 'select';
-	gameOptions.textContent = 'Game Options';
+		// Button to start single player game against AI
+		const local_match_button = document.createElement('button');
+		local_match_button.id = 'localMatchBtn';
+    local_match_button.classList.add('game-select-button');
+		local_match_button.type = 'select';
+		local_match_button.textContent = 'Local Match';
+
+		// Button to start multiplayer game against another player
+		const multi_player_button = document.createElement('button');
+		multi_player_button.id = 'multiPlayerBtn';
+    multi_player_button.classList.add('game-select-button');
+		multi_player_button.type = 'select';
+		multi_player_button.textContent = 'Online Multiplayer';
 
     // Create the button
-    const create_tournament_button = document.createElement('button');
-    create_tournament_button.id = 'createTournamentBtn';
-    create_tournament_button.type = 'select';
-    create_tournament_button.textContent = 'Create Tournament';
-
-    // Create the button
-    const join_tournament_button = document.createElement('button');
-    join_tournament_button.id = 'joinTournamentBtn';
-    join_tournament_button.type = 'select';
-    join_tournament_button.textContent = 'Join Tournament';
+    const tournament_button = document.createElement('button');
+    tournament_button.id = 'tournamentBtn';
+    tournament_button.classList.add('game-select-button');
+    tournament_button.type = 'select';
+    tournament_button.textContent = 'Tournament';
 
     // Append the paragraph to the container
-    container.appendChild(paragraph);
-	container.appendChild(gameOptions);
-    container.appendChild(create_tournament_button);
-    container.appendChild(join_tournament_button);
+    container.appendChild(setTitle);
+    container.appendChild(local_match_button);
+    container.appendChild(multi_player_button);
+    container.appendChild(tournament_button);
 
     return container;
   }
 
   async afterRender() {
 
-	document.getElementById('gameOptionsBtn').addEventListener('click', () => {
-		console.log('Game Options');
-		navigateTo('/game_options/');
-	});
+    document.getElementById('localMatchBtn').addEventListener('click', async() => {
+			navigateTo('/local_match_select/');
+		});
 
-    document.getElementById('createTournamentBtn').addEventListener('click', () => {
-      // load in Remote game on the backend.
-      console.log('Create Tournament');
-      navigateTo('/tournament_setup_create/');
-    });
+		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
+			navigateTo('/multiplayer_select/');
+		});
 
-    document.getElementById('joinTournamentBtn').addEventListener('click', () => {
-      // load in Remote game on the backend.
-      console.log('Join Tournament');
-      navigateTo('/tournament_setup_join/');
+    document.getElementById('tournamentBtn').addEventListener('click', () => {
+      navigateTo('/tournament_select/');
     });
   }
 }

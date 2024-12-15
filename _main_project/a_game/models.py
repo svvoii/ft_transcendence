@@ -11,6 +11,7 @@ class GameSession(models.Model):
 	player2_score = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_active = models.BooleanField(default=True)
+	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="winner", null=True, blank=True)
  
 	def __str__(self):
 		return self.game_id
