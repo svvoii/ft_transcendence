@@ -53,7 +53,10 @@ export async function joinGame(game_id, mode) {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
 		},
-		body: JSON.stringify({ game_id: game_id }),
+		body: JSON.stringify({ 
+			game_id: game_id,
+			mode: mode,
+		}),
 	});
 
 	const data = await response.json();
@@ -71,7 +74,9 @@ export async function joinGame(game_id, mode) {
 	// localStorage.setItem('player_role', role);
 
 	if (!socket) {
-		socket = new WebSocket(`ws://${window.location.host}/ws/pong/${game_id}/`);
+		const web_socker_protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+		socket = new WebSocket(`${web_socker_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
+		// socket = new WebSocket(`${web_socker_protocol}://${window.location.host}/ws/pong/${game_id}/`);
 	}
 
 	if (!game_initialized) {
@@ -233,7 +238,9 @@ async function initializeGame(socket, role, mode, game_id) {
 			ctx.fillText(`Game Over! ${winner} wins!`, canvas.width / 2 - 150, canvas.height / 2);
 			
 			// End the game
-			endGame(game_id);
+			if (role === 'player1') {
+				endGame(game_id);
+			}
 
 			socket.close();
 

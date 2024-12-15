@@ -15,6 +15,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		global game_states
 		self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
+		self.mode = self.scope["url_route"]["kwargs"]["mode"]
 		self.game_group_name = f"pong_{self.game_id}"
         
 		# `game_states` is a dictionary declared in game_logic.py, it stores the game state for each game_id
@@ -37,11 +38,19 @@ class PongConsumer(AsyncWebsocketConsumer):
 			connected_players[self.game_id] = []
 		connected_players[self.game_id].append(self.channel_name)
 
-		if len(connected_players[self.game_id]) == 2 and self.game_id not in game_tasks:
+		if self.mode == 'multiplayer' and len(connected_players[self.game_id]) < 2:
+			print("Waiting for another player to connect..")
+		elif self.game_id in game_tasks:
+			print("Game loop already started..")
+		else:
 			game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
 			print("Game loop started..")
-		else:
-			print("Waiting for another player to connect..")
+			
+		# if len(connected_players[self.game_id]) == 2 and self.game_id not in game_tasks:
+		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
+		# 	print("Game loop started..")
+		# else:
+		# 	print("Waiting for another player to connect..")
 
 		# if self.game_id not in game_tasks:
 		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
