@@ -16,8 +16,8 @@ build-no-cache:
 # If there are no certificates this must be run first before everything else. It will take some time.
 get-cert:
 	@echo -e "${GREEN}Getting sertificates...${NC}"
-	docker-compose build certbot
-	docker-compose run --rm certbot
+# docker-compose build certbot
+	docker-compose run --rm certbot /opt/certify-init.sh
 
 up:
 	@echo -e "${GREEN}Starting the project...${NC}"

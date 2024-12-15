@@ -6,7 +6,7 @@ echo "Check for dhparams.pem.."
 
 if [ ! -f /vol/proxy/ssl-dhparams.pem ]; then
 	echo "dhparams.pem not found, generating..."
-	openssl dhparam -out /vol/proxy/ssl-dhparams.pem 4096
+	openssl dhparam -out /vol/proxy/ssl-dhparams.pem 2048
 else
 	echo "dhparams.pem found in /vol/proxy, using it..."
 fi
@@ -31,7 +31,7 @@ else
 	envsubst < /etc/nginx/default-ssl.conf.tpl > /etc/nginx/conf.d/default.conf
 fi
 
-# Print the final config firl for debugging
+# Print the final config file for debugging
 # echo "Generated /etc/nginx/conf.d/default.conf:"
 # cat /etc/nginx/conf.d/default.conf
 
