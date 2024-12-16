@@ -1,5 +1,5 @@
 .chat {
-  position: absolute;
+  position: fixed;
   right: 2rem;
   bottom: calc(var(--footer-height) / 2);
   background-color: var(--background-color);
