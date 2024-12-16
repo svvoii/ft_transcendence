@@ -41,6 +41,9 @@ export default class extends AbstractView {
     playersList.className = 'list-of-players';
     document.body.appendChild(playersList);
 
+    const fullLobbyDiv = document.createElement('div');
+    fullLobbyDiv.className = 'full-lobby-message';
+    fullLobbyDiv.textContent = '';
 
     // Append all elements to the container
     container.appendChild(paragraph);
@@ -49,6 +52,7 @@ export default class extends AbstractView {
     container.appendChild(copyButton);
     container.appendChild(playersListTitle);
     container.appendChild(playersList);
+    container.appendChild(fullLobbyDiv);
     
     return container;
   }
@@ -59,6 +63,8 @@ export default class extends AbstractView {
     let lobbyLink = document.querySelector('.lobby-link');
     let listOfPlayers = document.querySelector('.list-of-players');
     let currentUrl = window.location.href;
+
+    let fullLobbyDiv = document.querySelector('.full-lobby-message');
     
     //getting the tournament ID from the URL
     currentUrl = currentUrl.slice(0, -1);
@@ -101,11 +107,13 @@ export default class extends AbstractView {
               listOfPlayers.appendChild(li);
             });
 
-          if (data.type == 'full_lobby') {
-            console.log(data.message);
           }
+        if (data.type == 'full_lobby') {
+          console.log('check', data.message);
+          fullLobbyDiv.textContent = data.message;
+
         }
-        
+          
         /*****To do : make the check_players_count method in models.py
          * work, so that it sends a message to all the group, with type 'full_lobby'
          * 

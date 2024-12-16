@@ -53,7 +53,7 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'last_player_name': last_player_name,
 		}))
 
-	def custom_message(self, event):
+	def full_lobby(self, event):
 		message = event['message']
 		self.send(text_data=json.dumps({
 			'type': event['type'],
