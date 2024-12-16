@@ -82,7 +82,7 @@ export default class extends AbstractView {
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
 
       socket.onopen = function() {
-        console.log('WebSocket connection is indeed established.');
+        console.log('WebSocket connection is established.');
         const message = {
           'message': 'New player entering the lobby.'
         };
@@ -92,6 +92,7 @@ export default class extends AbstractView {
       //Printing the list of players in the lobby
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
+        console.log('Data received from the websocket :', data);
         if (data.type == 'new_player') {
           listOfPlayers.innerHTML = '';
           data.player_names.forEach( player => {
@@ -107,6 +108,8 @@ export default class extends AbstractView {
         
         /*****To do : make the check_players_count method in models.py
          * work, so that it sends a message to all the group, with type 'full_lobby'
+         * 
+         * PULL FROM MAIN
          */
 
       })

@@ -10,7 +10,7 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-REQUIRED_NB_PLAYERS = 3
+REQUIRED_NB_PLAYERS = 4
 
 # tournament_ids = set()
 
