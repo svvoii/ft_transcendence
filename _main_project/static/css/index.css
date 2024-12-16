@@ -18,6 +18,11 @@
   --app-height: calc(100vh - (calc(var(--nav-height)) + var(--footer-height)));
 }
 
+/* enables scrolling in text screens like TOS and privacy policy */
+html, body {
+  overflow: auto;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -122,7 +127,7 @@ button[type=submit]:hover {
   text-shadow: 0 0 0.5rem; */
 }
 
-p, h1, h2 {
+p, h1, h2, li {
   color: var(--primary-color); 
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px; 
@@ -202,8 +207,47 @@ input:focus {
   position: relative;
   width: 100%;
   margin-top: var(--nav-height);
-  height: var(--app-height);
+  margin-bottom: var(--footer-height);
+  height: auto;
   background-size: cover;
+}
+
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-size: cover;
+  align-items: center;
+}
+
+.photos-container {
+  display: flex;
+}
+
+.profile-photo {
+  width: 25vw;
+  height: 25vw;
+  margin: 1rem;
+  border-radius: 1rem;
+  object-fit: cover;
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.profile-photo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--primary-color);
+  cursor: pointer;
+}
+
+.name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
 /* #app {

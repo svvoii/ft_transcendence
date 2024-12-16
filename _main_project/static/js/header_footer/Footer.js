@@ -17,7 +17,7 @@ export default class Footer {
     this.about_us.setAttribute('data-link', '');
     this.about_us.classList.add('about_us');
     this.about_us.href = '/about_us/';
-    this.about_us.textContent = 'ft_transcendence_team';
+    this.about_us.textContent = 'ft_transcenDANCE_team';
     this.about_us.style.marginLeft = '1rem';
 
     this.terms_of_service = document.createElement('a');
