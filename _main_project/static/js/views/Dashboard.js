@@ -30,15 +30,6 @@ export default class extends AbstractView {
     const paragraph1 = document.createElement('p');
     paragraph1.textContent = 'This is the dashboard. You can view the list of posts, your settings, or logout.';
 
-    // Create the third paragraph with a link
-    const paragraph3 = document.createElement('p');
-    const link2 = document.createElement('a');
-    link2.href = 'home/';
-    link2.textContent = 'here';
-    paragraph3.appendChild(document.createTextNode("If you'd like to look at the old version, click "));
-    paragraph3.appendChild(link2);
-    paragraph3.appendChild(document.createTextNode('.'));
-
     // Create the fourth paragraph
     const paragraph4 = document.createElement('p');
     paragraph4.textContent = 'Blah blah blah, some stuff about matchmaking? IDK....';
@@ -52,7 +43,6 @@ export default class extends AbstractView {
     // Append all elements to the container
     textContainer.appendChild(heading);
     textContainer.appendChild(paragraph1);
-    textContainer.appendChild(paragraph3);
     textContainer.appendChild(paragraph4);
     textContainer.appendChild(button);
 
