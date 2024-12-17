@@ -76,7 +76,7 @@ export default class extends AbstractView {
       // console.log('Entering the lobby');
 
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-      user.tournamentSocket = socket;
+      user.setTournamentSocket(socket);
       socket.onopen = function() {
         console.log('WebSocket connection is established.');
         user.setIsInTournament(true);

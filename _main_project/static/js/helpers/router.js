@@ -58,8 +58,10 @@ export const router = async () => {
   const view = new match.route.view(getParams(match));
 
   if (user.getIsInTournament() === true && view.name !== "TournamentLobby") {
-    console.log('user should leave the tournament');
-    user.tournamentSocket.close();
+    // console.log('user should leave the tournament');
+    user.getTournamentSocket().close();
+    user.setIsInTournament(false);
+    user.setTournamentSocket(null);
   }
   
   // Render the view
