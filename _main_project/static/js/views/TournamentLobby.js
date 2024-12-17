@@ -103,10 +103,11 @@ export default class extends AbstractView {
               listOfPlayers.appendChild(li);
             });
           }
-        else if (data.type == 'full_lobby') {
-              console.log('check', data.message);
-              fullLobbyDiv.textContent = data.message;
-        };
+        if (data.max_nb_players_reached == true)
+        {
+          console.log('check', data.message);
+          fullLobbyDiv.textContent = data.message;
+        }
       });
 
 
