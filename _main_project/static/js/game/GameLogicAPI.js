@@ -26,7 +26,6 @@ export async function getGameSession() {
 	});
 
 	const data = await response.json();
-	// console.log(data);
 
 	if (!response.ok) {
 		throw new Error(`ERROR: Server saying: ${data.error}`);
@@ -38,10 +37,6 @@ export async function getGameSession() {
 		throw new Error('Game ID not found in the response');
 	}
 }
-
-// These variables will be reset once the page is reloaded
-var socket = null;
-var game_initialized = false;
 
 // This will request the server to join the player to the game session
 // The player role will be returned as either 'player1' or 'player2'
@@ -64,42 +59,22 @@ export async function joinGame(game_id, mode) {
 	console.log('..join game, data: ', data);
 
 	if (!response.ok) {
-		// alert('Error joining the game: ' + data.error);
 		throw new Error(data.message || 'Error joining the game');
 	}
 
-	const role = data.role;
-
-	// localStorage.setItem('game_id', game_id);
-	// localStorage.setItem('player_role', role);
-
-	if (!socket) {
-		const web_socker_protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-		socket = new WebSocket(`${web_socker_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
-		// socket = new WebSocket(`${web_socker_protocol}://${window.location.host}/ws/pong/${game_id}/`);
-	}
-
-	if (!game_initialized) {
-		initializeGame(socket, role, mode, game_id);
-		game_initialized = true;
-	}
-	return data;
+	return data.role;
 }
 
 
 // This will request the server to fetch the current game state
 // Game state includes the position of paddles, ball, and scores
 async function fetchGameState(game_id) {
-	// console.log('..fetch game state, game_id: ', game_id);
 
     const response = await fetch(`/game/game_state/${game_id}/`);
     if (!response.ok) {
         throw new Error('Failed to fetch game state');
     }
 	const data = await response.json();
-	// console.log('..fetch game state, data: ', data);
-	// console.log('..game state fetched: ', gameState);
-	// console.log('..paddle1: ', data.paddle1, ' paddle2: ', data.paddle2);
 
 	return data;
 }
@@ -109,7 +84,6 @@ async function fetchGameState(game_id) {
 // The server expects the paddle value as either 1 or 2
 // The direction value is either -1 or 1
 async function movePaddle(game_id, paddle, direction) {
-	// console.log('..move paddle: paddle: ', paddle, ' direction: ', direction);
 	
     const response = await fetch(`/game/move_paddle/${game_id}/`, {
         method: 'POST',
@@ -121,7 +95,6 @@ async function movePaddle(game_id, paddle, direction) {
     });
 
 	const data = await response.json();
-	// console.log('..move paddle, data: ', data);
 
     if (!response.ok) {
         throw new Error('Failed to move paddle');
@@ -132,7 +105,7 @@ async function movePaddle(game_id, paddle, direction) {
 
 // This will request the server to end the game
 async function endGame(game_id) {
-	// console.log('..end game, game_id: ', game_id);
+
 	const response = await fetch(`/game/end_game/${game_id}/`, {
 		method: 'POST',
 		headers: {
@@ -148,11 +121,33 @@ async function endGame(game_id) {
 }
 
 
+// This will request the server to quit the game
+export async function quitGame() {
+
+	const response = await fetch('/game/quit_game/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+		},
+		body: JSON.stringify({}),
+	});
+
+	if (!response.ok) {
+		// throw new Error('Failed to quit the game');
+	}
+
+}
+
+
 // This will initialize the game logic
 // It will draw the paddles and ball on the canvas
 // The ball position is updated via WebSocket
 // The paddle position is updated via API call on key press
-async function initializeGame(socket, role, mode, game_id) {
+export async function initializeGame(socket, role, mode, game_id) {
+
+	console.log('..initializeGame, game_id: ', game_id);
+
     socket.onopen = function() {
         console.log('WebSocket connection established');
     };
@@ -245,6 +240,8 @@ async function initializeGame(socket, role, mode, game_id) {
 			socket.close();
 
 			return;
+		} else if (socket.readyState === WebSocket.CLOSED) {
+			return;
 		}
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -260,6 +257,7 @@ async function initializeGame(socket, role, mode, game_id) {
 
     document.addEventListener('keydown', async function(event) {
 		if (winner !== null) return;
+		if (socket.readyState === WebSocket.CLOSED) return;
 
         const key = event.key;
 		let player = role;
@@ -282,10 +280,8 @@ async function initializeGame(socket, role, mode, game_id) {
             }
 			let paddle = player === 'player1' ? 1 : 2; // backend expects 1 or 2 as paddle value
             gameState = await movePaddle(game_id, paddle, direction);
-            // gameState = await fetchGameState(game_id);
 			updateGameState(gameState);
         }
     });
 
-    // draw();
 }

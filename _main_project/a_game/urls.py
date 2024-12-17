@@ -7,4 +7,5 @@ urlpatterns = [
 	path("game_state/<str:game_id>/", views.get_game_state, name="game_state"),
 	path("move_paddle/<str:game_id>/", views.move_paddle, name="move_paddle"),
 	path("end_game/<str:game_id>/", views.end_game_session, name="end_game"),
+	path("quit_game/", views.quit_game_session, name="quit_game"),
 ]
