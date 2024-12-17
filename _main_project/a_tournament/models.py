@@ -10,7 +10,9 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-REQUIRED_NB_PLAYERS = 4
+# import time
+
+REQUIRED_NB_PLAYERS = 2
 
 # tournament_ids = set()
 
@@ -59,6 +61,9 @@ class Tournament(models.Model):
 def check_players_count(sender, instance, **kwargs):
     if instance.players.count() == REQUIRED_NB_PLAYERS:
         channel_layer = get_channel_layer()
+
+        # time.sleep(5)
+
         async_to_sync(channel_layer.group_send)(
             f"tournament_{instance.tournament_name}",
             {

@@ -7,6 +7,8 @@ export default class User {
     this.userName = '';
     this.userImg = '';
     this.loggedIn = false;
+    this.isInTournament = false;
+    this.tournamentSocket = null;
   }
 
   async userLoginCheck() {
@@ -77,6 +79,10 @@ export default class User {
     return this.loggedIn;
   }
 
+  getIsInTournament() {
+    return this.isInTournament;
+  }
+
   setUserId(id) {
     this.userId = id;
   }
@@ -91,6 +97,10 @@ export default class User {
 
   setLoginStatus(status) {
     this.loggedIn = status;
+  }
+
+  setIsInTournament(status) {
+    this.isInTournament = status;
   }
 
 }

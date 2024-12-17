@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-
+import { user } from "../index.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -73,29 +73,25 @@ export default class extends AbstractView {
     
     try {
 
+      // console.log('Entering the lobby');
 
-      /*********************** INITIALIZING THE LOBBY *************************/
-
-      console.log('Entering the lobby');
-      // Getting the tournament object
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-
-      //printing the tournament data
-      const tournamentDataText = await tournament.text();
-      console.log('Data after entering the lobby :', tournamentDataText);
-
-      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-
+      user.tournamentSocket = socket;
       socket.onopen = function() {
         console.log('WebSocket connection is established.');
+        user.setIsInTournament(true);
         const message = {
           'message': 'New player entering the lobby.'
         };
         socket.send(JSON.stringify(message));
       };
 
-      //Printing the list of players in the lobby
+      socket.onclose = function() {
+        console.log('WebSocket connection is closed.');
+        user.setIsInTournament(false);
+      };
+
+
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
         console.log('Data received from the websocket :', data);
@@ -106,22 +102,28 @@ export default class extends AbstractView {
               li.innerText = player;
               listOfPlayers.appendChild(li);
             });
-
           }
-        if (data.type == 'full_lobby') {
-          console.log('check', data.message);
-          fullLobbyDiv.textContent = data.message;
+        else if (data.type == 'full_lobby') {
+              console.log('check', data.message);
+              fullLobbyDiv.textContent = data.message;
+        };
+      });
 
-        }
-          
-        /*****To do : make the check_players_count method in models.py
-         * work, so that it sends a message to all the group, with type 'full_lobby'
-         * 
-         * PULL FROM MAIN
-         */
 
-      })
+      // Getting the tournament object
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
 
+      //printing the tournament data
+      const tournamentDataText = await tournament.text();
+      console.log('Data after entering the lobby :', tournamentDataText);
+
+      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
+
+
+
+
+
+  
       /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
       

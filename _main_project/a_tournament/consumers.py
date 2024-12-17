@@ -7,22 +7,38 @@ from .models import Tournament, REQUIRED_NB_PLAYERS
 
 
 class TournamentLobbyConsumer(WebsocketConsumer):
+	clients = {}
+
 	def connect(self):
 		self.tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		self.room = get_object_or_404(Tournament, tournament_name=self.tournament_name)
 		self.room_group_name = f"tournament_{self.tournament_name}"
 		
+
+
 		async_to_sync(self.channel_layer.group_add)(
 			self.room_group_name,
 			self.channel_name
 		)
 		self.accept()
 
+		if self.room_group_name not in TournamentLobbyConsumer.clients:
+			TournamentLobbyConsumer.clients[self.room_group_name] = []
+		TournamentLobbyConsumer.clients[self.room_group_name].append(self.channel_name)
+
+
+
 	def disconnect(self, code):
 		async_to_sync(self.channel_layer.group_discard)(
 			self.room_group_name,
 			self.channel_name
 		)
+		
+		if self.room_group_name in TournamentLobbyConsumer.clients:
+			TournamentLobbyConsumer.clients[self.room_group_name].remove(self.channel_name)
+			if not TournamentLobbyConsumer.clients[self.room_group_name]:
+				del TournamentLobbyConsumer.clients[self.room_group_name]
+
 
 	def receive(self, text_data):
 		text_data_json = json.loads(text_data)
@@ -55,11 +71,15 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 
 	def full_lobby(self, event):
 		message = event['message']
+
 		self.send(text_data=json.dumps({
 			'type': event['type'],
 			'message': message,
+			'list_of_clients': self.list_clients(),
 		}))
 
+	def list_clients(self):
+		return TournamentLobbyConsumer.clients.get(self.room_group_name, [])
 
 	# def chat_message(self, event):
 	# 	message = event['message']
