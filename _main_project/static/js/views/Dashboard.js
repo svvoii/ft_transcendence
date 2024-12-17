@@ -1,5 +1,6 @@
 import { navigateTo } from "../helpers/helpers.js";
 import AbstractView from "./AbstractView.js";
+import { user } from '../index.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -33,9 +34,20 @@ export default class extends AbstractView {
     button.textContent = 'Start';
     button.classList.add('start-btn')
 
+    // space
+    const space = document.createElement('br');
+
+    // Create the warning message
+    const warning = document.createElement('p');
+    warning.id = 'warningMsg';
+    warning.classList.add('warning-message');
+    warning.textContent = '';
+
     // Append all elements to the container
     textContainer.appendChild(heading);
     textContainer.appendChild(button);
+    textContainer.appendChild(space);
+    textContainer.appendChild(warning);
 
     container.appendChild(gifContainer);
     container.appendChild(textContainer);
@@ -45,7 +57,11 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('playGameBtn').addEventListener('click', () => {
-      navigateTo('/game_menu/');
+      if (user.getLoginStatus()) {
+        navigateTo('/game_menu/');
+      } else {
+        document.getElementById('warningMsg').textContent = 'Please log in to play the game!'
+      }
     });
   }
 }

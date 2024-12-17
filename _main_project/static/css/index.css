@@ -288,6 +288,11 @@ input:focus {
     }
 }
 
+.warning-message {
+  text-align: center;
+  color: var(--failure-color);
+}
+
 /* style for mode selection */
 
 .mode-dialog {
