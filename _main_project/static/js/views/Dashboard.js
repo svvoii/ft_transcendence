@@ -16,7 +16,6 @@ export default class extends AbstractView {
 
     // Create the main container div
     const gifContainer = document.createElement('div');
-    // container.classList.add('view-content');
     gifContainer.classList.add('gif-container');
 
     const textContainer = document.createElement('div');
@@ -25,25 +24,17 @@ export default class extends AbstractView {
     // Create the h1 element
     const heading = document.createElement('h1');
     heading.textContent = 'Welcome to our TranscenDANCE';
-
-    // Create the first paragraph
-    const paragraph1 = document.createElement('p');
-    paragraph1.textContent = 'This is the dashboard. You can view the list of posts, your settings, or logout.';
-
-    // Create the fourth paragraph
-    const paragraph4 = document.createElement('p');
-    paragraph4.textContent = 'Blah blah blah, some stuff about matchmaking? IDK....';
+    heading.style.textAlign = 'center';
 
     // Create the button
     const button = document.createElement('button');
     button.id = 'playGameBtn';
     button.type = 'select';
-    button.textContent = 'Play Game (Coming Soon)';
+    button.textContent = 'Start';
+    button.classList.add('start-btn')
 
     // Append all elements to the container
     textContainer.appendChild(heading);
-    textContainer.appendChild(paragraph1);
-    textContainer.appendChild(paragraph4);
     textContainer.appendChild(button);
 
     container.appendChild(gifContainer);
@@ -53,10 +44,7 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    const gameModal = document.getElementById("gameModal");
-
     document.getElementById('playGameBtn').addEventListener('click', () => {
-      // gameModal.style.display = "flex";
       navigateTo('/game_menu/');
     });
   }
