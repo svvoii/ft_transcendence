@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import { user } from "../index.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -33,21 +34,25 @@ export default class extends AbstractView {
     copyButton.id = 'copyButton';
     copyButton.textContent = 'Copy tournament ID';
 
-    const info_1 = document.createElement('p');
-    info_1.textContent = 'List of players :';
+    const playersListTitle = document.createElement('p');
+    playersListTitle.textContent = 'List of players :';
 
     const playersList = document.createElement('ul');
     playersList.className = 'list-of-players';
     document.body.appendChild(playersList);
 
+    const fullLobbyDiv = document.createElement('div');
+    fullLobbyDiv.className = 'full-lobby-message';
+    fullLobbyDiv.textContent = '';
 
     // Append all elements to the container
     container.appendChild(paragraph);
     container.appendChild(h1);
     container.appendChild(linkParagraph);
     container.appendChild(copyButton);
-    container.appendChild(info_1);
+    container.appendChild(playersListTitle);
     container.appendChild(playersList);
+    container.appendChild(fullLobbyDiv);
     
     return container;
   }
@@ -58,6 +63,8 @@ export default class extends AbstractView {
     let lobbyLink = document.querySelector('.lobby-link');
     let listOfPlayers = document.querySelector('.list-of-players');
     let currentUrl = window.location.href;
+
+    let fullLobbyDiv = document.querySelector('.full-lobby-message');
     
     //getting the tournament ID from the URL
     currentUrl = currentUrl.slice(0, -1);
@@ -66,47 +73,67 @@ export default class extends AbstractView {
     
     try {
 
-      // Getting the tournament object
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // console.log('Entering the lobby');
 
-      //printing the tournament data
-      const tournamentDataText = await tournament.text();
-      console.log('Data received :', tournamentDataText);
-
-      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-
+      user.setTournamentSocket(socket);
       socket.onopen = function() {
-        console.log('WebSocket connection is indeed established.');
+        console.log('WebSocket connection is established.');
+        user.setIsInTournament(true);
         const message = {
           'message': 'New player entering the lobby.'
         };
         socket.send(JSON.stringify(message));
       };
-    
-      socket.onmessage = function(event) {
-        const message = JSON.parse(event.data);
-        console.log('Message received from the server:', message);
+
+      socket.onclose = function() {
+        console.log('WebSocket connection is closed.');
+        user.setIsInTournament(false);
       };
 
-      //Printing the list of players in the lobby
+
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
+        console.log('Data received from the websocket :', data);
         if (data.type == 'new_player') {
           listOfPlayers.innerHTML = '';
           data.player_names.forEach( player => {
               const li = document.createElement('li');
               li.innerText = player;
               listOfPlayers.appendChild(li);
-            });     
+            });
+          }
+        if (data.max_nb_players_reached == true)
+        {
+          console.log('check', data.message);
+          fullLobbyDiv.textContent = data.message;
         }
-      })
-    } 
-    
+      });
+
+
+      // Getting the tournament object
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+
+      //printing the tournament data
+      const tournamentDataText = await tournament.text();
+      console.log('Data after entering the lobby :', tournamentDataText);
+
+      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
+
+
+
+
+
+  
+      /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
+
+      
+    }
     catch(error) {
       console.error('Error:', error);
     }
     
+    // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });

@@ -7,6 +7,8 @@ export default class User {
     this.userName = '';
     this.userImg = '';
     this.loggedIn = false;
+    this.isInTournament = false;
+    this.tournamentSocket = null;
   }
 
   async userLoginCheck() {
@@ -48,6 +50,11 @@ export default class User {
       this.userName = '';
       this.userImg = '';
       this.loggedIn = false;
+      if (this.getIsInTournament()) {
+        this.tournamentSocket.close();
+        this.isInTournament = false;
+      }
+
     } catch (error) {
         console.log(error);
     }
@@ -77,6 +84,14 @@ export default class User {
     return this.loggedIn;
   }
 
+  getIsInTournament() {
+    return this.isInTournament;
+  }
+
+  getTournamentSocket() {
+    return this.tournamentSocket;
+  }
+
   setUserId(id) {
     this.userId = id;
   }
@@ -91,6 +106,14 @@ export default class User {
 
   setLoginStatus(status) {
     this.loggedIn = status;
+  }
+
+  setIsInTournament(status) {
+    this.isInTournament = status;
+  }
+
+  setTournamentSocket(socket) {
+    this.tournamentSocket = socket;
   }
 
 }
