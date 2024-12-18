@@ -8,7 +8,8 @@ from .game_logic import game_states, FPS
 game_tasks = {}
 
 # connected players will store the list of connected players for each game_id
-connected_players = {}
+# connected_players = {}
+ready_players = {}
 
 class PongConsumer(AsyncWebsocketConsumer):
 
@@ -34,27 +35,18 @@ class PongConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 		# Add the player to the connected players list
-		if self.game_id not in connected_players:
-			connected_players[self.game_id] = []
-		connected_players[self.game_id].append(self.channel_name)
+		# if self.game_id not in connected_players:
+		# 	connected_players[self.game_id] = []
+		# connected_players[self.game_id].append(self.channel_name)
 
-		if self.mode == 'multiplayer' and len(connected_players[self.game_id]) < 2:
-			print("Waiting for another player to connect..")
-		elif self.game_id in game_tasks:
-			print("Game loop already started..")
-		else:
-			game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
-			print("Game loop started..")
-			
-		# if len(connected_players[self.game_id]) == 2 and self.game_id not in game_tasks:
+		# if self.mode == 'multiplayer' and len(connected_players[self.game_id]) < 2:
+		# 	print("Waiting for another player to connect..")
+		# elif self.game_id in game_tasks:
+		# 	print("Game loop already started..")
+		# else:
 		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
 		# 	print("Game loop started..")
-		# else:
-		# 	print("Waiting for another player to connect..")
-
-		# if self.game_id not in game_tasks:
-		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
-	
+			
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
             self.game_group_name,
@@ -62,17 +54,36 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 
 		# Remove the player from the connected players list
-		if self.game_id in connected_players:
-			connected_players[self.game_id].remove(self.channel_name)
-			if not connected_players[self.game_id]:
-				del connected_players[self.game_id]
+		# if self.game_id in connected_players:
+		# 	connected_players[self.game_id].remove(self.channel_name)
+		# 	if not connected_players[self.game_id]:
+		# 		del connected_players[self.game_id]
+
+		# Remove the player from the ready players list
+		if self.game_id in ready_players:
+			ready_players[self.game_id].remove(self.channel_name)
+			if not ready_players[self.game_id]:
+				del ready_players[self.game_id]
 
 		if self.game_id in game_tasks:
 			game_tasks[self.game_id].cancel()
 			del game_tasks[self.game_id]
 
 	async def receive(self, text_data):
-		pass
+		data = json.loads(text_data)
+		message_type = data.get("type")
+
+		if message_type == "player_ready":
+			if self.game_id not in ready_players:
+				ready_players[self.game_id] = []
+			ready_players[self.game_id].append(self.channel_name)
+
+			if len(ready_players[self.game_id]) == 2 or self.mode == 'single':
+				if self.game_id not in game_tasks:
+					game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
+					print("Game loop started..")
+			else:
+				print("Waiting for another player to get ready..")
 
 	async def game_loop(self):
 		while not self.game_state.game_over:

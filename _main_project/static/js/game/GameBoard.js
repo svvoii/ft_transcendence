@@ -32,6 +32,12 @@ export default class GameBoard {
 		quitGamebtn.classList.add('select');
 		quitGamebtn.textContent = 'Quit Game';
 
+		const readyBtn = document.createElement('button');
+		readyBtn.id = 'readyBtn';
+		readyBtn.classList.add('game-select-button');
+		readyBtn.classList.add('select');
+		readyBtn.textContent = 'Ready';
+
 		const canvas = document.createElement('canvas');
 		canvas.id = 'pongCanvas';
 		canvas.width = 800;
@@ -39,6 +45,7 @@ export default class GameBoard {
 		canvas.classList.add('board');
 
 		container.appendChild(this.paragraph);
+		container.appendChild(readyBtn);
 		container.appendChild(quitGamebtn);
 		container.appendChild(canvas);
 
@@ -70,6 +77,7 @@ export default class GameBoard {
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 
 			this.connectWebSocket(role, 'multiplayer', game_id);
+
 		} catch (error) {
 			alert('Error starting the game: ' + error.message);
 			console.error('Error starting the game: ', error);
@@ -133,6 +141,15 @@ export default class GameBoard {
 		const quitGamebtn = document.getElementById('quitGameBtn');
 		quitGamebtn.addEventListener('click', async () => {
 			await this.initQuitGame();
+		});
+
+		const readyBtn = document.getElementById('readyBtn');
+		readyBtn.addEventListener('click', async () => {
+			
+			this.socket.send(JSON.stringify({ 
+				'type': 'player_ready',
+			}));
+			readyBtn.style.display = 'none';
 		});
 
 	}
