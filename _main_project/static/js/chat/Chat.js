@@ -164,6 +164,11 @@ export default class Chat {
     this.app.querySelector('.chat').style.transform = 'translate(0%, 0%)';
     this.app.querySelector('.chat').style.right = '0px';
     this.app.querySelector('.chat').style.bottom = '0px';
+
+    const inputBox = this.chat.querySelector('.chat-input-field');
+    if (inputBox) {
+      inputBox.focus();
+    }
   }
 
   closeChat() {

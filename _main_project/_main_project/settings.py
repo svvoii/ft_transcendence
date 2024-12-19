@@ -67,7 +67,6 @@ INSTALLED_APPS = [
 	'a_chat',
     'a_tournament',
 	'a_friends',
-	'a_homepage',
 	'a_user',
 	'a_oauth2',
     'a_game',

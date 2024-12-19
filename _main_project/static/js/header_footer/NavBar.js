@@ -20,15 +20,15 @@ export default class NavBar {
     dashboardLink.setAttribute('data-link', '');
     dashboardLink.textContent = 'FT_DANCE';
 
-    // Create the Settings element
-    const settingsLink = document.createElement('a');
-    settingsLink.href = '/settings/';
-    settingsLink.classList.add('nav__link');
-    settingsLink.setAttribute('data-link', '');
-    settingsLink.textContent = 'Game_Settings';
+    // // Create the Settings element
+    // const settingsLink = document.createElement('a');
+    // settingsLink.href = '/settings/';
+    // settingsLink.classList.add('nav__link');
+    // settingsLink.setAttribute('data-link', '');
+    // settingsLink.textContent = 'Game_Settings';
 
     navLeft.appendChild(dashboardLink);
-    navLeft.appendChild(settingsLink);
+    // navLeft.appendChild(settingsLink);
 
     return navLeft;
   }

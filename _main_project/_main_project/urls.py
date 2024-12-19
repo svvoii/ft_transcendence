@@ -20,7 +20,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-from a_homepage.views import home_view
 from a_user.views import api_register_view, api_login_view, api_logout_view, api_account_search_view, api_logged_in_user_view
 from a_spa_frontend.views import index
 from a_pass import views
@@ -30,7 +29,6 @@ from a_pass import views
 
 urlpatterns = [
     path('', index, name='js_home'),
-	path('home/', home_view, name='home'),
     path('admin/', admin.site.urls),
 	path('accounts/', include('allauth.urls')),
 	path('chat/', include('a_chat.urls', namespace='chat')),
