@@ -180,3 +180,39 @@ def end_game_session(request, game_id):
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)
 
+
+# This function is called when the user clicks the "Quit Game" button
+@api_view(["POST"])
+@login_required
+def quit_game_session(request):
+	global game_states
+	context = {}
+	user = request.user
+	active_session = GameSession.objects.filter(is_active=True).filter(player1=user).first()
+	if not active_session:
+		active_session = GameSession.objects.filter(is_active=True).filter(player2=user).first()
+	
+	if not active_session:
+		context['message'] = 'No active game session for this player.'
+		return Response(context, status=300)
+	
+	game_id = active_session.game_id
+	if game_id not in game_states:
+		context['message'] = 'Game session has already ended.'
+		return Response(context, status=400)
+
+	game_states[game_id].game_over = True
+	active_session.score1 = game_states[game_id].score1
+	active_session.score2 = game_states[game_id].score2
+	active_session.winner = active_session.player1 if active_session.player2 == user else active_session.player2
+	active_session.is_active = False
+	active_session.save()
+	context['message'] = 'Player quit the game session.'
+
+	print(f'Player {active_session.winner} wins the game.')
+	print(f'Player 1: {active_session.score1}, Player 2: {active_session.score2}')
+	print(f'is_active: {active_session.is_active}')
+
+	del game_states[game_id]
+
+	return Response(context, status=200)
