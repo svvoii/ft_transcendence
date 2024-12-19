@@ -38,6 +38,11 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+# CSRF_TRUSTED_ORIGINS include the hostnames that are allowed to send POST requests without a CSRF token
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
+
+# Secure proxy SSL header and secure cookies
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
