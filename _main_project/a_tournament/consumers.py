@@ -39,6 +39,21 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			if not TournamentLobbyConsumer.clients[self.room_group_name]:
 				del TournamentLobbyConsumer.clients[self.room_group_name]
 
+		players = self.room.players.all()
+		player_names = [player.username for player in players]
+		last_player_name = player_names[-1] if player_names else None
+
+		async_to_sync(self.channel_layer.group_send)(
+			self.room_group_name,
+			{
+				'type': 'player_leaving_tournament',
+				'message': 'A player has left the tournament lobby',
+				'player_names': player_names,
+				'max_nb_players_reached': len(player_names) == REQUIRED_NB_PLAYERS,
+				'last_player_name': last_player_name,
+			}
+		)
+
 
 	def receive(self, text_data):
 		text_data_json = json.loads(text_data)
@@ -80,6 +95,20 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 
 	def list_clients(self):
 		return TournamentLobbyConsumer.clients.get(self.room_group_name, [])
+
+	def player_leaving_tournament(self, event):
+		message = event['message']
+		player_names = event['player_names']
+		max_nb_players_reached = event['max_nb_players_reached']
+		last_player_name = event['last_player_name']
+		self.send(text_data=json.dumps({
+			'type': event['type'],
+			'message': message,
+			'player_names': player_names,
+			'max_nb_players_reached': max_nb_players_reached,
+			'last_player_name': last_player_name,
+		}))
+
 
 	# def chat_message(self, event):
 	# 	message = event['message']

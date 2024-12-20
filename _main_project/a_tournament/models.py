@@ -57,20 +57,20 @@ class Tournament(models.Model):
     #     winners = []
     #     for match in self.matches
 
-@receiver(m2m_changed, sender=Tournament.players.through)
-def check_players_count(sender, instance, **kwargs):
-    if instance.players.count() == REQUIRED_NB_PLAYERS:
-        channel_layer = get_channel_layer()
+# @receiver(m2m_changed, sender=Tournament.players.through)
+# def check_players_count(sender, instance, **kwargs):
+#     if instance.players.count() == REQUIRED_NB_PLAYERS:
+#         channel_layer = get_channel_layer()
 
-        # time.sleep(5)
+#         # time.sleep(5)
 
-        async_to_sync(channel_layer.group_send)(
-            f"tournament_{instance.tournament_name}",
-            {
-                'type': 'full_lobby',
-                'message': "The lobby is full. The game will start soon.",
-            }
-        )
+#         async_to_sync(channel_layer.group_send)(
+#             f"tournament_{instance.tournament_name}",
+#             {
+#                 'type': 'full_lobby',
+#                 'message': "The lobby is full. The game will start soon.",
+#             }
+#         )
 
 
 class AllTournaments(models.Model):

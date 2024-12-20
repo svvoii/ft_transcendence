@@ -65,7 +65,7 @@ def create_tournament(request):
 def get_tournament(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-        if not tournament.players.filter(username=request.user.id).exists():
+        if not tournament.players.filter(username=request.user.username).exists():
             tournament.players.add(request.user)
             tournament.updateNbPlayers()
         tournament_nb_players = tournament.nb_players
@@ -112,6 +112,34 @@ def tournament_check_in(request, tournament_name):
                 'message': 'Tournament does not exist.'}, 
                 status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def remove_player_from_tournament(request, tournament_name):
+    if Tournament.objects.filter(tournament_name=tournament_name).exists():
+        tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+        if tournament.players.filter(username=request.user.username).exists():
+            player = get_object_or_404(tournament.players, username=request.user.username)
+            tournament.players.remove(player)
+            tournament.updateNbPlayers()
+            tournament_nb_players = tournament.nb_players
+            players = [player.username for player in tournament.players.all()]
+            nb_players = f'{tournament_nb_players}'
+            max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
+            return Response({'status': 'success', 
+                'players': players,
+                'nb_players': nb_players,
+                'max_nb_players_reached': max_nb_players_reached}, 
+                status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'error', 
+                'message': 'Player does not exist in the tournament.',
+                'request.user.username': request.user.username,}, 
+                status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'status': 'error', 
+            'message': 'Tournament does not exist.'}, 
+            status=status.HTTP_400_BAD_REQUEST)
 
 # #CHECK IF TOURNAMENT EXISTS
 # @api_view(['GET'])

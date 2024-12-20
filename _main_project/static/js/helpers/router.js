@@ -58,10 +58,27 @@ export const router = async () => {
   const view = new match.route.view(getParams(match));
 
   if (user.getIsInTournament() === true && view.name !== "TournamentLobby") {
-    // console.log('user should leave the tournament');
+    
+    // const leavingTournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
+
+    // // Remove the player from the tournament
+    const tournamentURL = user.getTournamentURL();
+    const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`)
+  
+
+    const responseText = await response.text();
+    const data = JSON.parse(responseText);
+    
+    console.log('Data after leaving the tournament :', data);
+
+    if (data.status === 'error') {
+      console.error('Error while leaving tournament:', data.message);
+    }
+
+    user.setIsInTournament(false, '');
     user.getTournamentSocket().close();
-    user.setIsInTournament(false);
     user.setTournamentSocket(null);
+
   }
   
   // Render the view
