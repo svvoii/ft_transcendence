@@ -66,6 +66,11 @@ export default class extends AbstractModalView {
     submitButton.style.marginBottom = '0.5rem;'
     form.appendChild(submitButton);
 
+    const oauthContainer = document.createElement('a');
+    oauthContainer.classList.add('oauth-container');
+    oauthContainer.textContent = 'Login with 42';
+    oauthContainer.href = 'http://localhost:8000/accounts/42/login/?process=login';
+
     // Create the forgot password link
     const forgotPassButton = document.createElement('button');
     forgotPassButton.id = 'forgotPass';
@@ -75,6 +80,7 @@ export default class extends AbstractModalView {
     // Append the form to the container
     container.appendChild(form);
 
+    container.appendChild(oauthContainer);
     container.appendChild(forgotPassButton);
 
     return container;
