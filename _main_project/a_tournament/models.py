@@ -36,7 +36,6 @@ class Tournament(models.Model):
         self.nb_players = self.players.count()
         super().save(*args, **kwargs)
 
-
     def clean(self):
         if self.players.count() != NB_PLAYERS:
             raise ValidationError(f'The number of players must be exactly {NB_PLAYERS}.')

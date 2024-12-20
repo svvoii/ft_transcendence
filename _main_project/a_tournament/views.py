@@ -76,7 +76,7 @@ def get_tournament(request, tournament_name):
             'players': players,
             'nb_players': nb_players,
             'max_nb_players_reached': max_nb_players_reached}, 
-        status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 
             'message': 'Tournament does not exist.'}, 
@@ -141,15 +141,6 @@ def remove_player_from_tournament(request, tournament_name):
             'message': 'Tournament does not exist.'}, 
             status=status.HTTP_400_BAD_REQUEST)
 
-# #CHECK IF TOURNAMENT EXISTS
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def check_if_exists(request, tournament_name):
-#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
-#         return Response({'status': 'success', 'message': 'Tournament exists.'}, status=status.HTTP_200_OK)
-#     else:
-#         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 #DELETE TOURNAMENT
 @api_view(['DELETE'])
@@ -165,7 +156,19 @@ def delete_tournament(request, tournament_name):
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
   
 
-# def trigger_server_message(request):
-#     consumer = TournamentLobbyConsumer()
-#     consumer.send_server_message()
-#     return JsonResponse({'status': 'Message sent'})
+# #START TOURNAMENT
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def start_tournament(request, tournament_name):
+#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
+#         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+        
+#         return Response({'status': 'success', 
+#             'players': players,
+#             'nb_players': nb_players,
+#             'max_nb_players_reached': max_nb_players_reached}, 
+#             status=status.HTTP_200_OK)
+#     else:
+#         return Response({'status': 'error', 
+#             'message': 'Tournament does not exist.'}, 
+#             status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,10 @@ export default class extends AbstractView {
     this.name = "TournamentLobby";
   }
 
+  // async function start_tournament(tournamentID) {
+    
+  // }
+
   getDomElements() {
 
     document.getElementById("gameModal").style.display = "none";
@@ -140,13 +144,11 @@ export default class extends AbstractView {
     }
     
 
-
-
-
     // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });
 
   };
+
 }
