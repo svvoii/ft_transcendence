@@ -8,6 +8,10 @@ export default class extends AbstractView {
     this.name = "TournamentLobby";
   }
 
+  // async function start_tournament(tournamentID) {
+    
+  // }
+
   getDomElements() {
 
     document.getElementById("gameModal").style.display = "none";
@@ -43,7 +47,7 @@ export default class extends AbstractView {
 
     const fullLobbyDiv = document.createElement('div');
     fullLobbyDiv.className = 'full-lobby-message';
-    fullLobbyDiv.textContent = '';
+    fullLobbyDiv.textContent = 'Waiting for more players to join...';
 
     // Append all elements to the container
     container.appendChild(paragraph);
@@ -79,16 +83,19 @@ export default class extends AbstractView {
       user.setTournamentSocket(socket);
       socket.onopen = function() {
         console.log('WebSocket connection is established.');
-        user.setIsInTournament(true);
+        user.setIsInTournament(true, tournamentID);
         const message = {
           'message': 'New player entering the lobby.'
         };
         socket.send(JSON.stringify(message));
+
       };
 
       socket.onclose = function() {
         console.log('WebSocket connection is closed.');
-        user.setIsInTournament(false);
+        user.setIsInTournament(false, '');
+
+
       };
 
 
@@ -103,10 +110,20 @@ export default class extends AbstractView {
               listOfPlayers.appendChild(li);
             });
           }
+        else if (data.type == 'player_leaving_tournament') {
+          listOfPlayers.innerHTML = '';
+          data.player_names.forEach( player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+              fullLobbyDiv.textContent = 'Waiting for more players to join...';
+            });
+        }
+        
         if (data.max_nb_players_reached == true)
         {
           console.log('check', data.message);
-          fullLobbyDiv.textContent = data.message;
+          fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
         }
       });
 
@@ -114,29 +131,24 @@ export default class extends AbstractView {
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
 
+
       //printing the tournament data
       const tournamentDataText = await tournament.text();
       console.log('Data after entering the lobby :', tournamentDataText);
 
-      //WEBSOCKET CONNECTION TO UPDATE NEW PLAYERS ENTERING THE LOBBY
-
-
-
-
-
-  
       /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
-      
     }
     catch(error) {
       console.error('Error:', error);
     }
     
+
     // Copy the lobby link to the clipboard
     document.getElementById('copyButton').addEventListener('click', async () => {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });
 
   };
+
 }
