@@ -81,6 +81,7 @@ button {
   padding: 0.5rem 1rem;
   border: none;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 button[type=select] {
@@ -91,7 +92,7 @@ button[type=select] {
   font-weight: 700;
   border: 2px solid var(--primary-color);
   background: var(--dark-color);
-  /* margin: 0 3px; */
+  border-radius: 4px;
 }
 
 button[type=select]:hover {
@@ -115,6 +116,7 @@ button[type=submit] {
   /* mask-image: linear-gradient(to bottom, #0005 50%, #000 50%);
   mask-size: 100% 2px;
   text-shadow: 0 0 0.5rem; */
+  border-radius: 4px;
 }
 
 button[type=submit]:hover {
@@ -158,6 +160,12 @@ input {
 
 input:focus {
   outline: none;
+}
+
+.start-btn {
+  display: block;
+  margin: 0 auto;
+  margin-top: 15vh;
 }
 
 .game-select-button {
@@ -278,6 +286,11 @@ input:focus {
     100% {
         background-position: 0 10000%;
     }
+}
+
+.warning-message {
+  text-align: center;
+  color: var(--failure-color);
 }
 
 /* style for mode selection */
