@@ -8,6 +8,7 @@ export default class User {
     this.userImg = '';
     this.loggedIn = false;
     this.isInTournament = false;
+    this.tournamentURL = '';
     this.tournamentSocket = null;
   }
 
@@ -88,6 +89,10 @@ export default class User {
     return this.isInTournament;
   }
 
+  getTournamentURL() {
+    return this.tournamentURL;
+  }
+
   getTournamentSocket() {
     return this.tournamentSocket;
   }
@@ -108,8 +113,9 @@ export default class User {
     this.loggedIn = status;
   }
 
-  setIsInTournament(status) {
+  setIsInTournament(status, tournamentURL) {
     this.isInTournament = status;
+    this.tournamentURL = tournamentURL;
   }
 
   setTournamentSocket(socket) {
