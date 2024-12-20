@@ -71,6 +71,11 @@ export default class extends AbstractModalView {
     oauthContainer.textContent = 'Login with 42';
     oauthContainer.href = 'http://localhost:8000/accounts/42/login/?process=login';
 
+    const fortyTwoButton = document.createElement('button');
+    fortyTwoButton.id = 'fortyTwoOauth';
+    fortyTwoButton.type = 'select';
+    fortyTwoButton.textContent = 'Login with 42';
+
     // Create the forgot password link
     const forgotPassButton = document.createElement('button');
     forgotPassButton.id = 'forgotPass';
@@ -81,6 +86,7 @@ export default class extends AbstractModalView {
     container.appendChild(form);
 
     container.appendChild(oauthContainer);
+    container.appendChild(fortyTwoButton);
     container.appendChild(forgotPassButton);
 
     return container;
@@ -141,6 +147,30 @@ export default class extends AbstractModalView {
 
     document.getElementById('forgotPass').addEventListener('click', () => {
       this.modal.showForm('forgotPassForm');
+    });
+
+    document.getElementById('fortyTwoOauth').addEventListener('click', async() => {
+      console.log('Login with 42');
+
+      const content = {
+        method: 'POST',
+        headers: {
+          // 'Accept': 'application/json',
+          // 'Content-Type': 'application/json',
+          'X-CSRFToken': this.getCookie('csrftoken') // Include CSRF token
+        },
+        // body: JSON.stringify(data)
+      };
+
+      try {
+        const response = await fetch("http://localhost:8000/accounts/42/login/?process=login", content);
+        const result = await response.json();
+
+        console.log(result);
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
     });
   }
 }
