@@ -37,7 +37,7 @@ export default class User {
         this.userName = data.username;
         this.userImg = data.profile_image_url;
         this.loggedIn = true;
-        navigateTo('/');
+        navigateTo('');
       }
     } catch (error) {
       console.error('Error:', error);

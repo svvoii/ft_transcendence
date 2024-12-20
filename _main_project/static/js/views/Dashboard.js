@@ -1,5 +1,6 @@
 import { navigateTo } from "../helpers/helpers.js";
 import AbstractView from "./AbstractView.js";
+import { user } from '../index.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -16,7 +17,6 @@ export default class extends AbstractView {
 
     // Create the main container div
     const gifContainer = document.createElement('div');
-    // container.classList.add('view-content');
     gifContainer.classList.add('gif-container');
 
     const textContainer = document.createElement('div');
@@ -25,36 +25,29 @@ export default class extends AbstractView {
     // Create the h1 element
     const heading = document.createElement('h1');
     heading.textContent = 'Welcome to our TranscenDANCE';
-
-    // Create the first paragraph
-    const paragraph1 = document.createElement('p');
-    paragraph1.textContent = 'This is the dashboard. You can view the list of posts, your settings, or logout.';
-
-    // Create the third paragraph with a link
-    const paragraph3 = document.createElement('p');
-    const link2 = document.createElement('a');
-    link2.href = 'home/';
-    link2.textContent = 'here';
-    paragraph3.appendChild(document.createTextNode("If you'd like to look at the old version, click "));
-    paragraph3.appendChild(link2);
-    paragraph3.appendChild(document.createTextNode('.'));
-
-    // Create the fourth paragraph
-    const paragraph4 = document.createElement('p');
-    paragraph4.textContent = 'Blah blah blah, some stuff about matchmaking? IDK....';
+    heading.style.textAlign = 'center';
 
     // Create the button
     const button = document.createElement('button');
     button.id = 'playGameBtn';
     button.type = 'select';
-    button.textContent = 'Play Game (Coming Soon)';
+    button.textContent = 'Start';
+    button.classList.add('start-btn')
+
+    // space
+    const space = document.createElement('br');
+
+    // Create the warning message
+    const warning = document.createElement('p');
+    warning.id = 'warningMsg';
+    warning.classList.add('warning-message');
+    warning.textContent = '';
 
     // Append all elements to the container
     textContainer.appendChild(heading);
-    textContainer.appendChild(paragraph1);
-    textContainer.appendChild(paragraph3);
-    textContainer.appendChild(paragraph4);
     textContainer.appendChild(button);
+    textContainer.appendChild(space);
+    textContainer.appendChild(warning);
 
     container.appendChild(gifContainer);
     container.appendChild(textContainer);
@@ -63,11 +56,12 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    const gameModal = document.getElementById("gameModal");
-
     document.getElementById('playGameBtn').addEventListener('click', () => {
-      // gameModal.style.display = "flex";
-      navigateTo('/game_menu/');
+      if (user.getLoginStatus()) {
+        navigateTo('/game_menu/');
+      } else {
+        document.getElementById('warningMsg').textContent = 'Please log in to play the game!'
+      }
     });
   }
 }
