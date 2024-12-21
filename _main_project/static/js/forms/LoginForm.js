@@ -9,8 +9,6 @@ export default class extends AbstractModalView {
   }
 
   createDomElements(data=null) {
-    // const csrfToken = this.getCookie('csrftoken');
-
     // Create the container
     const container = document.createElement('div');
 
@@ -66,14 +64,14 @@ export default class extends AbstractModalView {
     submitButton.style.marginBottom = '0.5rem;'
     form.appendChild(submitButton);
 
-    const oauthContainer = document.createElement('a');
-    oauthContainer.classList.add('oauth-container');
-    oauthContainer.textContent = 'Login with 42';
-    oauthContainer.href = 'http://localhost:8000/accounts/42/login/?process=login';
+    // const oauthContainer = document.createElement('a');
+    // oauthContainer.classList.add('oauth-container');
+    // oauthContainer.textContent = 'Login with 42';
 
-    const fortyTwoButton = document.createElement('button');
+    const fortyTwoButton = document.createElement('a');
+    fortyTwoButton.type = 'alt-signin';
+    fortyTwoButton.href = 'http://localhost:8000/accounts/42/login/?process=login';
     fortyTwoButton.id = 'fortyTwoOauth';
-    fortyTwoButton.type = 'select';
     fortyTwoButton.textContent = 'Login with 42';
 
     // Create the forgot password link
@@ -85,7 +83,7 @@ export default class extends AbstractModalView {
     // Append the form to the container
     container.appendChild(form);
 
-    container.appendChild(oauthContainer);
+    // container.appendChild(oauthContainer);
     container.appendChild(fortyTwoButton);
     container.appendChild(forgotPassButton);
 
@@ -151,26 +149,6 @@ export default class extends AbstractModalView {
 
     document.getElementById('fortyTwoOauth').addEventListener('click', async() => {
       console.log('Login with 42');
-
-      const content = {
-        method: 'POST',
-        headers: {
-          // 'Accept': 'application/json',
-          // 'Content-Type': 'application/json',
-          'X-CSRFToken': this.getCookie('csrftoken') // Include CSRF token
-        },
-        // body: JSON.stringify(data)
-      };
-
-      try {
-        const response = await fetch("http://localhost:8000/accounts/42/login/?process=login", content);
-        const result = await response.json();
-
-        console.log(result);
-
-      } catch (error) {
-        console.error('Error:', error);
-      }
     });
   }
 }
