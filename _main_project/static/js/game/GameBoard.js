@@ -56,7 +56,7 @@ export default class GameBoard {
 		console.log('Single Player Game started, mode: ', mode);
 
 		try {
-			const game_id = await getGameSession();
+			const game_id = await getGameSession(mode);
 			const role = await joinGame(game_id, mode);
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 
@@ -68,11 +68,11 @@ export default class GameBoard {
 		
 	}
 
-	async startMultiPlayerGame() {
+	async startMultiPlayerGame(mode) {
 		console.log('Multiplayer game started');
 
 		try {
-			const game_id = await getGameSession();
+			const game_id = await getGameSession(mode);
 			const role = await joinGame(game_id, 'multiplayer');
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 

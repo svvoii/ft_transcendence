@@ -15,14 +15,16 @@ function getCookie(name) {
 
 // This will request the server to create a new game session and return the game ID
 // No player is joined to the game at this point
-export async function getGameSession() {
+export async function getGameSession(mode) {
 	const response = await fetch('/game/create_game/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
 		},
-		body: JSON.stringify({}),
+		body: JSON.stringify({
+			mode: mode,
+		}),
 	});
 
 	const data = await response.json();
@@ -169,8 +171,12 @@ export async function initializeGame(socket, role, mode, game_id) {
     let ballY;
     let paddle1;
     let paddle2;
+	let paddle3;
+	let paddle4;
 	let score1;
 	let score2;
+	let score3;
+	let score4;
 	let winner = null;
 
     // Fetch initial game state
@@ -180,8 +186,12 @@ export async function initializeGame(socket, role, mode, game_id) {
 	function updateGameState(gameState) {
 		paddle1 = gameState.paddle1;
 		paddle2 = gameState.paddle2;
+		paddle3 = gameState.paddle3;
+		paddle4 = gameState.paddle4;
 		score1 = gameState.score1;
 		score2 = gameState.score2;
+		score3 = gameState.score3;
+		score4 = gameState.score4;
 		// winner = gameState.winner;
 		// console.log('..score1: ', score1, ' score2: ', score2);
 	}
@@ -193,6 +203,12 @@ export async function initializeGame(socket, role, mode, game_id) {
             ballY = data.ball_y;
 			score1 = data.score1;
 			score2 = data.score2;
+			score3 = data.score3;
+			score4 = data.score4;
+			// paddle1 = data.paddle1;
+			// paddle2 = data.paddle2;
+			// paddle3 = data.paddle3;
+			// paddle4 = data.paddle4;
 			// winner = data.winner;
         } else if (data.type === 'game_over') {
 			winner = data.winner;
@@ -210,6 +226,16 @@ export async function initializeGame(socket, role, mode, game_id) {
         ctx.fillRect(canvas.width - paddleWidth, paddle2, paddleWidth, paddleHeight);
     }
 
+	function drawPaddle3() {
+		ctx.fillStyle = 'white';
+		ctx.fillRect(paddle3, 0, paddleHeight, paddleWidth);
+	}
+
+	function drawPaddle4() {
+		ctx.fillStyle = 'white';
+		ctx.fillRect(paddle4, canvas.height - paddleWidth, paddleHeight, paddleWidth);
+	}
+
     function drawBall() {
         ctx.fillStyle = 'white';
         ctx.beginPath();
@@ -221,8 +247,12 @@ export async function initializeGame(socket, role, mode, game_id) {
 	function drawScore() {
 		ctx.fillStyle = 'white';
 		ctx.font = '30px Arial';
-		ctx.fillText(score1, canvas.width / 4, 50);
-		ctx.fillText(score2, canvas.width * 3 / 4, 50);
+		// ctx.fillText(score1, canvas.width / 4, 50);
+		// ctx.fillText(score2, canvas.width * 3 / 4, 50);
+		ctx.fillText(score1, canvas.width / 10, canvas.height / 2);
+		ctx.fillText(score2, canvas.width * 9 / 10, canvas.height / 2);
+		ctx.fillText(score3, canvas.width / 2, canvas.height / 10);
+		ctx.fillText(score4, canvas.width / 2, canvas.height * 9 / 10);
 	}
 
     function draw() {
@@ -247,6 +277,8 @@ export async function initializeGame(socket, role, mode, game_id) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawPaddle1();
         drawPaddle2();
+		drawPaddle3();
+		drawPaddle4();
         drawBall();
 		drawScore();
 
@@ -262,6 +294,7 @@ export async function initializeGame(socket, role, mode, game_id) {
         const key = event.key;
 		let player = role;
         let direction = 0; // server expects 1 or -1
+		let paddle = 0; // backend expects 1 or 2 as paddle value
 
 		// console.log('..key pressed: ', key);
         if (key === 'ArrowUp' || key === 'w') {
@@ -277,8 +310,18 @@ export async function initializeGame(socket, role, mode, game_id) {
 				} else {
 					player = 'player2';
 				}
-            }
-			let paddle = player === 'player1' ? 1 : 2; // backend expects 1 or 2 as paddle value
+            } else {
+				// Multiple players mode
+				if (player === 'player1') {
+					paddle = 1;
+				} else if (player === 'player2') {
+					paddle = 2;
+				} else if (player === 'player3') {
+					paddle = 3;
+				} else if (player === 'player4') {
+					paddle = 4;
+				}
+			}
             gameState = await movePaddle(game_id, paddle, direction);
 			updateGameState(gameState);
         }

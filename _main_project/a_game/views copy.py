@@ -15,32 +15,19 @@ from rest_framework.response import Response
 @login_required
 def create_game_session(request):
 	global game_states
-	context = {}
 	print('Create game session called.. request.data:', request.data)
 	user = request.user
-	mode = request.data.get('mode')
-
-	# Mapping mode to number of players
-	mode_to_players = {'ai': 0, 'single': 1, 'Multi_2': 2, 'Multi_3': 3, 'Multi_4': 4}
-
-	number_of_players = mode_to_players.get(mode, 1)
-
-	active_session = GameSession.objects.filter(is_active=True).filter(
-		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
-	).first()
+	context = {}
+	active_session = GameSession.objects.filter(is_active=True).filter(player1=user).first()
+	if not active_session:
+		active_session = GameSession.objects.filter(is_active=True).filter(player2=user).first()
 
 	if active_session:
 		context['game_id'] = active_session.game_id
 		context['message'] = 'Game session already exists for this user.'
 		return Response(context, status=200)
 
-	new_game_session = GameSession.objects.create(
-    	player1=None,
-    	player2=None,
-		player3=None,
-		player4=None,
-		number_of_players=number_of_players
-    )
+	new_game_session = GameSession.objects.create(player1=None, player2=None)
 	new_game_session.save()
 	context['game_id'] = new_game_session.game_id
 	context['message'] = 'Game session created successfully.'
@@ -62,8 +49,9 @@ def join_game_session(request, game_id):
 	print('Join game session called.. request.data:', request.data)
 
 	context = {}
-	user = request.user
 
+	user = request.user
+	# game_id = request.data.get('game_id')
 	try:
 		game_session = GameSession.objects.get(game_id=game_id)
 	except GameSession.DoesNotExist:
@@ -71,23 +59,25 @@ def join_game_session(request, game_id):
 		return Response(context, status=400)
 
 	if game_session.is_active:
-		if game_session.player1 == user or game_session.player2 == user or game_session.player3 == user or game_session.player4 == user:
-			context['message'] = 'User is already in the game session.'
+		if game_session.player1 == user or game_session.player2 == user:
+			context['message'] = 'User already joined the game session.'
+			context['game_id'] = game_session.game_id
+			context['role'] = 'player1' if game_session.player1 == user else 'player2'
 		elif not game_session.player1:
 			game_session.player1 = user
+			context['message'] = 'Player 1 joined the game session.'
+			context['role'] = 'player1'
+			game_session.save()
 		elif not game_session.player2:
 			game_session.player2 = user
-		elif not game_session.player3:
-			game_session.player3 = user
-		elif not game_session.player4:
-			game_session.player4 = user
+			context['message'] = 'Player 2 joined the game session.'
+			context['role'] = 'player2'
+			game_session.save()
 		else:
 			context['message'] = 'Game session is full.'
 			return Response(context, status=400)
-
-		game_session.save()
+        # game_session.save()
 		context['game_id'] = game_session.game_id
-		context['role'] = game_session.get_role(user)
 		return Response(context, status=200)
 	else:
 		context['message'] = 'Game session is not active.'
@@ -124,7 +114,7 @@ def get_game_state(request, game_id):
 # On the front-end in the `fetch` call to this endpoint:
 # - The `game_id` is passed as a URL parameter
 # - The `paddle` and `direction` are passed in the request body
-# - The `paddle` value must be either 1, 2, 3 or 4, representing the player's paddle
+# - The `paddle` value must be either 1 or 2, representing the player's paddle
 @api_view(["POST"])
 @login_required
 def move_paddle(request, game_id):
@@ -175,19 +165,7 @@ def end_game_session(request, game_id):
 
 	game_session.score1 = game_states[game_id].score1
 	game_session.score2 = game_states[game_id].score2
-	game_session.score3 = game_states[game_id].score3
-	game_session.score4 = game_states[game_id].score4
-
-	scores = {
-		'player1': game_session.score1,
-		'player2': game_session.score2,
-		'player3': game_session.score3,
-		'player4': game_session.score4
-	}
-
-	winner_role = max(scores, key=scores.get)
-	winner = getattr(game_session, winner_role)
-	
+	winner = game_session.player1 if game_states[game_id].score1 > game_states[game_id].score2 else game_session.player2
 	game_session.winner = winner
 	game_session.is_active = False
 	game_session.save()
@@ -195,7 +173,6 @@ def end_game_session(request, game_id):
 	# DEBUG #
 	print(f'Game session ended. Winner: {winner}')
 	print(f'Player 1: {game_states[game_id].score1}, Player 2: {game_states[game_id].score2}')
-	print(f'Player 3: {game_states[game_id].score3}, Player 4: {game_states[game_id].score4}')
 	print(f'is_active: {game_session.is_active}')
 
 	del game_states[game_id]
@@ -211,37 +188,31 @@ def quit_game_session(request):
 	global game_states
 	context = {}
 	user = request.user
-
-	active_session = GameSession.objects.filter(is_active=True).filter(
-		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
-	).first()
-
+	active_session = GameSession.objects.filter(is_active=True).filter(player1=user).first()
+	if not active_session:
+		active_session = GameSession.objects.filter(is_active=True).filter(player2=user).first()
+	
 	if not active_session:
 		context['message'] = 'No active game session for this player.'
-		return Response(context, status=204)
+		return Response(context, status=300)
 	
 	game_id = active_session.game_id
 	if game_id not in game_states:
 		context['message'] = 'Game session has already ended.'
-		return Response(context, status=202)
+		return Response(context, status=400)
 
-	# This will stop the game loop
-	# game_states[game_id].game_over = True
-	player_role = active_session.get_role(user)
-
-	if active_session.player1 == user:
-		active_session.score1 = 0
-	elif active_session.player2 == user:
-		active_session.score2 = 0
-	elif active_session.player3 == user:
-		active_session.score3 = 0
-	elif active_session.player4 == user:
-		active_session.score4 = 0
-
+	game_states[game_id].game_over = True
+	active_session.score1 = game_states[game_id].score1
+	active_session.score2 = game_states[game_id].score2
+	active_session.winner = active_session.player1 if active_session.player2 == user else active_session.player2
+	active_session.is_active = False
 	active_session.save()
-	context['message'] = 'Player {player_role} has quit the game.'
+	context['message'] = 'Player quit the game session.'
 
-	print(f'{player_role} has quit the game.')
+	print(f'Player {active_session.winner} wins the game.')
+	print(f'Player 1: {active_session.score1}, Player 2: {active_session.score2}')
 	print(f'is_active: {active_session.is_active}')
+
+	del game_states[game_id]
 
 	return Response(context, status=200)
