@@ -76,7 +76,7 @@ export default class extends AbstractModalView {
     
     const agreeTermsLabel = document.createElement('label');
     agreeTermsLabel.htmlFor = 'agree_terms';
-    agreeTermsLabel.innerHTML = 'I agree to the terms and conditions outlined in <a href="/terms_of_service" target="_blank">Terms of Service</a>';
+    agreeTermsLabel.innerHTML = ' I agree to the <a href="/terms_of_service" target="_blank">Terms of Service</a> and <a href="/privacy_policy" target="_blank">Privacy Policy</a>';
 
     form.appendChild(agreeTerms);
     form.appendChild(agreeTermsLabel);
