@@ -25,12 +25,19 @@ export default class extends AbstractView {
       { tag: 'p', content: 'We are a team of three students from 42 Paris and this is our ft_transcendence project. ft_transcendence is the final project of the common core.'},
       { tag: 'br', content: '' },
       { tag: 'p', content: 'We are passionate about coding and we are always looking for new challenges. We hope you enjoy our work!'},
+      { tag: 'p', content: 'To view our source code for this project, please visit our repo here:'},
+      { tag: 'a', content:  '<strong>ft_transcendence</strong>', href: 'https://github.com/svvoii/ft_transcendence'}
     ];
 
     elements.forEach(element => {
       const el = document.createElement(element.tag);
       el.innerHTML = element.content;
       el.style.textAlign = 'center';
+      if (element.href) {
+        el.style.display = 'flex';
+        el.style.justifyContent = 'center';
+        el.href = element.href;
+      }
       text_container.appendChild(el);
     });
 
