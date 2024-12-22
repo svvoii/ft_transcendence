@@ -14,4 +14,11 @@ class GameSession(models.Model):
 	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="winner", null=True, blank=True)
  
 	def __str__(self):
-		return self.game_id
+		return f"\tgame_id: {self.game_id},\n\
+			player1: {self.player1},\n\
+			player2: {self.player2},\n\
+			player1_score: {self.player1_score},\n\
+			player2_score: {self.player2_score},\n\
+			created_at: {self.created_at},\n\
+			is_active: {self.is_active},\n\
+			winner: {self.winner}"

@@ -20,9 +20,15 @@ def create_game_session(request):
 	print('Create game session called.. request.data:', request.data)
 	user = request.user
 	context = {}
-	active_session = GameSession.objects.filter(is_active=True).filter(player1=user).first()
-	if not active_session:
-		active_session = GameSession.objects.filter(is_active=True).filter(player2=user).first()
+
+	# add check that if player1 or player2 is defined, that the other one is not defined.
+	active_session = GameSession.objects.filter(
+		Q(is_active=True) & 
+		( Q(player1=user) | Q(player2=user) ) &
+		( Q(player1=None) | Q(player2=None) )
+	).first()
+	
+	print("active_session: ", active_session);
 
 	if active_session:
 		context['game_id'] = active_session.game_id
@@ -33,6 +39,8 @@ def create_game_session(request):
 	new_game_session.save()
 	context['game_id'] = new_game_session.game_id
 	context['message'] = 'Game session created successfully.'
+
+	print("new_game_session: ", new_game_session);
 
 	# Create a new game state object for the new game session
 	game_states[new_game_session.game_id] = GameState()
@@ -52,9 +60,9 @@ def join_game_session(request, game_id):
 
 	context = {}
 
-	# user = request.user
-	user_to_join = request.data.get('user_to_join')
-	user = Account.objects.filter(username=user_to_join).first()
+	user = request.user
+	# user_to_join = request.data.get('user_to_join')
+	# user = Account.objects.filter(username=user_to_join).first()
 	# game_id = request.data.get('game_id')
 	try:
 		game_session = GameSession.objects.get(game_id=game_id)
@@ -217,6 +225,7 @@ def quit_game_session(request):
 	print(f'Player 1: {active_session.score1}, Player 2: {active_session.score2}')
 	print(f'is_active: {active_session.is_active}')
 
+	# if active_session.is_active == False:
 	del game_states[game_id]
 
 	return Response(context, status=200)
@@ -271,7 +280,7 @@ def invite_to_game(request):
 	).first()
 
 	# DEBUG #
-	# print('active_session:', active_session)
+	print('active_session:', active_session)
 
 	# check if there is an active game session between the two users
 	if active_session:
