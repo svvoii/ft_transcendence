@@ -259,6 +259,7 @@ input:focus {
 
 .photos-container {
   display: flex;
+  margin-bottom: var(--footer-height);
 }
 
 .profile-photo {

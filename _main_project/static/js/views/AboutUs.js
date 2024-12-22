@@ -110,8 +110,11 @@ export default class extends AbstractView {
     photos_container.appendChild(roxane_container);
     photos_container.appendChild(drew_container);
 
+    const break_container = document.createElement('br');
+
     container.appendChild(text_container);
     container.appendChild(photos_container);
+    container.appendChild(break_container);
 
     return container;
   }
