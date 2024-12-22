@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import GameSession
 from .game_logic import GameState, game_states
+from a_user.models import Account
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -50,7 +52,9 @@ def join_game_session(request, game_id):
 
 	context = {}
 
-	user = request.user
+	# user = request.user
+	user_to_join = request.data.get('user_to_join')
+	user = Account.objects.filter(username=user_to_join).first()
 	# game_id = request.data.get('game_id')
 	try:
 		game_session = GameSession.objects.get(game_id=game_id)
@@ -216,3 +220,72 @@ def quit_game_session(request):
 	del game_states[game_id]
 
 	return Response(context, status=200)
+
+
+# This function is called when the user clicks the "Invite to Game" button
+@api_view(["POST"])
+@login_required
+def invite_to_game(request):
+	global game_states
+	user = request.user
+	context = {}
+
+	# DEBUG #
+	print('invite_to_game called.. request.data:', request.data)
+
+	# first get the users from the request
+	player1 = request.data.get('player1')
+	player2 = request.data.get('player2')
+
+	# check if both players are provided
+	if not player1 or not player2:
+		context['message'] = 'Both players must be provided.'
+		return Response(context, status=400)
+	
+	# check which player is the the requestsing user and which is the other user
+	requesting_user = user;
+	if (player1 == user.username):
+		other_user = Account.objects.filter(username=player2).first()
+	elif (player2 == user.username):
+		other_user = Account.objects.filter(username=player1).first()
+	else:
+		context['message'] = 'Requesting user is not included in the request.'
+		return Response(context, status=400)
+
+	# check if the other user exists
+	if not other_user:
+		context['message'] = 'Other user does not exist.'
+		return Response(context, status=400)
+
+	# at this point we have the requesting user and the other user
+
+	# DEBUG #
+	# print('player1:', player1, ' player2:', player2)
+	# print('requesting_user:', requesting_user.username, ' other_user:', other_user.username)
+
+	# search for active sessions where the requesting user and the other user are both players
+	active_session = GameSession.objects.filter(
+		Q(is_active=True) & 
+		( Q(player1=requesting_user) | Q(player2=requesting_user) ) &
+		( Q(player1=other_user) | Q(player2=other_user) )
+	).first()
+
+	# DEBUG #
+	# print('active_session:', active_session)
+
+	# check if there is an active game session between the two users
+	if active_session:
+		context['game_id'] = active_session.game_id
+		context['message'] = 'Game session already exists for these users.'
+		return Response(context, status=200)
+
+	# create a new game session if one does not already exist
+	new_game_session = GameSession.objects.create(player1=requesting_user, player2=other_user)
+	new_game_session.save()
+	context['game_id'] = new_game_session.game_id
+	context['message'] = 'Game session created successfully.'
+
+	# Add the new game state object to the game_states dictionary
+	game_states[new_game_session.game_id] = GameState()
+
+	return Response(context, status=201)

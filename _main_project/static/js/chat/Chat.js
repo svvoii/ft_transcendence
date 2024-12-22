@@ -114,8 +114,31 @@ export default class Chat {
       }
     });
 
-    this.chat.querySelector('.chat-invite-button').addEventListener('click', () => {
+    ///// INVITE BUTTON /////
+
+    this.chat.querySelector('.chat-invite-button').addEventListener('click', async() => {
       console.log('Invite button clicked');
+
+      try {
+        const content = JSON.stringify({ 
+          player1 : user.getUserName(), 
+          player2: this.chat.querySelector('.chat-title').textContent 
+        });
+
+        const response = await fetch('/game/invite_to_game/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': this.getCookie('csrftoken'),
+          },
+          body: content,
+        });
+        const data = await response.json();
+
+        console.log('Data: ', data);
+      } catch (error) {
+        console.error('Error inviting to game:', error);
+      }
     });
 
     this.chat.querySelector('.chat-input-field').addEventListener('keypress', (event) => {
@@ -317,5 +340,20 @@ export default class Chat {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
   }
 };
