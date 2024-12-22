@@ -317,7 +317,7 @@ input:focus {
 
 .warning-message {
   text-align: center;
-  color: var(--failure-color);
+  color: var(--primary-color);
 }
 
 /* style for mode selection */
