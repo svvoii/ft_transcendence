@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from .models import GameSession
 from .game_logic import GameState, game_states
 
@@ -18,12 +19,12 @@ def create_game_session(request):
 	context = {}
 	print('Create game session called.. request.data:', request.data)
 	user = request.user
-	mode = request.data.get('mode')
+	game_mode = request.data.get('mode')
 
 	# Mapping mode to number of players
-	mode_to_players = {'ai': 0, 'single': 1, 'Multi_2': 2, 'Multi_3': 3, 'Multi_4': 4}
+	mode_to_players = {'AI': 0, 'Single': 1, 'Multi_2': 2, 'Multi_3': 3, 'Multi_4': 4}
 
-	number_of_players = mode_to_players.get(mode, 1)
+	number_of_players = mode_to_players.get(game_mode, 1)
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
 		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
@@ -39,7 +40,7 @@ def create_game_session(request):
     	player2=None,
 		player3=None,
 		player4=None,
-		number_of_players=number_of_players
+		mode=number_of_players
     )
 	new_game_session.save()
 	context['game_id'] = new_game_session.game_id
@@ -47,6 +48,11 @@ def create_game_session(request):
 
 	# Create a new game state object for the new game session
 	game_states[new_game_session.game_id] = GameState()
+
+	# Setting game_mode in the GameState object
+	game_state = game_states[new_game_session.game_id]
+	game_state.game_mode = game_mode
+	game_state.num_players = number_of_players
  
 	return Response(context, status=201)
 
@@ -88,6 +94,9 @@ def join_game_session(request, game_id):
 		game_session.save()
 		context['game_id'] = game_session.game_id
 		context['role'] = game_session.get_role(user)
+		# DEBUG #
+		print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
+
 		return Response(context, status=200)
 	else:
 		context['message'] = 'Game session is not active.'

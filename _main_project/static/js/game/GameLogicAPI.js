@@ -42,7 +42,7 @@ export async function getGameSession(mode) {
 
 // This will request the server to join the player to the game session
 // The player role will be returned as either 'player1' or 'player2'
-export async function joinGame(game_id, mode) {
+export async function joinGame(game_id) {
 
 	const response = await fetch(`/game/join_game/${game_id}/`, {
 		method: 'POST',
@@ -50,10 +50,7 @@ export async function joinGame(game_id, mode) {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
 		},
-		body: JSON.stringify({ 
-			game_id: game_id,
-			mode: mode,
-		}),
+		body: JSON.stringify({}),
 	});
 
 	const data = await response.json();
@@ -96,11 +93,12 @@ async function movePaddle(game_id, paddle, direction) {
         body: JSON.stringify({ paddle, direction }),
     });
 
-	const data = await response.json();
-
     if (!response.ok) {
         throw new Error('Failed to move paddle');
     }
+
+	const data = await response.json();
+	// console.log('..movePaddle, data: ', data);
     return data;
 }
 
@@ -146,7 +144,7 @@ export async function quitGame() {
 // It will draw the paddles and ball on the canvas
 // The ball position is updated via WebSocket
 // The paddle position is updated via API call on key press
-export async function initializeGame(socket, role, mode, game_id) {
+export async function initializeGame(socket, role, game_id) {
 
 	console.log('..initializeGame, game_id: ', game_id);
 
@@ -178,12 +176,16 @@ export async function initializeGame(socket, role, mode, game_id) {
 	let score3;
 	let score4;
 	let winner = null;
+	let mode;
+	let numPlayers;
 
     // Fetch initial game state
     let gameState = await fetchGameState(game_id);
 	updateGameState(gameState);
 
 	function updateGameState(gameState) {
+		mode = gameState.game_mode;
+		numPlayers = gameState.num_players;
 		paddle1 = gameState.paddle1;
 		paddle2 = gameState.paddle2;
 		paddle3 = gameState.paddle3;
@@ -192,25 +194,26 @@ export async function initializeGame(socket, role, mode, game_id) {
 		score2 = gameState.score2;
 		score3 = gameState.score3;
 		score4 = gameState.score4;
-		// winner = gameState.winner;
 		// console.log('..score1: ', score1, ' score2: ', score2);
 	}
 
     socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        if (data.type === 'update_state') {
-            ballX = data.ball_x;
-            ballY = data.ball_y;
+		console.log('WebSocket message received: ', event.data.type);
+		const data = JSON.parse(event.data);
+		// console.log('..onmessage, data.type: ', data.type);
+		if (data.type === 'update_state') {
+			ballX = data.ball_x;
+			ballY = data.ball_y;
 			score1 = data.score1;
 			score2 = data.score2;
 			score3 = data.score3;
 			score4 = data.score4;
-			// paddle1 = data.paddle1;
-			// paddle2 = data.paddle2;
-			// paddle3 = data.paddle3;
-			// paddle4 = data.paddle4;
+			paddle1 = data.paddle1;
+			paddle2 = data.paddle2;
+			paddle3 = data.paddle3;
+			paddle4 = data.paddle4;
 			// winner = data.winner;
-        } else if (data.type === 'game_over') {
+		} else if (data.type === 'game_over') {
 			winner = data.winner;
 			// alert(`Game Over! ${winner} wins!`);
 		}
@@ -251,8 +254,12 @@ export async function initializeGame(socket, role, mode, game_id) {
 		// ctx.fillText(score2, canvas.width * 3 / 4, 50);
 		ctx.fillText(score1, canvas.width / 10, canvas.height / 2);
 		ctx.fillText(score2, canvas.width * 9 / 10, canvas.height / 2);
-		ctx.fillText(score3, canvas.width / 2, canvas.height / 10);
-		ctx.fillText(score4, canvas.width / 2, canvas.height * 9 / 10);
+		if (numPlayers === 3) {
+			ctx.fillText(score3, canvas.width / 2, canvas.height / 10);
+		} else if (numPlayers === 4) {
+			ctx.fillText(score3, canvas.width / 2, canvas.height / 10);
+			ctx.fillText(score4, canvas.width / 2, canvas.height * 9 / 10);
+		}
 	}
 
     function draw() {
@@ -277,8 +284,12 @@ export async function initializeGame(socket, role, mode, game_id) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawPaddle1();
         drawPaddle2();
-		drawPaddle3();
-		drawPaddle4();
+		if (numPlayers === 3) {
+			drawPaddle3();
+		} else if (numPlayers === 4) {
+			drawPaddle3();
+			drawPaddle4();
+		}
         drawBall();
 		drawScore();
 
@@ -301,29 +312,34 @@ export async function initializeGame(socket, role, mode, game_id) {
             direction = -1;
         } else if (key === 'ArrowDown' || key === 's') {
             direction = 1;
-        }
+        } else if (key === 'ArrowLeft' || key === 'a') {
+			direction = -1;
+		} else if (key === 'ArrowRight' || key === 'd') {
+			direction = 1;
+		}
 
         if (direction !== 0) {
-            if (mode === 'single' || mode === 'ai') {
+            if (mode === 'Single' || mode === 'AI') {
 				if (key === 'w' || key === 's') {
 					player = 'player1';
 				} else {
 					player = 'player2';
 				}
-            } else {
-				// Multiple players mode
-				if (player === 'player1') {
-					paddle = 1;
-				} else if (player === 'player2') {
-					paddle = 2;
-				} else if (player === 'player3') {
-					paddle = 3;
-				} else if (player === 'player4') {
-					paddle = 4;
-				}
+            }
+			// Multiple players mode
+			if (player === 'player1') {
+				paddle = 1;
+			} else if (player === 'player2') {
+				paddle = 2;
+			} else if (player === 'player3') {
+				paddle = 3;
+			} else if (player === 'player4') {
+				paddle = 4;
 			}
+
+			// console.log('..player: ', player, ' paddle: ', paddle, ' direction: ', direction);
             gameState = await movePaddle(game_id, paddle, direction);
-			updateGameState(gameState);
+			// updateGameState(gameState);
         }
     });
 

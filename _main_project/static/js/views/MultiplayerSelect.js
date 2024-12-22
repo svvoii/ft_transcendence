@@ -22,23 +22,23 @@ export default class extends AbstractView {
 		setDescript.style.textAlign = 'center';
 
 		const create_mp_match_btn_2 = document.createElement('button');
-		create_mp_match_btn.id = 'createMPMatchBtn_2';
-		create_mp_match_btn.classList.add('game-select-button');
-		create_mp_match_btn.type = 'select';
-		create_mp_match_btn.textContent = 'Create a Multiplayer Match for 2 players';
+		create_mp_match_btn_2.id = 'createMPMatchBtn_2';
+		create_mp_match_btn_2.classList.add('game-select-button');
+		create_mp_match_btn_2.type = 'select';
+		create_mp_match_btn_2.textContent = 'Create a Multiplayer Match for 2 players';
 
 		const create_mp_match_btn_3 = document.createElement('button');
-		create_mp_match_btn.id = 'createMPMatchBtn_3';
-		create_mp_match_btn.classList.add('game-select-button');
-		create_mp_match_btn.type = 'select';
-		create_mp_match_btn.textContent = 'Create a Muliplayer Match for 3 players';
+		create_mp_match_btn_3.id = 'createMPMatchBtn_3';
+		create_mp_match_btn_3.classList.add('game-select-button');
+		create_mp_match_btn_3.type = 'select';
+		create_mp_match_btn_3.textContent = 'Create a Muliplayer Match for 3 players';
 		// create_mp_match_btn.textContent = 'Create a Match and invite another player';
 
 		const create_mp_match_btn_4 = document.createElement('button');
-		create_mp_match_btn.id = 'createMPMatchBtn_4';
-		create_mp_match_btn.classList.add('game-select-button');
-		create_mp_match_btn.type = 'select';
-		create_mp_match_btn.textContent = 'Create a Multiplayer Match for 4 players';
+		create_mp_match_btn_4.id = 'createMPMatchBtn_4';
+		create_mp_match_btn_4.classList.add('game-select-button');
+		create_mp_match_btn_4.type = 'select';
+		create_mp_match_btn_4.textContent = 'Create a Multiplayer Match for 4 players';
 
 		const orStatement = document.createElement('h1');
 		orStatement.textContent = 'or';

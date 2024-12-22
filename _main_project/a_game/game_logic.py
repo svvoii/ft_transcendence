@@ -3,15 +3,15 @@
 # The GameState objects are stored in the game_states dictionary, with the game_id as the key.
 # There can be only one GameState object per game_id / game session.
 
-CANVAS_WIDTH = 500
-CANVAS_HEIGHT = 500
+CANVAS_WIDTH = 600
+CANVAS_HEIGHT = 600
 PADDLE_WIDTH = 10
-PADDLE_HEIGHT = 100
+PADDLE_HEIGHT = 60
 PADDLE_SPEED = 20
 BALL_WIDTH = 10
 BALL_HEIGHT = 10
-BALL_VELOCITY_X = 5
-BALL_VELOCITY_Y = 5
+BALL_VELOCITY_X = 3
+BALL_VELOCITY_Y = 3
 WINNING_SCORE = 3
 FPS = 60
 
@@ -20,6 +20,8 @@ game_states = {}
 
 class GameState:
 	def __init__(self):
+		self.game_mode = None
+		self.num_players = 0
 		self.paddle1 = CANVAS_HEIGHT / 2 - PADDLE_HEIGHT / 2
 		self.paddle2 = CANVAS_HEIGHT / 2 - PADDLE_HEIGHT / 2
 		self.paddle3 = CANVAS_WIDTH / 2 - PADDLE_WIDTH / 2
@@ -36,6 +38,8 @@ class GameState:
 
 	def get_state(self):
 		return {
+			"game_mode": self.game_mode,
+			"num_players": self.num_players,
 			"paddle1": self.paddle1,
             "paddle2": self.paddle2,
 			"paddle3": self.paddle3,

@@ -40,7 +40,7 @@ export default class GameBoard {
 
 		const canvas = document.createElement('canvas');
 		canvas.id = 'pongCanvas';
-		canvas.width = 800;
+		canvas.width = 600;
 		canvas.height = 600;
 		canvas.classList.add('board');
 
@@ -53,14 +53,14 @@ export default class GameBoard {
 	}
 
 	async startSinglePlayerGame(mode) {
-		console.log('Single Player Game started, mode: ', mode);
+		// console.log('Single Player Game started, mode: ', mode);
 
 		try {
 			const game_id = await getGameSession(mode);
-			const role = await joinGame(game_id, mode);
+			const role = await joinGame(game_id);
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 
-			this.connectWebSocket(role, mode, game_id);
+			this.connectWebSocket(role, game_id);
 			
 		} catch (error) {
 			console.error('Error starting the game: ', error);
@@ -73,10 +73,10 @@ export default class GameBoard {
 
 		try {
 			const game_id = await getGameSession(mode);
-			const role = await joinGame(game_id, 'multiplayer');
+			const role = await joinGame(game_id);
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 
-			this.connectWebSocket(role, 'multiplayer', game_id);
+			this.connectWebSocket(role, game_id);
 
 		} catch (error) {
 			alert('Error starting the game: ' + error.message);
@@ -90,11 +90,11 @@ export default class GameBoard {
 		console.log('Joining existing game, game_id: ', game_id);
 
 		try {
-			const role = await joinGame(game_id, 'multiplayer');
+			const role = await joinGame(game_id);
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 			gameModal.style.display = 'flex';
 
-			this.connectWebSocket(role, 'multiplayer', game_id);
+			this.connectWebSocket(role, game_id);
 
 		} catch (error) {
 			alert('Error joining the game: ' + error.message);
@@ -115,12 +115,13 @@ export default class GameBoard {
 		}
 	}
 
-	connectWebSocket(role, mode, game_id) {
+	connectWebSocket(role, game_id) {
 		if (!this.socket) {
 			const ws_protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-			this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
+			this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/`);
+			// this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
 
-			initializeGame(this.socket, role, mode, game_id);
+			initializeGame(this.socket, role, game_id);
 		}
 
 		// this.socket.onclose = () => {
