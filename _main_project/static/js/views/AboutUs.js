@@ -110,11 +110,28 @@ export default class extends AbstractView {
     photos_container.appendChild(roxane_container);
     photos_container.appendChild(drew_container);
 
-    const break_container = document.createElement('br');
-
     container.appendChild(text_container);
     container.appendChild(photos_container);
-    container.appendChild(break_container);
+
+    const text_container_end = document.createElement('div');
+    text_container_end.classList.add('text-container');
+
+    const elementsEnd = [
+      // { tag: 'br', content: '' },
+      { tag: 'hr', content: '' },
+      { tag: 'br', content: '' },
+      { tag: 'h3', content: 'Thank you for playing ft_transcenDANCE!' },
+      { tag: 'br', content: '' },
+    ];
+
+    elementsEnd.forEach(element => {
+      const el = document.createElement(element.tag);
+      el.innerHTML = element.content;
+      el.style.textAlign = 'center';
+      text_container_end.appendChild(el);
+    });
+
+    container.appendChild(text_container_end);
 
     return container;
   }
