@@ -1,4 +1,4 @@
-import { user, modal } from '../index.js';
+import { user, modal, gameBoard } from '../index.js';
 
 export default class Chat {
   constructor(appId) {
@@ -136,6 +136,11 @@ export default class Chat {
         const data = await response.json();
 
         console.log('Data: ', data);
+
+        gameBoard.resetGameBoard();
+        gameBoard.joinExistingGame(data.game_id);
+        gameModal.style.display = 'flex';
+
       } catch (error) {
         console.error('Error inviting to game:', error);
       }
