@@ -1,7 +1,7 @@
 import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game_logic import game_states, FPS
+from .game_logic import FPS, game_states, game_st_lock
 
 # `game_tasks` is a dictionary that stores the game loop task for each game_id.
 # This way there is only one task to run the game loop for each game_id.
@@ -13,21 +13,18 @@ ready_players = {}
 class PongConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
-		global game_states
+		# global game_states
 		self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-		# Getting game_mode either from the database or from the game_states dictionary
-		# self.mode = GameSession.objects.get(game_id=self.game_id).get_mode_string()
-		self.mode = game_states[self.game_id].game_mode
-		self.num_players = game_states[self.game_id].num_players
 		self.game_group_name = f"pong_{self.game_id}"
-        
-		# `game_states` is a dictionary declared in game_logic.py, it stores the game state for each game_id
-		# There should be only one GameState object per game_id
-		if self.game_id in game_states:
-			self.game_state = game_states[self.game_id]
-		else:
-			await self.close()
-			return
+
+		async with game_st_lock:
+			if self.game_id in game_states: # `game_states` is a dictionary declared in game_logic.py, it stores the game state for each game_id
+				self.game_state = game_states[self.game_id]
+				self.mode = game_states[self.game_id].game_mode # Getting game_mode from the game_states dictionary
+				self.num_players = game_states[self.game_id].num_players
+			else:
+				await self.close()
+				return
 
 		await self.channel_layer.group_add(
             self.game_group_name,

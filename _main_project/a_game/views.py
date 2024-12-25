@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from .models import GameSession
-from .game_logic import GameState, game_states
+from .game_logic import GameState, game_states, game_st_lock
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -33,6 +33,9 @@ def create_game_session(request):
 	if active_session:
 		context['game_id'] = active_session.game_id
 		context['message'] = 'Game session already exists for this user.'
+		# DEBUG #
+		print(f'Game session already exists, game_id: {active_session.game_id}')
+
 		return Response(context, status=200)
 
 	new_game_session = GameSession.objects.create(
@@ -45,6 +48,9 @@ def create_game_session(request):
 	new_game_session.save()
 	context['game_id'] = new_game_session.game_id
 	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Game session created with ID {new_game_session.game_id}')
 
 	# Create a new game state object for the new game session
 	game_states[new_game_session.game_id] = GameState()
@@ -207,7 +213,8 @@ def end_game_session(request, game_id):
 	print(f'Player 3: {game_states[game_id].score3}, Player 4: {game_states[game_id].score4}')
 	print(f'is_active: {game_session.is_active}')
 
-	del game_states[game_id]
+	# Delete the game state object from the dictionary
+	# del game_states[game_id]
 
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)

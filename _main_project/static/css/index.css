@@ -293,21 +293,27 @@ input:focus {
   color: var(--failure-color);
 }
 
-/* style for mode selection */
+/* style for game canvas */
 
-.mode-dialog {
+.game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    height: 100vh;
+    overflow: auto;
 }
 
-.mode-button {
-    margin: 10px 0;
-    padding: 10px 20px;
-    font-size: 22px;
-    cursor: pointer;
+.board {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    max-height: 600px;
+	border: #58ffeccf 2px solid;
+}
+
+.game-select-button {
+    margin: 10px;
 }
 
 /* * * * * * * * * * * * * * */

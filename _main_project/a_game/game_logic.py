@@ -3,20 +3,25 @@
 # The GameState objects are stored in the game_states dictionary, with the game_id as the key.
 # There can be only one GameState object per game_id / game session.
 
+import random
+import math
+import asyncio
+
+
 CANVAS_WIDTH = 600
 CANVAS_HEIGHT = 600
 PADDLE_WIDTH = 10
 PADDLE_HEIGHT = 60
-PADDLE_SPEED = 20
-BALL_WIDTH = 10
-BALL_HEIGHT = 10
-BALL_VELOCITY_X = 3
-BALL_VELOCITY_Y = 3
-WINNING_SCORE = 3
+PADDLE_SPEED = 30
+BALL_RADIUS = 8
+BALL_VELOCITY_X = 4
+BALL_VELOCITY_Y = 4
+WINNING_SCORE = 5
 FPS = 60
 
 
 game_states = {}
+game_st_lock = asyncio.Lock()
 
 class GameState:
 	def __init__(self):
@@ -26,8 +31,9 @@ class GameState:
 		self.paddle2 = CANVAS_HEIGHT / 2 - PADDLE_HEIGHT / 2
 		self.paddle3 = CANVAS_WIDTH / 2 - PADDLE_WIDTH / 2
 		self.paddle4 = CANVAS_WIDTH / 2 - PADDLE_WIDTH / 2
-		self.ball_x = CANVAS_WIDTH / 2 - BALL_WIDTH / 2
-		self.ball_y = CANVAS_HEIGHT / 2 - BALL_HEIGHT / 2
+		self.last_paddle_touch = None
+		self.ball_x = CANVAS_WIDTH / 2 - BALL_RADIUS / 2
+		self.ball_y = CANVAS_HEIGHT / 2 - BALL_RADIUS / 2
 		self.ball_velocity_x = BALL_VELOCITY_X
 		self.ball_velocity_y = BALL_VELOCITY_Y
 		self.score1 = 0
@@ -54,52 +60,124 @@ class GameState:
 		if self.game_over:
 			return
 
-		# Top and bottom wall collision
-		if self.ball_y <= 0 or self.ball_y >= CANVAS_HEIGHT - BALL_HEIGHT:
-			self.ball_velocity_y *= -1
-
-		# Paddle 1 collision
-		if self.ball_x <= PADDLE_WIDTH:
+		# Paddle 1 collision (left paddle)
+		if self.ball_x + BALL_RADIUS <= 0:
+			if self.last_paddle_touch is None:
+				self.change_ball_direction('x')
+			else:
+				self.assign_score_and_reset_ball(self.last_paddle_touch)
+		elif self.ball_x - BALL_RADIUS <= PADDLE_WIDTH:
 			if self.paddle1 <= self.ball_y <= self.paddle1 + PADDLE_HEIGHT:
-				self.ball_velocity_x *= -1
-			else:
-				self.score2 += 1
-				self.reset_ball()
+				self.change_ball_direction('x')
+				self.ball_x = PADDLE_WIDTH + BALL_RADIUS
+				self.last_paddle_touch = 1
 		
-		# Paddle 2 collision
-		if self.ball_x >= CANVAS_WIDTH - PADDLE_WIDTH - BALL_WIDTH:
+		# Paddle 2 collision (right paddle)
+		if self.ball_x + BALL_RADIUS >= CANVAS_WIDTH:
+			if self.last_paddle_touch is None:
+				self.change_ball_direction('x')
+			else:
+				self.assign_score_and_reset_ball(self.last_paddle_touch)
+		elif self.ball_x + BALL_RADIUS >= CANVAS_WIDTH - PADDLE_WIDTH:
 			if self.paddle2 <= self.ball_y <= self.paddle2 + PADDLE_HEIGHT:
-				self.ball_velocity_x *= -1
-			else:
-				self.score1 += 1
-				self.reset_ball()
+				self.change_ball_direction('x')
+				self.ball_x = CANVAS_WIDTH - PADDLE_WIDTH - BALL_RADIUS
+				self.last_paddle_touch = 2
 		
-		# Paddle 3 collision
-		if self.ball_y <= PADDLE_WIDTH:
-			if self.paddle3 <= self.ball_x <= self.paddle3 + PADDLE_WIDTH:
-				self.ball_velocity_y *= -1
-			else:
-				self.score4 += 1
-				self.reset_ball()
+		# Paddle 3 collision (top paddle)
+		if self.num_players >= 3:
+			if self.ball_y + BALL_RADIUS <= 0:
+				if self.last_paddle_touch is None:
+					self.change_ball_direction('y')
+				else:
+					self.assign_score_and_reset_ball(self.last_paddle_touch)
+			elif self.ball_y - BALL_RADIUS <= PADDLE_WIDTH:
+				if self.paddle3 <= self.ball_x <= self.paddle3 + PADDLE_HEIGHT:
+					self.change_ball_direction('y')
+					self.ball_y = PADDLE_WIDTH + BALL_RADIUS
+					self.last_paddle_touch = 3
+		else: # top wall collision (if there are only 2 players)
+			if self.ball_y <= 0:
+				self.change_ball_direction('y')
 
-		# Paddle 4 collision
-		if self.ball_y >= CANVAS_HEIGHT - PADDLE_WIDTH - BALL_WIDTH:
-			if self.paddle4 <= self.ball_x <= self.paddle4 + PADDLE_WIDTH:
-				self.ball_velocity_y *= -1
-			else:
-				self.score3 += 1
-				self.reset_ball()
+		# Paddle 4 collision (bottom paddle)
+		if self.num_players == 4:
+			if self.ball_y + BALL_RADIUS >= CANVAS_HEIGHT:
+				if self.last_paddle_touch is None:
+					self.change_ball_direction('y')
+				else:
+					self.assign_score_and_reset_ball(self.last_paddle_touch)
+			elif self.ball_y + BALL_RADIUS >= CANVAS_HEIGHT - PADDLE_WIDTH:
+				if self.paddle4 <= self.ball_x <= self.paddle4 + PADDLE_HEIGHT:
+					self.change_ball_direction('y')
+					self.ball_y = CANVAS_HEIGHT - PADDLE_WIDTH - BALL_RADIUS
+					self.last_paddle_touch = 4
+		else: # bottom wall collision (if there are 2 or 3 players)
+			if self.ball_y + BALL_RADIUS >= CANVAS_HEIGHT:
+				self.change_ball_direction('y')
 
 		self.ball_x += self.ball_velocity_x
 		self.ball_y += self.ball_velocity_y
 
 		self.check_winner()
 
+	def change_ball_direction(self, direction):
+		print(f'Changing ball direction: {direction}')
+		if direction == 'x':
+			self.ball_velocity_x *= -1
+		elif direction == 'y':
+			self.ball_velocity_y *= -1
+		self.add_random_velocity()
+
+	def assign_score_and_reset_ball(self, player):
+		if player is not None:
+			if player == 1:
+				self.score1 += 1
+			elif player == 2:
+				self.score2 += 1
+			elif player == 3:
+				self.score3 += 1
+			elif player == 4:
+				self.score4 += 1
+		else:
+			# If the ball hits the wall, the last player to touch the ball is None
+			# In this case, the score is not assigned to any player and the ball is bounced back
+			pass
+		
+		self.reset_ball()
+
 	def reset_ball(self):
-		self.ball_x = CANVAS_WIDTH / 2 - BALL_WIDTH / 2
-		self.ball_y = CANVAS_HEIGHT / 2 - BALL_HEIGHT / 2
-		self.ball_velocity_x *= -1
-		self.ball_velocity_y *= -1
+		print('Resetting ball...')
+		self.ball_x = CANVAS_WIDTH / 2 - BALL_RADIUS / 2
+		self.ball_y = CANVAS_HEIGHT / 2 - BALL_RADIUS / 2
+
+		# Ramdomize the direction of the ball
+		direction = random.choice(['-x', 'x', '-y', 'y'])
+		print('direction:', direction)
+		if direction == '-x': # Top left
+			self.ball_velocity_x = -abs(self.ball_velocity_x)
+			self.ball_velocity_y = 0
+		elif direction == 'x': # Top right
+			self.ball_velocity_x = abs(self.ball_velocity_x)
+			self.ball_velocity_y = 0
+		elif direction == '-y': # Bottom left
+			self.ball_velocity_x = 0
+			self.ball_velocity_y = -abs(self.ball_velocity_y)
+		elif direction == 'y': # Bottom right
+			self.ball_velocity_x = 0
+			self.ball_velocity_y = abs(self.ball_velocity_y)
+		
+		self.add_random_velocity()
+		self.last_paddle_touch = None
+	
+	def add_random_velocity(self):
+		self.ball_velocity_x += random.uniform(-0.8, 0.8)
+		self.ball_velocity_y += random.uniform(-0.8, 0.8)
+
+		# Normalize the velocity
+		speed = math.sqrt(self.ball_velocity_x ** 2 + self.ball_velocity_y ** 2)
+		self.ball_velocity_x = (self.ball_velocity_x / speed) * BALL_VELOCITY_X
+		self.ball_velocity_y = (self.ball_velocity_y / speed) * BALL_VELOCITY_Y
 
 	def move_paddle(self, paddle, direction):
 		if paddle == 1:
@@ -126,4 +204,10 @@ class GameState:
 		elif self.score2 >= WINNING_SCORE:
 			self.game_over = True
 			self.winner = "player2"
+		elif self.score3 >= WINNING_SCORE:
+			self.game_over = True
+			self.winner = "player3"
+		elif self.score4 >= WINNING_SCORE:
+			self.game_over = True
+			self.winner = "player4"
 

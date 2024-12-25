@@ -22,6 +22,7 @@ export default class GameBoard {
 
 	getDomElements() {
 		const container = document.createElement('div');
+		container.classList.add('game-container');
 
 		this.paragraph = document.createElement('p');
 		this.paragraph.textContent = '';

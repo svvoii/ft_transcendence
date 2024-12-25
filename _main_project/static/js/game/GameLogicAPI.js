@@ -162,9 +162,9 @@ export async function initializeGame(socket, role, game_id) {
 
     const canvas = document.getElementById('pongCanvas');
     const ctx = canvas.getContext('2d');
-    const paddleHeight = 100;
+    const paddleHeight = 60;
     const paddleWidth = 10;
-    const ballSize = 10;
+    const ballSize = 8;
     let ballX;
     let ballY;
     let paddle1;
@@ -198,7 +198,7 @@ export async function initializeGame(socket, role, game_id) {
 	}
 
     socket.onmessage = function(event) {
-		console.log('WebSocket message received: ', event.data.type);
+		// console.log('WebSocket message received: ', event.data.type);
 		const data = JSON.parse(event.data);
 		// console.log('..onmessage, data.type: ', data.type);
 		if (data.type === 'update_state') {
@@ -221,22 +221,26 @@ export async function initializeGame(socket, role, game_id) {
 
     function drawPaddle1() {
         ctx.fillStyle = 'white';
-        ctx.fillRect(0, paddle1, paddleWidth, paddleHeight);
+		const y = Math.min(Math.max(paddle1, 0), canvas.height - paddleHeight);
+		ctx.fillRect(0, y, paddleWidth, paddleHeight);
     }
 
     function drawPaddle2() {
         ctx.fillStyle = 'white';
-        ctx.fillRect(canvas.width - paddleWidth, paddle2, paddleWidth, paddleHeight);
+		const y = Math.min(Math.max(paddle2, 0), canvas.height - paddleHeight);
+		ctx.fillRect(canvas.width - paddleWidth, y, paddleWidth, paddleHeight);
     }
 
 	function drawPaddle3() {
 		ctx.fillStyle = 'white';
-		ctx.fillRect(paddle3, 0, paddleHeight, paddleWidth);
+		const x = Math.min(Math.max(paddle3, 0), canvas.width - paddleHeight);
+		ctx.fillRect(x, 0, paddleHeight, paddleWidth);
 	}
 
 	function drawPaddle4() {
 		ctx.fillStyle = 'white';
-		ctx.fillRect(paddle4, canvas.height - paddleWidth, paddleHeight, paddleWidth);
+		const x = Math.min(Math.max(paddle4, 0), canvas.width - paddleHeight);
+		ctx.fillRect(x, canvas.height - paddleWidth, paddleHeight, paddleWidth);
 	}
 
     function drawBall() {
@@ -318,6 +322,8 @@ export async function initializeGame(socket, role, game_id) {
 			direction = 1;
 		}
 
+		// console.log('..direction: ', direction);
+		console.log('..mode: ', mode);
         if (direction !== 0) {
             if (mode === 'Single' || mode === 'AI') {
 				if (key === 'w' || key === 's') {
