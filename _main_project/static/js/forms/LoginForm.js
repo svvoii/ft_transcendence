@@ -9,8 +9,6 @@ export default class extends AbstractModalView {
   }
 
   createDomElements(data=null) {
-    // const csrfToken = this.getCookie('csrftoken');
-
     // Create the container
     const container = document.createElement('div');
 
@@ -66,6 +64,16 @@ export default class extends AbstractModalView {
     submitButton.style.marginBottom = '0.5rem;'
     form.appendChild(submitButton);
 
+    // const oauthContainer = document.createElement('a');
+    // oauthContainer.classList.add('oauth-container');
+    // oauthContainer.textContent = 'Login with 42';
+
+    const fortyTwoButton = document.createElement('a');
+    fortyTwoButton.type = 'alt-signin';
+    fortyTwoButton.href = 'http://localhost:8000/accounts/42/login/?process=login';
+    fortyTwoButton.id = 'fortyTwoOauth';
+    fortyTwoButton.textContent = 'Login with 42';
+
     // Create the forgot password link
     const forgotPassButton = document.createElement('button');
     forgotPassButton.id = 'forgotPass';
@@ -75,6 +83,8 @@ export default class extends AbstractModalView {
     // Append the form to the container
     container.appendChild(form);
 
+    // container.appendChild(oauthContainer);
+    container.appendChild(fortyTwoButton);
     container.appendChild(forgotPassButton);
 
     return container;
@@ -135,6 +145,10 @@ export default class extends AbstractModalView {
 
     document.getElementById('forgotPass').addEventListener('click', () => {
       this.modal.showForm('forgotPassForm');
+    });
+
+    document.getElementById('fortyTwoOauth').addEventListener('click', async() => {
+      console.log('Login with 42');
     });
   }
 }

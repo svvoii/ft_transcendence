@@ -25,12 +25,19 @@ export default class extends AbstractView {
       { tag: 'p', content: 'We are a team of three students from 42 Paris and this is our ft_transcendence project. ft_transcendence is the final project of the common core.'},
       { tag: 'br', content: '' },
       { tag: 'p', content: 'We are passionate about coding and we are always looking for new challenges. We hope you enjoy our work!'},
+      { tag: 'p', content: 'To view our source code for this project, please visit our repo here:'},
+      { tag: 'a', content:  '<strong>ft_transcendence</strong>', href: 'https://github.com/svvoii/ft_transcendence'}
     ];
 
     elements.forEach(element => {
       const el = document.createElement(element.tag);
       el.innerHTML = element.content;
       el.style.textAlign = 'center';
+      if (element.href) {
+        el.style.display = 'flex';
+        el.style.justifyContent = 'center';
+        el.href = element.href;
+      }
       text_container.appendChild(el);
     });
 
@@ -105,6 +112,26 @@ export default class extends AbstractView {
 
     container.appendChild(text_container);
     container.appendChild(photos_container);
+
+    const text_container_end = document.createElement('div');
+    text_container_end.classList.add('text-container');
+
+    const elementsEnd = [
+      // { tag: 'br', content: '' },
+      { tag: 'hr', content: '' },
+      { tag: 'br', content: '' },
+      { tag: 'h3', content: 'Thank you for playing ft_transcenDANCE!' },
+      { tag: 'br', content: '' },
+    ];
+
+    elementsEnd.forEach(element => {
+      const el = document.createElement(element.tag);
+      el.innerHTML = element.content;
+      el.style.textAlign = 'center';
+      text_container_end.appendChild(el);
+    });
+
+    container.appendChild(text_container_end);
 
     return container;
   }
