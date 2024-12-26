@@ -261,3 +261,60 @@ def quit_game_session(request):
 	print(f'is_active: {active_session.is_active}')
 
 	return Response(context, status=200)
+
+
+# This is an API endpoint to create a game session with 2 players
+@api_view(["POST"])
+@login_required
+def create_game_with_2_players(request):
+	global game_states
+	context = {}
+	
+	data = request.data
+	username1 = data.get('player1')
+	username2 = data.get('player2')
+
+	if not username1 or not username2:
+		context['message'] = 'Both players are required.'
+		return Response(context, status=400)
+
+	player1 = User.objects.filter(username=username1).first()
+	player2 = User.objects.filter(username=username2).first()
+
+	if not player1 or not player2:
+		context['message'] = 'Player does not exist.'
+		return Response(context, status=400)
+
+	active_session = GameSession.objects.filter(is_active=True).filter(
+		models.Q(player1=player1) | models.Q(player2=player1) | models.Q(player1=player2) | models.Q(player2=player2)
+	).first()
+ 
+	if active_session:
+		context['message'] = 'Game session already exists for these players.'
+		context['game_id'] = active_session.game_id
+		return Response(context, status=200)
+	
+	new_game_session = GameSession.objects.create(
+		player1=player1,
+		player2=player2,
+		mode=2
+	)
+	new_game_session.save()
+
+	context['game_id'] = new_game_session.game_id
+	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Game session created with ID {new_game_session.game_id}')
+	# # # # #
+
+	# Create a new game state object for the new game session
+	game_states[new_game_session.game_id] = GameState()
+
+	# Setting game_mode in the GameState object
+	game_state = game_states[new_game_session.game_id]
+	game_state.game_mode = 'Multi_2'
+	game_state.num_players = 2
+
+	return Response(context, status=201)
+

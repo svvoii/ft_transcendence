@@ -1,4 +1,5 @@
-import { getGameSession, joinGame, initializeGame, quitGame } from './GameLogicAPI.js';
+import { getGameSession, joinGame, quitGame } from './GameAPI.js';
+import { initializeGame } from './GameLogic.js';
 
 export default class GameBoard {
 	constructor(appId) {
@@ -124,11 +125,6 @@ export default class GameBoard {
 
 			initializeGame(this.socket, role, game_id);
 		}
-
-		// this.socket.onclose = () => {
-		// 	console.log('WebSocket connection closed. Refreshing the Game Board');
-		// 	this.resetGameBoard();
-		// };
 	}
 
 	resetGameBoard() {
