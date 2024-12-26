@@ -62,10 +62,13 @@ class GameState:
 
 		# Paddle 1 collision (left paddle)
 		if self.ball_x + BALL_RADIUS <= 0:
-			if self.last_paddle_touch is None:
-				self.change_ball_direction('x')
+			if self.num_players > 2:
+				if self.last_paddle_touch is None:
+					self.change_ball_direction('x')
+				else:
+					self.assign_score_and_reset_ball(self.last_paddle_touch)
 			else:
-				self.assign_score_and_reset_ball(self.last_paddle_touch)
+				self.assign_score_and_reset_ball(self.last_paddle_touch, 'score2')
 		elif self.ball_x - BALL_RADIUS <= PADDLE_WIDTH:
 			if self.paddle1 <= self.ball_y <= self.paddle1 + PADDLE_HEIGHT:
 				self.change_ball_direction('x')
@@ -74,10 +77,13 @@ class GameState:
 		
 		# Paddle 2 collision (right paddle)
 		if self.ball_x + BALL_RADIUS >= CANVAS_WIDTH:
-			if self.last_paddle_touch is None:
-				self.change_ball_direction('x')
+			if self.num_players > 2:
+				if self.last_paddle_touch is None:
+					self.change_ball_direction('x')
+				else:
+					self.assign_score_and_reset_ball(self.last_paddle_touch)
 			else:
-				self.assign_score_and_reset_ball(self.last_paddle_touch)
+				self.assign_score_and_reset_ball(self.last_paddle_touch, 'score1')
 		elif self.ball_x + BALL_RADIUS >= CANVAS_WIDTH - PADDLE_WIDTH:
 			if self.paddle2 <= self.ball_y <= self.paddle2 + PADDLE_HEIGHT:
 				self.change_ball_direction('x')
@@ -122,6 +128,7 @@ class GameState:
 		self.check_winner()
 
 	def change_ball_direction(self, direction):
+		# if self.last_paddle_touch is None:
 		print(f'Changing ball direction: {direction}')
 		if direction == 'x':
 			self.ball_velocity_x *= -1
@@ -129,20 +136,24 @@ class GameState:
 			self.ball_velocity_y *= -1
 		self.add_random_velocity()
 
-	def assign_score_and_reset_ball(self, player):
-		if player is not None:
-			if player == 1:
+	# If the ball hits the wall, the last player to touch the ball is None
+	# In this case, the score is not assigned to any player and the ball is bounced back
+	def assign_score_and_reset_ball(self, player, score=None):
+		if self.num_players > 2:
+			if player is not None:
+				if player == 1:
+					self.score1 += 1
+				elif player == 2:
+					self.score2 += 1
+				elif player == 3:
+					self.score3 += 1
+				elif player == 4:
+					self.score4 += 1
+		if score is not None:
+			if score == 'score1':
 				self.score1 += 1
-			elif player == 2:
+			elif score == 'score2':
 				self.score2 += 1
-			elif player == 3:
-				self.score3 += 1
-			elif player == 4:
-				self.score4 += 1
-		else:
-			# If the ball hits the wall, the last player to touch the ball is None
-			# In this case, the score is not assigned to any player and the ball is bounced back
-			pass
 		
 		self.reset_ball()
 
@@ -152,27 +163,31 @@ class GameState:
 		self.ball_y = CANVAS_HEIGHT / 2 - BALL_RADIUS / 2
 
 		# Ramdomize the direction of the ball
-		direction = random.choice(['-x', 'x', '-y', 'y'])
-		print('direction:', direction)
-		if direction == '-x': # Top left
-			self.ball_velocity_x = -abs(self.ball_velocity_x)
-			self.ball_velocity_y = 0
-		elif direction == 'x': # Top right
-			self.ball_velocity_x = abs(self.ball_velocity_x)
-			self.ball_velocity_y = 0
-		elif direction == '-y': # Bottom left
-			self.ball_velocity_x = 0
-			self.ball_velocity_y = -abs(self.ball_velocity_y)
-		elif direction == 'y': # Bottom right
-			self.ball_velocity_x = 0
-			self.ball_velocity_y = abs(self.ball_velocity_y)
+		if self.num_players > 2:
+			direction = random.choice(['-x', 'x', '-y', 'y'])
+			print('direction:', direction)
+			if direction == '-x': # Top left
+				self.ball_velocity_x = -abs(self.ball_velocity_x)
+				self.ball_velocity_y = 0
+			elif direction == 'x': # Top right
+				self.ball_velocity_x = abs(self.ball_velocity_x)
+				self.ball_velocity_y = 0
+			elif direction == '-y': # Bottom left
+				self.ball_velocity_x = 0
+				self.ball_velocity_y = -abs(self.ball_velocity_y)
+			elif direction == 'y': # Bottom right
+				self.ball_velocity_x = 0
+				self.ball_velocity_y = abs(self.ball_velocity_y)
+		else:
+			self.ball_velocity_x *= -1
+			self.ball_velocity_y *= -1
 		
 		self.add_random_velocity()
 		self.last_paddle_touch = None
 	
 	def add_random_velocity(self):
-		self.ball_velocity_x += random.uniform(-0.8, 0.8)
-		self.ball_velocity_y += random.uniform(-0.8, 0.8)
+		self.ball_velocity_x += random.uniform(-0.5, 0.5)
+		self.ball_velocity_y += random.uniform(-0.5, 0.5)
 
 		# Normalize the velocity
 		speed = math.sqrt(self.ball_velocity_x ** 2 + self.ball_velocity_y ** 2)

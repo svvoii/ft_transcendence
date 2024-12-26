@@ -1,3 +1,5 @@
+import { fetchGameState, movePaddle, endGame } from './GameAPI.js';
+
 // This will initialize the game logic
 // It will draw the paddles and ball on the canvas
 // The ball position is updated via WebSocket
@@ -8,6 +10,7 @@ export async function initializeGame(socket, role, game_id) {
 
     socket.onopen = function() {
         console.log('WebSocket connection established');
+		socket.send(JSON.stringify({ type: 'get_initial_state' }));
     };
 
     socket.onclose = function() {
@@ -38,8 +41,8 @@ export async function initializeGame(socket, role, game_id) {
 	let numPlayers;
 
     // Fetch initial game state
-    let gameState = await fetchGameState(game_id);
-	updateGameState(gameState);
+    // let gameState = await fetchGameState(game_id);
+	// updateGameState(gameState);
 
 	function updateGameState(gameState) {
 		mode = gameState.game_mode;
@@ -59,7 +62,10 @@ export async function initializeGame(socket, role, game_id) {
 		// console.log('WebSocket message received: ', event.data.type);
 		const data = JSON.parse(event.data);
 		// console.log('..onmessage, data.type: ', data.type);
-		if (data.type === 'update_state') {
+		if (data.type === 'initial_state') {
+			const gameState = data.state;
+			updateGameState(gameState);
+		} else if (data.type === 'update_state') {
 			ballX = data.ball_x;
 			ballY = data.ball_y;
 			score1 = data.score1;
@@ -181,7 +187,7 @@ export async function initializeGame(socket, role, game_id) {
 		}
 
 		// console.log('..direction: ', direction);
-		console.log('..mode: ', mode);
+		// console.log('..mode: ', mode);
         if (direction !== 0) {
             if (mode === 'Single' || mode === 'AI') {
 				if (key === 'w' || key === 's') {
@@ -202,8 +208,9 @@ export async function initializeGame(socket, role, game_id) {
 			}
 
 			// console.log('..player: ', player, ' paddle: ', paddle, ' direction: ', direction);
-            gameState = await movePaddle(game_id, paddle, direction);
+            // gameState = await movePaddle(game_id, paddle, direction);
 			// updateGameState(gameState);
+            await movePaddle(game_id, paddle, direction);
         }
     });
 

@@ -1,4 +1,5 @@
 import { user, modal, gameBoard } from '../index.js';
+import { createGameWith2Players } from '../game/GameAPI.js';
 
 export default class Chat {
   constructor(appId) {
@@ -119,24 +120,14 @@ export default class Chat {
     this.chat.querySelector('.chat-invite-button').addEventListener('click', async() => {
       // console.log('Invite button clicked');
       try {
-        const content = JSON.stringify({ 
-          player1 : user.getUserName(), 
-          player2: this.chat.querySelector('.chat-title').textContent 
-        });
+		const player1 = user.getUserName();
+		const player2 = this.chat.querySelector('.chat-title').textContent; 
 
-        const response = await fetch('/game/invite_to_game/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': this.getCookie('csrftoken'),
-          },
-          body: content,
-        });
-        const data = await response.json();
-        // console.log('Data: ', data);
-        gameBoard.resetGameBoard();
-        gameBoard.joinExistingGame(data.game_id);
-        gameModal.style.display = 'flex';
+		gameBoard.inviteToPlayFromChat(player1, player2);
+
+		gameBoard.resetGameBoard();
+		gameModal.style.display = 'flex';
+
       } catch (error) {
         console.error('Error inviting to game:', error);
       }

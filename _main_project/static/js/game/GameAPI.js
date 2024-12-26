@@ -67,7 +67,7 @@ export async function joinGame(game_id) {
 
 // This will request the server to fetch the current game state
 // Game state includes the position of paddles, ball, and scores
-async function fetchGameState(game_id) {
+export async function fetchGameState(game_id) {
 
     const response = await fetch(`/game/game_state/${game_id}/`);
     if (!response.ok) {
@@ -82,7 +82,7 @@ async function fetchGameState(game_id) {
 // This will request the server to update the position of the paddle
 // The server expects the paddle value as either 1 or 2
 // The direction value is either -1 or 1
-async function movePaddle(game_id, paddle, direction) {
+export async function movePaddle(game_id, paddle, direction) {
 	
     const response = await fetch(`/game/move_paddle/${game_id}/`, {
         method: 'POST',
@@ -104,7 +104,7 @@ async function movePaddle(game_id, paddle, direction) {
 
 
 // This will request the server to end the game
-async function endGame(game_id) {
+export async function endGame(game_id) {
 
 	const response = await fetch(`/game/end_game/${game_id}/`, {
 		method: 'POST',
@@ -162,8 +162,8 @@ export async function createGameWith2Players(username1, username2) {
 		throw new Error(`ERROR: Server saying: ${data.error}`);
 	}
 
-	if (data.game_id) {
-		return data.game_id;
+	if (data.game_id && data.role) {
+		return { game_id: data.game_id, role: data.role };
 	} else {
 		throw new Error('Game ID not found in the response');
 	}

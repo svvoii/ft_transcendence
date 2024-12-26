@@ -61,6 +61,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 		message_type = data.get("type")
 		# number_of_players = data.get("number_of_players")
 
+		if message_type == "get_initial_state":
+			await self.send(text_data=json.dumps({
+				"type": "initial_state",
+				"state": self.game_state.get_state(),
+			}))
+
 		if message_type == "player_ready":
 			if self.game_id not in ready_players:
 				ready_players[self.game_id] = []

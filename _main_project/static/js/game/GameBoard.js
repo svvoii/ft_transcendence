@@ -1,4 +1,4 @@
-import { getGameSession, joinGame, quitGame } from './GameAPI.js';
+import { getGameSession, joinGame, createGameWith2Players, quitGame } from './GameAPI.js';
 import { initializeGame } from './GameLogic.js';
 
 export default class GameBoard {
@@ -100,6 +100,23 @@ export default class GameBoard {
 
 		} catch (error) {
 			alert('Error joining the game: ' + error.message);
+		}
+	}
+
+	// Function to call grom the Chat.js file when the user clicks `invite to play` button
+	async inviteToPlayFromChat(player1, player2) {
+		const gameModal = document.getElementById('gameModal');
+		console.log('Invite to play button clicked');
+
+		try {
+			const { game_id, role } = await createGameWith2Players(player1, player2);
+			this.paragraph.textContent = `Game ID: ${game_id}`;
+			gameModal.style.display = 'flex';
+
+			this.connectWebSocket(role, game_id);
+
+		} catch (error) {
+			alert('Error inviting the player to play: ' + error.message);
 		}
 	}
 
