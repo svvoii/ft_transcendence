@@ -103,6 +103,7 @@ const renderPage = async(view) => {
 
   // Create the div that holds the view content and add content
   const viewContent = document.createElement('div');
+  viewContent.id = 'view-content';
   viewContent.appendChild(view.getDomElements());
   app.appendChild(viewContent);
 

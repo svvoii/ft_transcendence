@@ -49,6 +49,11 @@ export default class extends AbstractView {
     fullLobbyDiv.className = 'full-lobby-message';
     fullLobbyDiv.textContent = 'Waiting for more players to join...';
 
+    // DEBUG : Add a button to start the tournament
+    const startTournamentButton = document.createElement('button');
+    startTournamentButton.id = 'startTournamentButton';
+    startTournamentButton.textContent = 'Start the tournament';
+
     // Append all elements to the container
     container.appendChild(paragraph);
     container.appendChild(h1);
@@ -57,6 +62,7 @@ export default class extends AbstractView {
     container.appendChild(playersListTitle);
     container.appendChild(playersList);
     container.appendChild(fullLobbyDiv);
+    container.appendChild(startTournamentButton);
     
     return container;
   }
@@ -149,6 +155,30 @@ export default class extends AbstractView {
       navigator.clipboard.writeText(lobbyLink.textContent);
     });
 
+    document.getElementById('startTournamentButton').addEventListener('click', async () => {
+      // Set the game modal to hidden
+      document.getElementById("gameModal").style.display = "none";
+
+      const app = document.querySelector('#view-content');
+      app.innerHTML = '';
+
+      app.appendChild(this.renderBracket());
+    });
   };
 
+  renderBracket() {
+    console.log('Showing the bracket');
+    // Create a container div
+    const container = document.createElement('div');
+    container.classList.add('text-container');
+
+    // Create the paragraph element
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'You are viewing the tournament bracket!';
+
+    // Append the paragraph to the container
+    container.appendChild(paragraph);
+
+    return container;
+  }
 }
