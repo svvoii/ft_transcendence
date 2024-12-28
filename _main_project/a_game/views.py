@@ -16,9 +16,11 @@ from rest_framework.response import Response
 @api_view(["POST"])
 @login_required
 def create_game_session(request):
+	# DEBUG #
+	print('Create game session called.. request.data:', request.data)
+	# # # # #
 	global game_states
 	context = {}
-	print('Create game session called.. request.data:', request.data)
 	user = request.user
 	data = request.data
 	game_mode_string = data.get('mode')
@@ -40,7 +42,7 @@ def create_game_session(request):
 		context['message'] = 'Game session already exists for this user.'
 		# DEBUG #
 		print(f'Game session already exists, game_id: {active_session.game_id}')
-
+		# # # # #
 		return Response(context, status=200)
 
 	new_game_session = GameSession.objects.create(
@@ -53,6 +55,10 @@ def create_game_session(request):
 	new_game_session.save()
 	context['game_id'] = new_game_session.game_id
 	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Game session created with ID {new_game_session.game_id}. Mode: {game_mode_string}')
+	# # # # #
 
 	# Create a new game state object for the new game session
 	game_states[new_game_session.game_id] = GameState()
@@ -74,45 +80,52 @@ def create_game_session(request):
 @login_required
 def join_game_session(request, game_id):
 	print('Join game session called.. request.data:', request.data)
-
 	context = {}
 	user = request.user
-	# game_id = request.data.get('game_id')
+
 	try:
 		game_session = GameSession.objects.get(game_id=game_id)
 	except GameSession.DoesNotExist:
 		context['message'] = 'Game session does not exist.'
 		return Response(context, status=400)
 
-	if game_session.is_active:
-		if game_session.player1 == user or game_session.player2 == user or game_session.player3 == user or game_session.player4 == user:
-			context['message'] = 'User is already in the game session.'
-		elif not game_session.player1:
-			game_session.player1 = user
-		elif not game_session.player2:
-			game_session.player2 = user
-		elif not game_session.player3:
-			game_session.player3 = user
-		elif not game_session.player4:
-			game_session.player4 = user
-		else:
-			context['message'] = 'Game session is full.'
-			return Response(context, status=400)
-
-		game_session.save()
-		context['game_id'] = game_session.game_id
-		context['role'] = game_session.get_role(user)
-		# DEBUG #
-		print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
-
-		return Response(context, status=200)
-	else:
+	if not game_session.is_active:
 		context['message'] = 'Game session is not active.'
 		return Response(context, status=400)
 
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	if user in players:
+		context['message'] = 'User is already in the game session.'
+		# DEBUG #
+		print(f'User {user} is already in an active game session with ID {game_id}')
+		# # # # #
+		return Response(context, status=200)
+
+	num_players = game_session.mode
+	for i in range(num_players):
+		if not players[i]:
+			players[i] = user
+			break
+	else: # If the loop completes without breaking (apparantly it is a valid syntax in Python !)
+		context['message'] = 'Game session is full.'
+		# DEBUG #
+		print(f'Game session with ID {game_id} is full.')
+		# # # # #
+		return Response(context, status=400)
+	
+	game_session.player1, game_session.player2, game_session.player3, game_session.player4 = players
+
+	game_session.save()
+	context['game_id'] = game_session.game_id
+	context['role'] = game_session.get_role(user)
+	# DEBUG #
+	print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
+
+	return Response(context, status=200)
+
 
 # This function is called when the game is loaded to get the initial game state
-# On the front-end in the `fetch` call to this endpoint:
+# (On the front-end in the `fetch` call to this endpoint) - this functionality is changed to be performed via the WebSocket due possible issues with the race conditions in an async environment of the game loop
 # - The `game_id` is passed as a URL parameter
 @api_view(["GET"])
 @login_required
@@ -216,13 +229,14 @@ def end_game_session(request, game_id):
 	print(f'is_active: {game_session.is_active}')
 
 	# Delete the game state object from the dictionary
-	# del game_states[game_id]
+	del game_states[game_id]
 
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)
 
 
 # This function is called when the user clicks the "Quit Game" button
+# The logic is to mark the game session as inactive as soon as at least one player quits the game
 @api_view(["POST"])
 @login_required
 def quit_game_session(request):
@@ -256,6 +270,9 @@ def quit_game_session(request):
 	elif active_session.player4 == user:
 		active_session.score4 = 0
 
+	if active_session.is_active:
+		active_session.is_active = False
+
 	active_session.save()
 	context['message'] = 'Player {player_role} has quit the game.'
 
@@ -287,7 +304,7 @@ def create_game_with_2_players(request):
 	player2 = Account.objects.filter(username=username2).first()
 
 	if not player1 or not player2:
-		context['message'] = 'Player does not exist.'
+		context['message'] = f'User {username1} or {username2} does not exist.'
 		return Response(context, status=400)
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
@@ -298,6 +315,9 @@ def create_game_with_2_players(request):
 		context['message'] = 'Game session already exists for these players.'
 		context['game_id'] = active_session.game_id
 		context['role'] = active_session.get_role(user)
+		# DEBUG #
+		print(f'Game session already exists for players {username1} and {username2}. Game ID: {active_session.game_id}. Role: {context["role"]}')
+		# # # # #
 		return Response(context, status=200)
 	
 	new_game_session = GameSession.objects.create(
