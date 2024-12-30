@@ -1,4 +1,5 @@
-import { user, modal } from '../index.js';
+import { user, modal, gameBoard } from '../index.js';
+import { createGameWith2Players } from '../game/GameAPI.js';
 
 export default class Chat {
   constructor(appId) {
@@ -114,8 +115,22 @@ export default class Chat {
       }
     });
 
-    this.chat.querySelector('.chat-invite-button').addEventListener('click', () => {
-      console.log('Invite button clicked');
+    ///// INVITE BUTTON /////
+
+    this.chat.querySelector('.chat-invite-button').addEventListener('click', async() => {
+      // console.log('Invite button clicked');
+      try {
+		const player1 = user.getUserName();
+		const player2 = this.chat.querySelector('.chat-title').textContent; 
+
+		gameBoard.inviteToPlayFromChat(player1, player2);
+
+		gameBoard.resetGameBoard();
+		gameModal.style.display = 'flex';
+
+      } catch (error) {
+        console.error('Error inviting to game:', error);
+      }
     });
 
     this.chat.querySelector('.chat-input-field').addEventListener('keypress', (event) => {
@@ -317,5 +332,20 @@ export default class Chat {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
   }
 };

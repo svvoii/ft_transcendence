@@ -1,31 +1,30 @@
 import json
 import asyncio
+from django.core.cache import cache
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game_logic import game_states, FPS
+from .game_logic import FPS
 
 # `game_tasks` is a dictionary that stores the game loop task for each game_id.
 # This way there is only one task to run the game loop for each game_id.
 game_tasks = {}
 
-# connected players will store the list of connected players for each game_id
-# connected_players = {}
+# ready_players will store the list of players who are ready to play for each game_id
 ready_players = {}
 
 class PongConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
-		global game_states
 		self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-		self.mode = self.scope["url_route"]["kwargs"]["mode"]
 		self.game_group_name = f"pong_{self.game_id}"
-        
-		# `game_states` is a dictionary declared in game_logic.py, it stores the game state for each game_id
-		# There should be only one GameState object per game_id
-		if self.game_id in game_states:
-			self.game_state = game_states[self.game_id]
-		else:
+
+		# Get the game state for the game_id
+		self.game_state = cache.get(self.game_id)
+		if self.game_state is None:
 			await self.close()
 			return
+
+		self.mode = self.game_state.game_mode
+		self.num_players = self.game_state.num_players
 
 		await self.channel_layer.group_add(
             self.game_group_name,
@@ -34,30 +33,18 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		await self.accept()
 
-		# Add the player to the connected players list
-		# if self.game_id not in connected_players:
-		# 	connected_players[self.game_id] = []
-		# connected_players[self.game_id].append(self.channel_name)
+		# print(f"Sending game_mode to the player: {self.mode}")
+		# # Send the initial game state to the player
+		# await self.send(text_data=json.dumps({
+		# 	"type": "game_mode",
+		# 	"mode": self.mode,
+		# }))
 
-		# if self.mode == 'multiplayer' and len(connected_players[self.game_id]) < 2:
-		# 	print("Waiting for another player to connect..")
-		# elif self.game_id in game_tasks:
-		# 	print("Game loop already started..")
-		# else:
-		# 	game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
-		# 	print("Game loop started..")
-			
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
             self.game_group_name,
 			self.channel_name
 		)
-
-		# Remove the player from the connected players list
-		# if self.game_id in connected_players:
-		# 	connected_players[self.game_id].remove(self.channel_name)
-		# 	if not connected_players[self.game_id]:
-		# 		del connected_players[self.game_id]
 
 		# Remove the player from the ready players list
 		if self.game_id in ready_players:
@@ -72,13 +59,21 @@ class PongConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		data = json.loads(text_data)
 		message_type = data.get("type")
+		# number_of_players = data.get("number_of_players")
+
+		if message_type == "get_initial_state":
+			await self.send(text_data=json.dumps({
+				"type": "initial_state",
+				"state": self.game_state.get_state(),
+			}))
 
 		if message_type == "player_ready":
 			if self.game_id not in ready_players:
 				ready_players[self.game_id] = []
 			ready_players[self.game_id].append(self.channel_name)
 
-			if len(ready_players[self.game_id]) == 2 or self.mode == 'single':
+			# if len(ready_players[self.game_id]) == number_of_players or self.mode == 'Single':
+			if len(ready_players[self.game_id]) >= self.num_players:
 				if self.game_id not in game_tasks:
 					game_tasks[self.game_id] = asyncio.create_task(self.game_loop())
 					print("Game loop started..")
@@ -96,7 +91,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                     "ball_y": self.game_state.ball_y,
 					"score1": self.game_state.score1,
 					"score2": self.game_state.score2,
-					# "winner": getattr(self.game_state, "winner", None),
+					"score3": self.game_state.score3,
+					"score4": self.game_state.score4,
+					"paddle1": self.game_state.paddle1,
+					"paddle2": self.game_state.paddle2,
+					"paddle3": self.game_state.paddle3,
+					"paddle4": self.game_state.paddle4,
                 }
             )
 			await asyncio.sleep(1 / FPS)  # 60 FPS
@@ -109,7 +109,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 		ball_y = event["ball_y"]
 		score1 = event["score1"]
 		score2 = event["score2"]
-		# winner = event["winner"]
+		score3 = event["score3"]
+		score4 = event["score4"]
+		paddle1 = event["paddle1"]
+		paddle2 = event["paddle2"]
+		paddle3 = event["paddle3"]
+		paddle4 = event["paddle4"]
 
 		await self.send(text_data=json.dumps({
 			"type": "update_state",
@@ -117,7 +122,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 			"ball_y": ball_y, 
 			"score1": score1,
 			"score2": score2,
-			# "winner": winner,
+			"score3": score3,
+			"score4": score4,
+			"paddle1": paddle1,
+			"paddle2": paddle2,
+			"paddle3": paddle3,
+			"paddle4": paddle4,
 		}))
 
 	# This will close the connection and end the game loop
