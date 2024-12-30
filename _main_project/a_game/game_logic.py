@@ -6,6 +6,7 @@
 import random
 import math
 import asyncio
+from .models import GameSession
 
 
 CANVAS_WIDTH = 600
@@ -19,9 +20,6 @@ BALL_VELOCITY_Y = 4
 WINNING_SCORE = 10
 FPS = 60
 
-
-game_states = {}
-game_st_lock = asyncio.Lock()
 
 class GameState:
 	def __init__(self):

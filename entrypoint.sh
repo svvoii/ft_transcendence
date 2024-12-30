@@ -17,5 +17,9 @@ python _main_project/manage.py create_social_apps
 echo "Creating public chat room..."
 python _main_project/manage.py create_public_chatroom
 
+# Loading active `game_states` from the database
+echo "Loading active game states..."
+python _main_project/manage.py load_active_game_states
+
 # Starting the server
 python _main_project/manage.py runserver 0.0.0.0:8000
