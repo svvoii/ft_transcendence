@@ -1,5 +1,6 @@
 import json
 import asyncio
+import pickle
 from django.core.cache import cache
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game_logic import FPS
@@ -18,13 +19,24 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.game_group_name = f"pong_{self.game_id}"
 
 		# Get the game state for the game_id
-		self.game_state = cache.get(self.game_id)
-		if self.game_state is None:
+		cached_game_state = cache.get(self.game_id)
+		if cached_game_state is None:
+			print(f"Game state not found for game_id: {self.game_id}")
 			await self.close()
 			return
+		
+		self.game_state = pickle.loads(cached_game_state)
+
+		# DEBUG #
+		print(f"Retrieved game state for game_id: {self.game_id}: {self.game_state}")
+		print(f"Type of game_state: {type(self.game_state)}")
+		print(f"Attributes of game_state: {self.game_state.__dict__}")
 
 		self.mode = self.game_state.game_mode
 		self.num_players = self.game_state.num_players
+
+		# DEBUG #
+		print(f"...WebSocket, game_id: {self.game_id}, mode: {self.mode}, num_players: {self.num_players}")
 
 		await self.channel_layer.group_add(
             self.game_group_name,
@@ -33,12 +45,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		await self.accept()
 
-		# print(f"Sending game_mode to the player: {self.mode}")
-		# # Send the initial game state to the player
-		# await self.send(text_data=json.dumps({
-		# 	"type": "game_mode",
-		# 	"mode": self.mode,
-		# }))
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(
@@ -56,12 +62,16 @@ class PongConsumer(AsyncWebsocketConsumer):
 			game_tasks[self.game_id].cancel()
 			del game_tasks[self.game_id]
 
+
 	async def receive(self, text_data):
 		data = json.loads(text_data)
 		message_type = data.get("type")
 		# number_of_players = data.get("number_of_players")
 
 		if message_type == "get_initial_state":
+			# DEBUG #
+			print(f"Inital state requested via WebSocket for game_id: {self.game_id}")
+
 			await self.send(text_data=json.dumps({
 				"type": "initial_state",
 				"state": self.game_state.get_state(),
@@ -80,9 +90,20 @@ class PongConsumer(AsyncWebsocketConsumer):
 			else:
 				print("Waiting for another player to get ready..")
 
+
 	async def game_loop(self):
 		while not self.game_state.game_over:
+			
+			cached_game_state = cache.get(self.game_id)
+			if cached_game_state is None:
+				print(f"Game state not found for game_id: {self.game_id}")
+				await self.end_game()
+				return
+			else:
+				self.game_state = pickle.loads(cached_game_state)
+   
 			self.game_state.update()
+
 			await self.channel_layer.group_send(
 				self.game_group_name,
                 {
@@ -99,11 +120,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 					"paddle4": self.game_state.paddle4,
                 }
             )
+
+			cache.set(self.game_id, pickle.dumps(self.game_state))
+
 			await asyncio.sleep(1 / FPS)  # 60 FPS
 		
 		# Game over
 		await self.end_game()
 			
+
 	async def update_state(self, event):
 		ball_x = event["ball_x"]
 		ball_y = event["ball_y"]
@@ -115,6 +140,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 		paddle2 = event["paddle2"]
 		paddle3 = event["paddle3"]
 		paddle4 = event["paddle4"]
+
+		# DEBUG #
+		# print(f"Received update: paddle1: {paddle1}, paddle2: {paddle2}")
 
 		await self.send(text_data=json.dumps({
 			"type": "update_state",
@@ -150,6 +178,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		if self.game_id in game_tasks:
 			game_tasks[self.game_id].cancel()
 			del game_tasks[self.game_id]
+
 
 	async def game_over(self, event):
 		winner = event["winner"]
