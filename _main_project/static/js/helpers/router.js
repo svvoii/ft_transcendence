@@ -11,10 +11,14 @@ import TournamentSelect from "../views/TournamentSelect.js";
 import MultiplayerSelect from "../views/MultiplayerSelect.js";
 import LocalMatchSelect from "../views/LocalMatchSelect.js";
 import { pathToRegex, getParams } from "./helpers.js";
-import { navBar, footer, modal, gameBoard, crtEffect, chat } from "../index.js";
+import { navBar, footer, modal, gameBoard, crtEffect, chat, user } from "../index.js";
 
 // handles Routing for the application
 export const router = async () => {
+  // if (user.getIsInTournament() === true) {
+  //   console.log('user is in a tournament');
+  // }
+
   // Listing the routes
   const routes = [
     { path: '/', view: Dashboard },
@@ -52,9 +56,35 @@ export const router = async () => {
 
   // Creates a new instance of the view
   const view = new match.route.view(getParams(match));
+
+  if (user.getIsInTournament() === true && view.name !== "TournamentLobby") {
+    
+    // const leavingTournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
+
+    // // Remove the player from the tournament
+    const tournamentURL = user.getTournamentURL();
+    const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`)
+  
+
+    const responseText = await response.text();
+    const data = JSON.parse(responseText);
+    
+    console.log('Data after leaving the tournament :', data);
+
+    if (data.status === 'error') {
+      console.error('Error while leaving tournament:', data.message);
+    }
+
+    user.setIsInTournament(false, '');
+    user.getTournamentSocket().close();
+    user.setTournamentSocket(null);
+
+  }
   
   // Render the view
   await renderPage(view);
+
+  // console.log(window.location.href);
 
 };
 

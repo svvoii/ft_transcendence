@@ -6,6 +6,25 @@
 
 {% load i18n %}
 
+{% block head %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Single Page Application</title>
+  <link rel="stylesheet" href="/static/css/index.css">
+  <link rel="stylesheet" href="/static/css/navbar.css">
+  <link rel="stylesheet" href="/static/css/footer.css">
+  <link rel="stylesheet" href="/static/css/forms.css">
+  <link rel="stylesheet" href="/static/css/game.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <link rel="stylesheet" href="/static/css/tournament.css">
+  <link rel="icon" href="/static/favicon.ico">
+  <code>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  </code>
+{% endblock head %}
+
 {% comment %}
 {% block head_title %}
     {% trans "Sign In" %}
@@ -14,30 +33,30 @@
 
 
 {% block content %}
-
-    {% if process == "connect" %}
-        {% element h1 %}
-            {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
-        {% endelement %}
-        {% element p %}
-            {% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}
-        {% endelement %}
-    {% else %}
-        {% element h1 %}
-            {% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}
-        {% endelement %}
-        {% element p %}
-            {% blocktrans with provider.name as provider %}You are about to sign in using a third-party account from {{ provider }}.{% endblocktrans %}
-        {% endelement %}
-    {% endif %}
-
-    {% element form method="post" no_visible_fields=True %}
-        {% slot actions %}
-            {% csrf_token %}
-            {% element button type="submit" %}
-                {% trans "Continue" %}
+    <div class="oauth-container">
+        {% if process == "connect" %}
+            {% element h1 %}
+                {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
             {% endelement %}
-        {% endslot %}
-    {% endelement %}
+            {% element p %}
+                {% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}
+            {% endelement %}
+        {% else %}
+            {% element h1 %}
+                {% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}
+            {% endelement %}
+            {% element p %}
+                {% blocktrans with provider.name as provider %}You are about to sign in using a (shady) third-party account from {{ provider }}.{% endblocktrans %}
+            {% endelement %}
+        {% endif %}
 
+        {% element form method="post" no_visible_fields=True %}
+            {% slot actions %}
+                {% csrf_token %}
+                {% element button type="submit" %}
+                    {% trans "Continue" %}
+                {% endelement %}
+            {% endslot %}
+        {% endelement %}
+    </div>
 {% endblock content %}

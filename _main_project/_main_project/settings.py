@@ -67,7 +67,6 @@ INSTALLED_APPS = [
 	'a_chat',
     'a_tournament',
 	'a_friends',
-	'a_homepage',
 	'a_user',
 	'a_oauth2',
     'a_game',
@@ -131,6 +130,18 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
 	'default': env.db()
+}
+
+CACHES = {
+	'default': {
+		# 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+		# 'LOCATION': 'game-states-cache',
+		'BACKEND': 'django_redis.cache.RedisCache',
+		'LOCATION': 'redis://redis-app:6379/1',
+		'OPTIONS': {
+			'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+		},
+	}
 }
 
 

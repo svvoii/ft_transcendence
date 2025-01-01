@@ -13,3 +13,4 @@ channels-redis
 django-htmx
 channels[daphne]
 shortuuid
+django-redis

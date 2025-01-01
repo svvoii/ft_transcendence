@@ -29,5 +29,9 @@ python manage.py create_social_apps
 echo "Creating public chat room..."
 python manage.py create_public_chatroom
 
+# Loading active game states
+echo "Loading active game states..."
+python manage.py load_active_game_states
+
 # Starting the server
 python manage.py runserver 0.0.0.0:8000
