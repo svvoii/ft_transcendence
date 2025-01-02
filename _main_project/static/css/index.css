@@ -337,6 +337,7 @@ input:focus {
 
 /* style for game canvas */
 
+
 .game-container {
   display: flex;
   flex-direction: column;
