@@ -54,7 +54,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		# Remove the player from the ready players list
 		if self.game_id in ready_players:
-			ready_players[self.game_id].remove(self.channel_name)
+			if self.channel_name in ready_players[self.game_id]:
+				ready_players[self.game_id].remove(self.channel_name)
 			if not ready_players[self.game_id]:
 				del ready_players[self.game_id]
 
