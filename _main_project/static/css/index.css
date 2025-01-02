@@ -73,6 +73,25 @@ a[class="about_us"] {
   color: var(--primary-color);
 }
 
+a[type="alt-signin"] {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  border: 2px solid var(--primary-color);
+  background: var(--dark-color);
+  border-radius: 4px;
+  width: fit-content;
+}
+
+a[type="alt-signin"]:hover {
+  color: var(--dark-color);
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
 button {
   background-color: var(--primary-color);
   color: var(--background-color);
@@ -82,6 +101,7 @@ button {
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  text-shadow: 0 0 0.5rem;
 }
 
 button[type=select] {
@@ -220,6 +240,13 @@ input:focus {
   background-size: cover;
 }
 
+.oauth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .photo-container {
   display: flex;
   flex-direction: column;
@@ -232,6 +259,7 @@ input:focus {
 
 .photos-container {
   display: flex;
+  margin-bottom: var(--footer-height);
 }
 
 .profile-photo {
@@ -290,24 +318,30 @@ input:focus {
 
 .warning-message {
   text-align: center;
-  color: var(--failure-color);
+  color: var(--primary-color);
 }
 
-/* style for mode selection */
+/* style for game canvas */
 
-.mode-dialog {
+.game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    height: 100vh;
+    overflow: auto;
 }
 
-.mode-button {
-    margin: 10px 0;
-    padding: 10px 20px;
-    font-size: 22px;
-    cursor: pointer;
+.board {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    max-height: 600px;
+	border: #58ffeccf 2px solid;
+}
+
+.game-select-button {
+    margin: 10px;
 }
 
 /* * * * * * * * * * * * * * */

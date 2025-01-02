@@ -69,6 +69,18 @@ export default class extends AbstractModalView {
     form.appendChild(password2Input);
     form.appendChild(document.createElement('br'));
 
+    const agreeTerms = document.createElement('input');
+    agreeTerms.type = 'checkbox';
+    agreeTerms.name = 'agree_terms';
+    agreeTerms.required = true;
+    
+    const agreeTermsLabel = document.createElement('label');
+    agreeTermsLabel.htmlFor = 'agree_terms';
+    agreeTermsLabel.innerHTML = ' I agree to the <a href="/terms_of_service" target="_blank">Terms of Service</a> and <a href="/privacy_policy" target="_blank">Privacy Policy</a>';
+
+    form.appendChild(agreeTerms);
+    form.appendChild(agreeTermsLabel);
+
     // Create the message paragraph
     const messageParagraph = document.createElement('p');
     const messageSpan = document.createElement('span');

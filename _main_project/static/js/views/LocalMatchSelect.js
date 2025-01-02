@@ -49,12 +49,12 @@ export default class extends AbstractView {
 
   async afterRender() {
     document.getElementById('createLocalMatchBtn').addEventListener('click', async() => {
-      gameBoard.startSinglePlayerGame('single');
+      gameBoard.startSinglePlayerGame('Single');
       gameModal.style.display = 'flex';
     });
 
     document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
-      gameBoard.startSinglePlayerGame('ai');
+      gameBoard.startSinglePlayerGame('AI');
       gameModal.style.display = 'flex';
     });
   }
