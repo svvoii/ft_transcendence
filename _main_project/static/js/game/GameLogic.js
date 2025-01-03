@@ -45,6 +45,7 @@ export async function initializeGame(socket, role, game_id) {
 	// updateGameState(gameState);
 
 	function updateGameState(gameState) {
+		// console.log('..updateGameState, gameState: ', gameState);
 		mode = gameState.game_mode;
 		numPlayers = gameState.num_players;
 		paddle1 = gameState.paddle1;
@@ -55,13 +56,12 @@ export async function initializeGame(socket, role, game_id) {
 		score2 = gameState.score2;
 		score3 = gameState.score3;
 		score4 = gameState.score4;
-		// console.log('..score1: ', score1, ' score2: ', score2);
 	}
 
     socket.onmessage = function(event) {
 		// console.log('WebSocket message received: ', event.data.type);
 		const data = JSON.parse(event.data);
-		// console.log('..onmessage, data.type: ', data.type);
+		// console.log('..WebSocket ..paddle1: ', data.paddle1, ' paddle2: ', data.paddle2);
 		if (data.type === 'initial_state') {
 			const gameState = data.state;
 			updateGameState(gameState);
@@ -76,7 +76,8 @@ export async function initializeGame(socket, role, game_id) {
 			paddle2 = data.paddle2;
 			paddle3 = data.paddle3;
 			paddle4 = data.paddle4;
-			// winner = data.winner;
+
+			// console.log('..update_state, paddle1: ', paddle1, ' paddle2: ', paddle2);
 		} else if (data.type === 'game_over') {
 			winner = data.winner;
 			// alert(`Game Over! ${winner} wins!`);
@@ -152,11 +153,11 @@ export async function initializeGame(socket, role, game_id) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawPaddle1();
         drawPaddle2();
-		if (numPlayers === 3) {
+		if (numPlayers >= 3) {
 			drawPaddle3();
-		} else if (numPlayers === 4) {
-			drawPaddle3();
-			drawPaddle4();
+			if (numPlayers === 4) {
+				drawPaddle4();
+			}
 		}
         drawBall();
 		drawScore();
