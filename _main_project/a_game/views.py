@@ -1,3 +1,4 @@
+import pickle
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.core.cache import cache
@@ -20,7 +21,6 @@ def create_game_session(request):
 	# DEBUG #
 	print('Create game session called.. request.data:', request.data)
 	# # # # #
-	# global game_states
 	context = {}
 	user = request.user
 	data = request.data
@@ -64,14 +64,18 @@ def create_game_session(request):
 	# # # # #
 
 	# Create a new game state object for the new game session
-	# game_states[new_game_session.game_id] = GameState()
-	cache.set(new_game_session.game_id, GameState())	
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))	
 
 	# Setting game_mode in the GameState object
-	game_state = cache.get(new_game_session.game_id)
-	# game_state = game_states[new_game_session.game_id]
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = game_mode_string
 	game_state.num_players = number_of_players
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
  
 	return Response(context, status=201)
 
@@ -140,19 +144,20 @@ def get_game_state(request, game_id):
 	context = {}
 	# DEBUG #
 	# print('Get game state called.. request.data:', request.data)
-	# print(f'..current game_states keys: {cache.keys("*")}')
 
 	if not game_id:
 		print('Game ID is required.')
 		context['message'] = 'Game ID is required.'
 		return Response(context, status=400)
 	
-	game_state = cache.get(game_id)
-	if not game_state:
+	cached_game_state = cache.get(game_id)
+	if not cached_game_state:
 		print(f'Game State object with ID {game_id} does not exist.')
 		context['game_id'] = game_id
 		context['message'] = f'Game State object with this ID : { game_id } does not exist.'
 		return Response(context, status=400)
+	
+	game_state = pickle.loads(cached_game_state)
 
 	context = game_state.get_state()
 	return Response(context, status=200)
@@ -171,9 +176,8 @@ def move_paddle(request, game_id):
 	context = {}
 	user = request.user
 
-	game_state = cache.get(game_id)
-	# if game_id not in game_states:
-	if not game_state:
+	cached_game_state = cache.get(game_id)
+	if not cached_game_state:
 		context['message'] = 'Game session with this ID does not exist.'
 		return Response(context, status=400)
 
@@ -181,10 +185,18 @@ def move_paddle(request, game_id):
 	paddle = data.get('paddle')
 	direction = data.get('direction')
 
+	# DEBUG #
+	# print(f'Paddle: {paddle}, Direction: {direction}')
 	if paddle and direction:
+		game_state = pickle.loads(cached_game_state)
+		# DEBUG #
+		# print(f'..before move_paddle: {game_state.get_state()}')
 		game_state.move_paddle(paddle, direction)
-		# context['message'] = 'Paddle move successful.'
 		context = game_state.get_state()
+		# DEBUG #
+		# print(f'..after move_paddle: {game_state.get_state()}')
+		cache.set(game_id, pickle.dumps(game_state))
+  
 		return Response(context, status=200)
 	
 	context['message'] = 'Invalid request.'
@@ -194,15 +206,14 @@ def move_paddle(request, game_id):
 
 # This function is called when the game is over to end the game session
 # The game results and the winner are saved to the GameSession object / model
-# The GameState object is deleted from the `game_states` dictionary
+# The GameState object is deleted from the Redis cache
 @api_view(["POST"])
 @login_required
 def end_game_session(request, game_id):
 	context = {}
 
-	# Check if the game id exists in the game_states dictionary
-	game_state = cache.get(game_id)
-	if not game_state:	
+	cached_game_state = cache.get(game_id)
+	if not cached_game_state:	
 		context['message'] = 'Game session has already ended.'
 		return Response(context, status=400)
 
@@ -210,11 +221,13 @@ def end_game_session(request, game_id):
 	if not game_session:
 		context['message'] = 'Game session does not exist.'
 		return Response(context, status=400)
+	
+	game_state = pickle.loads(cached_game_state)
 
-	game_session.score1 = game_states[game_id].score1
-	game_session.score2 = game_states[game_id].score2
-	game_session.score3 = game_states[game_id].score3
-	game_session.score4 = game_states[game_id].score4
+	game_session.score1 = game_state.score1
+	game_session.score2 = game_state.score2
+	game_session.score3 = game_state.score3
+	game_session.score4 = game_state.score4
 
 	scores = {
 		'player1': game_session.score1,
@@ -232,8 +245,8 @@ def end_game_session(request, game_id):
 
 	# DEBUG #
 	print(f'Game session ended. Winner: {winner}')
-	print(f'Player 1: {game_states[game_id].score1}, Player 2: {game_states[game_id].score2}')
-	print(f'Player 3: {game_states[game_id].score3}, Player 4: {game_states[game_id].score4}')
+	print(f'Player 1: {game_state.score1}, Player 2: {game_state.score2}')
+	print(f'Player 3: {game_state.score3}, Player 4: {game_state.score4}')
 	print(f'is_active: {game_session.is_active}')
 
 	# Delete the game state object from the cache
@@ -260,8 +273,8 @@ def quit_game_session(request):
 		return Response(context, status=204)
 	
 	game_id = active_session.game_id
-	game_state = cache.get(game_id)
-	if not game_state:
+	cached_game_state = cache.get(game_id)
+	if not cached_game_state:
 		context['message'] = 'Game session has already ended.'
 		return Response(context, status=202)
 
@@ -278,6 +291,9 @@ def quit_game_session(request):
 
 	if active_session.is_active:
 		active_session.is_active = False
+
+	# Delete the game state object from the cache
+	cache.delete(game_id)
 
 	active_session.save()
 	context['message'] = 'Player {player_role} has quit the game.'
@@ -339,12 +355,18 @@ def create_game_with_2_players(request):
 	# # # # #
 
 	# Create a new game state object for the new game session
-	cache.set(new_game_session.game_id, GameState())
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
 
 	# Setting game_mode in the GameState object
-	game_state = cache.get(new_game_session.game_id)
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = 'Multi_2'
 	game_state.num_players = 2
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
 
 	return Response(context, status=201)
 
