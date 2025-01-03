@@ -131,8 +131,18 @@ export default class extends AbstractView {
           matchMaking = await fetch(`/tournament/start_round_1/${tournamentID}/`);
 
           const matchMakingData = await matchMaking.text();
-          console.log('Data after entering the lobby :', matchMakingData);
+          console.log('Match Making Data :', matchMakingData);
+
+              const gameModal = document.getElementById('gameModal');
+              console.log('Joining existing game, game_id: ', game_id);
           
+                const role = await joinGame(game_id);
+                this.paragraph.textContent = `Game ID: ${game_id}`;
+                gameModal.style.display = 'flex';
+          
+                this.connectWebSocket(role, game_id);
+
+
         }
       });
 

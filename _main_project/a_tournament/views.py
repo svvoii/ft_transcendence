@@ -1,20 +1,20 @@
-from django.shortcuts import render
-from django.http import Http404, JsonResponse
-from .models import Tournament, Round_1, Round_2, REQUIRED_NB_PLAYERS
-# from a_user.models import Account, BlockedUser
-from .consumers import TournamentLobbyConsumer
-import json
+from django.shortcuts import render, HttpResponse
+from django.http import Http404, JsonResponse, HttpRequest
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+
+from .models import Tournament, Round_1, Round_2, REQUIRED_NB_PLAYERS
+from .consumers import TournamentLobbyConsumer
+import json
+# from a_user.models import Account, BlockedUser
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.shortcuts import get_object_or_404
-
-
+from a_game.views import create_game_with_2_players
 
 # Create your views here.
 
@@ -169,7 +169,23 @@ def start_round_1(request, tournament_name):
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
         for player in tournament.players.all():
             tournament.round_1.players.add(player)
-        
+
+        # request_match_1 = HttpRequest()
+        # request_match_1.method = 'POST'
+        # request_match_1.POST['player_1'] = player_names[0]
+        # request_match_1.POST['player_2'] = player_names[1]
+
+        # match_1_Response = create_game_with_2_players(request_match_1)
+
+        # request_match_2 = HttpRequest()
+        # request_match_2.method = 'POST'
+        # request_match_2.POST['player_1'] = player_names[2]
+        # request_match_2.POST['player_2'] = player_names[3]
+
+        # match_2_Response = create_game_with_2_players(request_match_2)
+
+
+
         return Response({'status': 'success',
             'player_1': f'{tournament.round_1.players[0]}',
             'player_2': f'{tournament.round_1.players[1]}',
