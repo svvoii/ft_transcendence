@@ -1,6 +1,6 @@
 # This file contains the game logic for the Pong game. 
 # The GameState class object is initialized once the game session is created in the views.py file.
-# The GameState objects are stored in the game_states dictionary, with the game_id as the key.
+# The GameState objects are stored in the Redis cache with the game_id as the key.
 # There can be only one GameState object per game_id / game session.
 
 import random
@@ -199,6 +199,9 @@ class GameState:
 		# self.ball_velocity_y = (self.ball_velocity_y / speed) * BALL_VELOCITY_Y
 
 	def move_paddle(self, paddle, direction):
+		# DEBUG # 
+		# print(f'Moving paddle {paddle}')
+
 		if paddle == 1:
 			self.paddle1 += direction * PADDLE_SPEED
 		elif paddle == 2:
@@ -215,7 +218,6 @@ class GameState:
 		self.paddle4 = max(0, min(self.paddle4, CANVAS_WIDTH - PADDLE_WIDTH))
 	
 	# To get the winner of the game: 
-	# `getattr(game_states[game_id], "winner", None)` - this will return the winner of the game if the game is over, otherwise it will return None
 	def check_winner(self):
 		if self.score1 >= WINNING_SCORE:
 			self.game_over = True

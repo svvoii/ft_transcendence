@@ -1,1 +1,14 @@
 /*////////////////////  PONG GAME //////////////////////////////*/
+
+/* Modal that contains the Game */
+.modal-game {
+	display: none;
+	justify-content: center;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: var(--nav-height);
+	width: 100%;
+	height: calc(100vh - calc(var(--nav-height) + var(--footer-height)));
+	background-color: var(--background-color);
+  }
