@@ -84,14 +84,15 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'last_player_name': last_player_name,
 		}))
 
-	def full_lobby(self, event):
-		message = event['message']
+	# def full_lobby(self, event):
+	# 	message = event['message']
 
-		self.send(text_data=json.dumps({
-			'type': event['type'],
-			'message': message,
-			'list_of_clients': self.list_clients(),
-		}))
+	# 	self.send(text_data=json.dumps({
+	# 		# 'type': event['type'],
+	# 		'type': 'full_lobby',
+	# 		'message': message,
+	# 		'list_of_clients': self.list_clients(),
+	# 	}))
 
 	def list_clients(self):
 		return TournamentLobbyConsumer.clients.get(self.room_group_name, [])

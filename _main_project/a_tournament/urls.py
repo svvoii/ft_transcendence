@@ -10,5 +10,6 @@ urlpatterns = [
     path('get_tournament/<str:tournament_name>/', views.get_tournament, name='get_tournament'),
     path('tournament_check_in/<str:tournament_name>/', views.tournament_check_in, name='tournament_check_in'),
     path('remove_player_from_tournament/<str:tournament_name>/', views.remove_player_from_tournament, name='remove_player_from_tournament'),
+    path('start_round_1/<str:tournament_name>/', views.start_round_1, name='start_round_1'),
     # path('check_if_exists/<str:tournament_name>/', views.check_if_exists, name='check_if_exists'),
 ]

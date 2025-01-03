@@ -75,6 +75,8 @@ export default class extends AbstractView {
     const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
     lobbyLink.textContent = tournamentID;
     
+    let matchMaking;
+
     try {
 
       // console.log('Entering the lobby');
@@ -99,7 +101,8 @@ export default class extends AbstractView {
       };
 
 
-      socket.addEventListener('message', (event) => {
+
+      socket.addEventListener('message', async (event) => {
         const data = JSON.parse(event.data);
         console.log('Data received from the websocket :', data);
         if (data.type == 'new_player') {
@@ -118,12 +121,18 @@ export default class extends AbstractView {
               listOfPlayers.appendChild(li);
               fullLobbyDiv.textContent = 'Waiting for more players to join...';
             });
-        }
-        
+          }
+
         if (data.max_nb_players_reached == true)
         {
           console.log('check', data.message);
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
+          
+          matchMaking = await fetch(`/tournament/start_round_1/${tournamentID}/`);
+
+          const matchMakingData = await matchMaking.text();
+          console.log('Data after entering the lobby :', matchMakingData);
+          
         }
       });
 
