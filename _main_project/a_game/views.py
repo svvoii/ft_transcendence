@@ -65,14 +65,14 @@ def create_game_session(request):
 
 	# Create a new game state object for the new game session
 	game_state = GameState()
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))	
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)	
 
 	# Setting game_mode in the GameState object
 	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = game_mode_string
 	game_state.num_players = number_of_players
 
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
@@ -195,7 +195,7 @@ def move_paddle(request, game_id):
 		context = game_state.get_state()
 		# DEBUG #
 		# print(f'..after move_paddle: {game_state.get_state()}')
-		cache.set(game_id, pickle.dumps(game_state))
+		cache.set(game_id, pickle.dumps(game_state), timeout=None)
   
 		return Response(context, status=200)
 	
@@ -356,14 +356,14 @@ def create_game_with_2_players(request):
 
 	# Create a new game state object for the new game session
 	game_state = GameState()
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# Setting game_mode in the GameState object
 	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = 'Multi_2'
 	game_state.num_players = 2
 
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
