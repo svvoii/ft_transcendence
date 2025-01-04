@@ -327,7 +327,8 @@ def create_game_with_2_players(request):
 		return Response(context, status=400)
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
-		models.Q(player1=player1) | models.Q(player2=player1) | models.Q(player1=player2) | models.Q(player2=player2)
+		( models.Q(player1=player1) | models.Q(player1=player2) ) &
+		( models.Q(player2=player1) | models.Q(player2=player2) )
 	).first()
  
 	if active_session:
