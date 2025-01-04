@@ -140,7 +140,7 @@ export default class GameBoard {
 			this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/`);
 			// this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
 
-			initializeGame(this.socket, role, game_id);
+			initializeGame(this.socket, role, game_id, this);
 		}
 	}
 

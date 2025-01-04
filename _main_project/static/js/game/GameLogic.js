@@ -4,7 +4,7 @@ import { fetchGameState, movePaddle, endGame } from './GameAPI.js';
 // It will draw the paddles and ball on the canvas
 // The ball position is updated via WebSocket
 // The paddle position is updated via API call on key press
-export async function initializeGame(socket, role, game_id) {
+export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 
 	console.log('..initializeGame, game_id: ', game_id);
 
@@ -81,6 +81,15 @@ export async function initializeGame(socket, role, game_id) {
 		} else if (data.type === 'game_over') {
 			winner = data.winner;
 			// alert(`Game Over! ${winner} wins!`);
+		} else if (data.type === 'game_quit') {
+			console.log('..game_quit, message: ', data.message);
+			if (data.quitting_player !== role) {
+				if (socket) socket.close();
+				gameBoardInstance.resetGameBoard();
+				const gameModal = document.getElementById('gameModal');
+				gameModal.style.display = 'none';
+				alert(`Game has ended: ${data.message}`);
+			}
 		}
     };
 

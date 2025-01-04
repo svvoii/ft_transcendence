@@ -5,6 +5,8 @@ from django.core.cache import cache
 from .models import GameSession
 from .game_logic import GameState
 from a_user.models import Account
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -291,6 +293,16 @@ def quit_game_session(request):
 
 	if active_session.is_active:
 		active_session.is_active = False
+
+	# Notify the other players via WebSocket
+	channel_layer = get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		f'pong_{game_id}', {
+			'type': 'game_quit',
+			'message': f'{player_role} has quit the game.',
+			'quitting_player': player_role
+		}
+	)
 
 	# Delete the game state object from the cache
 	cache.delete(game_id)

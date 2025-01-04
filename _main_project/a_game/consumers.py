@@ -91,6 +91,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 			else:
 				print("Waiting for another player to get ready..")
 
+	# This is called from the views.py file when the user clicks the quit button
+	async def game_quit(self, event):
+		message = event["message"]
+		await self.send(text_data=json.dumps({
+			"type": "game_quit",
+			"message": message,
+		}))
 
 	async def game_loop(self):
 		while not self.game_state.game_over:
