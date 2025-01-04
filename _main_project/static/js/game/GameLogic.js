@@ -58,6 +58,13 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		score4 = gameState.score4;
 	}
 
+	function resetGameBoard() {
+		if (socket) socket.close();
+		gameBoardInstance.resetGameBoard();
+		const gameModal = document.getElementById('gameModal');
+		gameModal.style.display = 'none';
+	}
+
     socket.onmessage = function(event) {
 		// console.log('WebSocket message received: ', event.data.type);
 		const data = JSON.parse(event.data);
@@ -80,14 +87,12 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			// console.log('..update_state, paddle1: ', paddle1, ' paddle2: ', paddle2);
 		} else if (data.type === 'game_over') {
 			winner = data.winner;
-			// alert(`Game Over! ${winner} wins!`);
+			alert(`Game Over! ${winner} wins!`);
+			resetGameBoard();
 		} else if (data.type === 'game_quit') {
 			console.log('..game_quit, message: ', data.message);
 			if (data.quitting_player !== role) {
-				if (socket) socket.close();
-				gameBoardInstance.resetGameBoard();
-				const gameModal = document.getElementById('gameModal');
-				gameModal.style.display = 'none';
+				resetGameBoard();
 				alert(`Game has ended: ${data.message}`);
 			}
 		}
