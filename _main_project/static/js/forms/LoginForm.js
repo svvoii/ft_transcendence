@@ -70,7 +70,7 @@ export default class extends AbstractModalView {
 
     const fortyTwoButton = document.createElement('a');
     fortyTwoButton.type = 'alt-signin';
-    fortyTwoButton.href = 'http://localhost:8000/accounts/42/login/?process=login';
+    fortyTwoButton.href = '/accounts/42/login/?process=login';
     fortyTwoButton.id = 'fortyTwoOauth';
     fortyTwoButton.textContent = 'Login with 42';
 

@@ -165,7 +165,7 @@ export default class GameBoard {
 
 		const readyBtn = document.getElementById('readyBtn');
 		readyBtn.addEventListener('click', async () => {
-			
+
 			this.socket.send(JSON.stringify({ 
 				'type': 'player_ready',
 			}));

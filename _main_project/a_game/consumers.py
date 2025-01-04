@@ -21,6 +21,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 		# Get the game state for the game_id
 		cached_game_state = cache.get(self.game_id)
 		if cached_game_state is None:
+			# look in database as a backup
+
 			print(f"Game state not found for game_id: {self.game_id}")
 			await self.close()
 			return
