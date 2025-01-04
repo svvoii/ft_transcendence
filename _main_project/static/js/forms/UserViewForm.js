@@ -15,9 +15,9 @@ export default class extends AbstractModalView {
       }
       let userResponse = null;
       if (data) {
-        userResponse = await fetch(`http://localhost:8000/user/${data.id}/`);
+        userResponse = await fetch(`/user/${data.id}/`);
       } else {
-        userResponse = await fetch(`http://localhost:8000/user/${user.getUserId()}/`);
+        userResponse = await fetch(`/user/${user.getUserId()}/`);
       }
       const userData = await userResponse.json();
 
@@ -119,7 +119,7 @@ export default class extends AbstractModalView {
       friendRequestsHeading.textContent = 'Friend Requests';
 
       for (const request of friend_requests) {
-        const response = await fetch(`http://localhost:8000/user/${request.sender}/`);
+        const response = await fetch(`/user/${request.sender}/`);
 
         const senderAccount = await response.json();
 
@@ -154,7 +154,7 @@ export default class extends AbstractModalView {
       const formData = new FormData();
       formData.append('friend_request_id', id);
 
-      const response = await fetch(`http://localhost:8000/friends/accept-friend-request/`, {
+      const response = await fetch(`/friends/accept-friend-request/`, {
         method: 'POST',
         headers: {
           'x-csrftoken': this.getCookie('csrftoken')
@@ -176,7 +176,7 @@ export default class extends AbstractModalView {
       const formData = new FormData();
       formData.append('friend_request_id', id);
 
-      const response = await fetch(`http://localhost:8000/friends/decline-friend-request/`, {
+      const response = await fetch(`/friends/decline-friend-request/`, {
         method: 'POST',
         headers: {
           'x-csrftoken': this.getCookie('csrftoken')
@@ -300,7 +300,7 @@ export default class extends AbstractModalView {
     if (userData.is_blocked === false) {
       blockUserBtn.textContent = 'Block User';
       blockUserBtn.addEventListener('click', async() => {
-        const response = await fetch(`http://localhost:8000/user/${userData.id}/block/`, {
+        const response = await fetch(`/user/${userData.id}/block/`, {
           method: 'POST',
           headers: {
             'accept': 'application/json',
@@ -320,7 +320,7 @@ export default class extends AbstractModalView {
     } else {
       blockUserBtn.textContent = 'Unblock User';
       blockUserBtn.addEventListener('click', async() => {
-        const response = await fetch(`http://localhost:8000/user/${userData.id}/unblock/`, {
+        const response = await fetch(`/user/${userData.id}/unblock/`, {
           method: 'POST',
           headers: {
             'accept': 'application/json',

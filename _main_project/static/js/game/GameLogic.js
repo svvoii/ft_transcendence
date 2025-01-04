@@ -8,28 +8,54 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 
 	console.log('..initializeGame, game_id: ', game_id);
 
-    socket.onopen = function() {
-        console.log('WebSocket connection established');
-		socket.send(JSON.stringify({ type: 'get_initial_state' }));
-    };
+	socket.onopen = function() {
+			console.log('WebSocket connection established');
+	socket.send(JSON.stringify({ type: 'get_initial_state' }));
+	};
 
-    socket.onclose = function() {
-        console.log('WebSocket connection closed');
-    };
+	socket.onclose = function() {
+			console.log('WebSocket connection closed');
+	};
 
-    socket.onerror = function(error) {
-        console.error('WebSocket error:', error);
-    };
+	socket.onmessage = function(event) {
+		// console.log('WebSocket message received: ', event.data.type);
+		const data = JSON.parse(event.data);
+		// console.log('..WebSocket ..paddle1: ', data.paddle1, ' paddle2: ', data.paddle2);
+		if (data.type === 'initial_state') {
+			const gameState = data.state;
+			updateGameState(gameState);
+		} else if (data.type === 'update_state') {
+			ballX = data.ball_x;
+			ballY = data.ball_y;
+			score1 = data.score1;
+			score2 = data.score2;
+			score3 = data.score3;
+			score4 = data.score4;
+			paddle1 = data.paddle1;
+			paddle2 = data.paddle2;
+			paddle3 = data.paddle3;
+			paddle4 = data.paddle4;
 
-    const canvas = document.getElementById('pongCanvas');
-    const ctx = canvas.getContext('2d');
-    const paddleHeight = 60;
-    const paddleWidth = 10;
-    const ballSize = 8;
-    let ballX;
-    let ballY;
-    let paddle1;
-    let paddle2;
+			// console.log('..update_state, paddle1: ', paddle1, ' paddle2: ', paddle2);
+		} else if (data.type === 'game_over') {
+			winner = data.winner;
+			// alert(`Game Over! ${winner} wins!`);
+		}
+	};
+
+	socket.onerror = function(error) {
+			console.error('WebSocket error:', error);
+	};
+
+	const canvas = document.getElementById('pongCanvas');
+	const ctx = canvas.getContext('2d');
+	const paddleHeight = 60;
+	const paddleWidth = 10;
+	const ballSize = 8;
+	let ballX;
+	let ballY;
+	let paddle1;
+	let paddle2;
 	let paddle3;
 	let paddle4;
 	let score1;
@@ -40,8 +66,8 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 	let mode;
 	let numPlayers;
 
-    // Fetch initial game state
-    // let gameState = await fetchGameState(game_id);
+	// Fetch initial game state
+	// let gameState = await fetchGameState(game_id);
 	// updateGameState(gameState);
 
 	function updateGameState(gameState) {
@@ -98,17 +124,17 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		}
     };
 
-    function drawPaddle1() {
+	function drawPaddle1() {
         ctx.fillStyle = 'white';
 		const y = Math.min(Math.max(paddle1, 0), canvas.height - paddleHeight);
 		ctx.fillRect(0, y, paddleWidth, paddleHeight);
-    }
+	}
 
-    function drawPaddle2() {
+	function drawPaddle2() {
         ctx.fillStyle = 'white';
 		const y = Math.min(Math.max(paddle2, 0), canvas.height - paddleHeight);
 		ctx.fillRect(canvas.width - paddleWidth, y, paddleWidth, paddleHeight);
-    }
+	}
 
 	function drawPaddle3() {
 		ctx.fillStyle = 'white';
@@ -122,13 +148,13 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		ctx.fillRect(x, canvas.height - paddleWidth, paddleHeight, paddleWidth);
 	}
 
-    function drawBall() {
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2, true);
-        ctx.fill();
-        ctx.closePath();
-    }
+	function drawBall() {
+			ctx.fillStyle = 'white';
+			ctx.beginPath();
+			ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2, true);
+			ctx.fill();
+			ctx.closePath();
+	}
 
 	function drawScore() {
 		ctx.fillStyle = 'white';
@@ -145,7 +171,7 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		}
 	}
 
-    function draw() {
+	function draw() {
 		if (winner !== null) {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = 'white';
@@ -164,38 +190,38 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			return;
 		}
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawPaddle1();
-        drawPaddle2();
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		drawPaddle1();
+		drawPaddle2();
+
 		if (numPlayers >= 3) {
 			drawPaddle3();
 			if (numPlayers === 4) {
 				drawPaddle4();
 			}
 		}
-        drawBall();
+    drawBall();
 		drawScore();
-
-        requestAnimationFrame(draw);
-    }
-
     requestAnimationFrame(draw);
+	}
 
-    document.addEventListener('keydown', async function(event) {
+	requestAnimationFrame(draw);
+
+	document.addEventListener('keydown', async function(event) {
 		if (winner !== null) return;
 		if (socket.readyState === WebSocket.CLOSED) return;
 
-        const key = event.key;
+		const key = event.key;
 		let player = role;
-        let direction = 0; // server expects 1 or -1
+		let direction = 0; // server expects 1 or -1
 		let paddle = 0; // backend expects 1 or 2 as paddle value
 
 		// console.log('..key pressed: ', key);
-        if (key === 'ArrowUp' || key === 'w') {
-            direction = -1;
-        } else if (key === 'ArrowDown' || key === 's') {
-            direction = 1;
-        } else if (key === 'ArrowLeft' || key === 'a') {
+		if (key === 'ArrowUp' || key === 'w') {
+				direction = -1;
+		} else if (key === 'ArrowDown' || key === 's') {
+				direction = 1;
+		} else if (key === 'ArrowLeft' || key === 'a') {
 			direction = -1;
 		} else if (key === 'ArrowRight' || key === 'd') {
 			direction = 1;
@@ -203,14 +229,14 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 
 		// console.log('..direction: ', direction);
 		// console.log('..mode: ', mode);
-        if (direction !== 0) {
-            if (mode === 'Single' || mode === 'AI') {
+		if (direction !== 0) {
+			if (mode === 'Single' || mode === 'AI') {
 				if (key === 'w' || key === 's') {
 					player = 'player1';
 				} else {
 					player = 'player2';
 				}
-            }
+			}
 			// Multiple players mode
 			if (player === 'player1') {
 				paddle = 1;
@@ -225,8 +251,7 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			// console.log('..player: ', player, ' paddle: ', paddle, ' direction: ', direction);
             // gameState = await movePaddle(game_id, paddle, direction);
 			// updateGameState(gameState);
-            await movePaddle(game_id, paddle, direction);
-        }
-    });
-
+			await movePaddle(game_id, paddle, direction);
+		}
+	});
 }

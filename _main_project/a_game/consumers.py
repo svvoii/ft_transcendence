@@ -161,7 +161,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-			cache.set(self.game_id, pickle.dumps(self.game_state))
+			cache.set(self.game_id, pickle.dumps(self.game_state), timeout=None)
 
 			await asyncio.sleep(1 / FPS)  # 60 FPS
 		
