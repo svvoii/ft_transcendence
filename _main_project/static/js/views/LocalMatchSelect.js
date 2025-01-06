@@ -10,6 +10,11 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
 
     // Create a container div
     const container = document.createElement('div');
@@ -48,14 +53,17 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    document.getElementById('createLocalMatchBtn').addEventListener('click', async() => {
-      gameBoard.startSinglePlayerGame('Single');
-      gameModal.style.display = 'flex';
-    });
+    try {
+      document.getElementById('createLocalMatchBtn').addEventListener('click', async() => {
+        gameBoard.startSinglePlayerGame('Single');
+        gameModal.style.display = 'flex';
+      });
 
-    document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
-      gameBoard.startSinglePlayerGame('AI');
-      gameModal.style.display = 'flex';
-    });
+      document.getElementById('aiLocalMatchBtn').addEventListener('click', async() => {
+        gameBoard.startSinglePlayerGame('AI');
+        gameModal.style.display = 'flex';
+      });
+    } catch (error) {
+    }
   }
 }

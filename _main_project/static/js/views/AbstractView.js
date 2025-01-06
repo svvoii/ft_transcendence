@@ -1,3 +1,5 @@
+import { user } from '../index.js';
+
 // An Abstract class for all views
 export default class {
   constructor(params) {
@@ -33,5 +35,16 @@ export default class {
       }
     }
     return cookieValue;
+  }
+
+  checkUserLoggedIn() {
+    if (user.getLoginStatus()) {
+      return null;
+    } else {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'Please log in to play the game!';
+      paragraph.classList.add('text-container');
+      return paragraph;
+    }
   }
 }

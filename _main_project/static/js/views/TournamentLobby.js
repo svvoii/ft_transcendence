@@ -13,6 +13,11 @@ export default class extends AbstractView {
   // }
 
   getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
 
     document.getElementById("gameModal").style.display = "none";
 
@@ -62,112 +67,112 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-
-    //printing the lobby URL, so that the user can copy it
-    let lobbyLink = document.querySelector('.lobby-link');
-    let listOfPlayers = document.querySelector('.list-of-players');
-    let currentUrl = window.location.href;
-
-    let fullLobbyDiv = document.querySelector('.full-lobby-message');
-    
-    //getting the tournament ID from the URL
-    currentUrl = currentUrl.slice(0, -1);
-    const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
-    lobbyLink.textContent = tournamentID;
-    
-    let matchMaking;
-
     try {
+      //printing the lobby URL, so that the user can copy it
+      let lobbyLink = document.querySelector('.lobby-link');
+      let listOfPlayers = document.querySelector('.list-of-players');
+      let currentUrl = window.location.href;
 
-      // console.log('Entering the lobby');
+      let fullLobbyDiv = document.querySelector('.full-lobby-message');
+      
+      //getting the tournament ID from the URL
+      currentUrl = currentUrl.slice(0, -1);
+      const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
+      lobbyLink.textContent = tournamentID;
+      
+      let matchMaking;
 
-      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-      user.setTournamentSocket(socket);
-      socket.onopen = function() {
-        console.log('WebSocket connection is established.');
-        user.setIsInTournament(true, tournamentID);
-        const message = {
-          'message': 'New player entering the lobby.'
+      try {
+
+        // console.log('Entering the lobby');
+
+        const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
+        user.setTournamentSocket(socket);
+        socket.onopen = function() {
+          console.log('WebSocket connection is established.');
+          user.setIsInTournament(true, tournamentID);
+          const message = {
+            'message': 'New player entering the lobby.'
+          };
+          socket.send(JSON.stringify(message));
+
         };
-        socket.send(JSON.stringify(message));
 
-      };
-
-      socket.onclose = function() {
-        console.log('WebSocket connection is closed.');
-        user.setIsInTournament(false, '');
+        socket.onclose = function() {
+          console.log('WebSocket connection is closed.');
+          user.setIsInTournament(false, '');
 
 
-      };
+        };
 
 
 
-      socket.addEventListener('message', async (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Data received from the websocket :', data);
-        if (data.type == 'new_player') {
-          listOfPlayers.innerHTML = '';
-          data.player_names.forEach( player => {
-              const li = document.createElement('li');
-              li.innerText = player;
-              listOfPlayers.appendChild(li);
-            });
+        socket.addEventListener('message', async (event) => {
+          const data = JSON.parse(event.data);
+          console.log('Data received from the websocket :', data);
+          if (data.type == 'new_player') {
+            listOfPlayers.innerHTML = '';
+            data.player_names.forEach( player => {
+                const li = document.createElement('li');
+                li.innerText = player;
+                listOfPlayers.appendChild(li);
+              });
+            }
+          else if (data.type == 'player_leaving_tournament') {
+            listOfPlayers.innerHTML = '';
+            data.player_names.forEach( player => {
+                const li = document.createElement('li');
+                li.innerText = player;
+                listOfPlayers.appendChild(li);
+                fullLobbyDiv.textContent = 'Waiting for more players to join...';
+              });
+            }
+
+          if (data.max_nb_players_reached == true)
+          {
+            console.log('check', data.message);
+            fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
+            
+            matchMaking = await fetch(`/tournament/start_round_1/${tournamentID}/`);
+
+            const matchMakingData = await matchMaking.text();
+            console.log('Match Making Data :', matchMakingData);
+
+                const gameModal = document.getElementById('gameModal');
+                console.log('Joining existing game, game_id: ', game_id);
+            
+                  const role = await joinGame(game_id);
+                  this.paragraph.textContent = `Game ID: ${game_id}`;
+                  gameModal.style.display = 'flex';
+            
+                  this.connectWebSocket(role, game_id);
+
+
           }
-        else if (data.type == 'player_leaving_tournament') {
-          listOfPlayers.innerHTML = '';
-          data.player_names.forEach( player => {
-              const li = document.createElement('li');
-              li.innerText = player;
-              listOfPlayers.appendChild(li);
-              fullLobbyDiv.textContent = 'Waiting for more players to join...';
-            });
-          }
-
-        if (data.max_nb_players_reached == true)
-        {
-          console.log('check', data.message);
-          fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
-          
-          matchMaking = await fetch(`/tournament/start_round_1/${tournamentID}/`);
-
-          const matchMakingData = await matchMaking.text();
-          console.log('Match Making Data :', matchMakingData);
-
-              const gameModal = document.getElementById('gameModal');
-              console.log('Joining existing game, game_id: ', game_id);
-          
-                const role = await joinGame(game_id);
-                this.paragraph.textContent = `Game ID: ${game_id}`;
-                gameModal.style.display = 'flex';
-          
-                this.connectWebSocket(role, game_id);
+        });
 
 
-        }
+        // Getting the tournament object
+        const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+
+
+        //printing the tournament data
+        const tournamentDataText = await tournament.text();
+        console.log('Data after entering the lobby :', tournamentDataText);
+
+        /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
+
+      }
+      catch(error) {
+        console.error('Error:', error);
+      }
+      
+
+      // Copy the lobby link to the clipboard
+      document.getElementById('copyButton').addEventListener('click', async () => {
+        navigator.clipboard.writeText(lobbyLink.textContent);
       });
-
-
-      // Getting the tournament object
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-
-
-      //printing the tournament data
-      const tournamentDataText = await tournament.text();
-      console.log('Data after entering the lobby :', tournamentDataText);
-
-      /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
-
+    } catch (error) {
     }
-    catch(error) {
-      console.error('Error:', error);
-    }
-    
-
-    // Copy the lobby link to the clipboard
-    document.getElementById('copyButton').addEventListener('click', async () => {
-      navigator.clipboard.writeText(lobbyLink.textContent);
-    });
-
   };
-
 }

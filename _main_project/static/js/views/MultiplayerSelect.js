@@ -10,6 +10,11 @@ export default class extends AbstractView {
 	}
 
 	getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
 		const container = document.createElement('div');
 		container.classList.add('text-container', 'game-select-button-div');
 
@@ -71,34 +76,38 @@ export default class extends AbstractView {
 
 	async afterRender() {
 
-		document.getElementById('createMPMatchBtn_2').addEventListener('click', async() => {
-			console.log('createMPMatchBtn_2 clicked');
-			gameBoard.startMultiPlayerGame("Multi_2");
-			gameModal.style.display = 'flex';
-		});
+		try {
+			document.getElementById('createMPMatchBtn_2').addEventListener('click', async() => {
+				console.log('createMPMatchBtn_2 clicked');
+				gameBoard.startMultiPlayerGame("Multi_2");
+				gameModal.style.display = 'flex';
+			});
 
-		document.getElementById('createMPMatchBtn_3').addEventListener('click', async() => {
-			console.log('createMPMatchBtn_3 clicked');
-			gameBoard.startMultiPlayerGame("Multi_3");
-			gameModal.style.display = 'flex';
-		});
+			document.getElementById('createMPMatchBtn_3').addEventListener('click', async() => {
+				console.log('createMPMatchBtn_3 clicked');
+				gameBoard.startMultiPlayerGame("Multi_3");
+				gameModal.style.display = 'flex';
+			});
 
-		document.getElementById('createMPMatchBtn_4').addEventListener('click', async() => {
-			console.log('createMPMatchBtn_4 clicked');
-			gameBoard.startMultiPlayerGame("Multi_4");
-			gameModal.style.display = 'flex';
-		});
+			document.getElementById('createMPMatchBtn_4').addEventListener('click', async() => {
+				console.log('createMPMatchBtn_4 clicked');
+				gameBoard.startMultiPlayerGame("Multi_4");
+				gameModal.style.display = 'flex';
+			});
 
-		document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
-			// console.log('joinMPMatchBtn clicked');
-			const game_id = document.getElementById('joinGameInput').value;
+			document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
+				// console.log('joinMPMatchBtn clicked');
+				const game_id = document.getElementById('joinGameInput').value;
 
-			if (!game_id) {
-				alert('Please enter a game ID');
-				return;
-			}
-			gameBoard.joinExistingGame(game_id);
-			// gameModal.style.display = 'flex';
-		});
+				if (!game_id) {
+					alert('Please enter a game ID');
+					return;
+				}
+				gameBoard.joinExistingGame(game_id);
+				// gameModal.style.display = 'flex';
+			});
+		} catch (error) {
+			// console.error('Error:', error);
+		}
 	}
 }

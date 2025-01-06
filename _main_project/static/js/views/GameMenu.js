@@ -9,6 +9,11 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
     // Set the game modal to hidden
     document.getElementById("gameModal").style.display = "none";
 
@@ -51,17 +56,19 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
+    try {
+      document.getElementById('localMatchBtn').addEventListener('click', async() => {
+        navigateTo('/local_match_select/');
+      });
 
-    document.getElementById('localMatchBtn').addEventListener('click', async() => {
-			navigateTo('/local_match_select/');
-		});
+      document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
+        navigateTo('/multiplayer_select/');
+      });
 
-		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
-			navigateTo('/multiplayer_select/');
-		});
-
-    document.getElementById('tournamentBtn').addEventListener('click', () => {
-      navigateTo('/tournament_select/');
-    });
+      document.getElementById('tournamentBtn').addEventListener('click', () => {
+        navigateTo('/tournament_select/');
+      });
+    } catch (error) {
+    }
   }
 }

@@ -9,6 +9,11 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
 
     // Create a container div
     const container = document.createElement('div');
@@ -64,25 +69,28 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
-    document.getElementById('createMPMatchBtn').addEventListener('click', async() => {
-      navigateTo('/tournament_setup_create/');
-    });
+    try {
+      document.getElementById('createMPMatchBtn').addEventListener('click', async() => {
+        navigateTo('/tournament_setup_create/');
+      });
 
-    document.getElementById('tournamentLinkForm').addEventListener("submit", (e) => {
-      e.preventDefault();
-    
-      console.log('link sent by user : ', document.getElementById('tournamentLinkInput').value);
-    });
+      document.getElementById('tournamentLinkForm').addEventListener("submit", (e) => {
+        e.preventDefault();
+      
+        console.log('link sent by user : ', document.getElementById('tournamentLinkInput').value);
+      });
 
-    document.getElementById('joinMPMatchBtn').addEventListener('click', () => {
-      console.log('Join Tournament Lobby Button Clicked');
+      document.getElementById('joinMPMatchBtn').addEventListener('click', () => {
+        console.log('Join Tournament Lobby Button Clicked');
 
-      try {
-          this.navigate_to_tournamentURL_if_valid(document.getElementById('tournamentLinkInput'));
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    });
+        try {
+            this.navigate_to_tournamentURL_if_valid(document.getElementById('tournamentLinkInput'));
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+    } catch (error) {
+    }
   }
 
   async navigate_to_tournamentURL_if_valid(linkFormText) {
