@@ -14,7 +14,7 @@ export default class extends AbstractModalView {
       if (user.getLoginStatus() === false) {
         return ;
       }
-      const userResponse = await fetch(`http://localhost:8000/user/${user.getUserId()}/`);
+      const userResponse = await fetch(`/user/${user.getUserId()}/`);
       const userData = await userResponse.json();
 
       // Create the container

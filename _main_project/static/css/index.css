@@ -321,22 +321,38 @@ input:focus {
   color: var(--primary-color);
 }
 
+/* Modal that contains the Game */
+
+.modal-game {
+  display: none;
+  justify-content: center;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: var(--nav-height);
+  width: 100%;
+  height: calc(100vh - calc(var(--nav-height) + var(--footer-height)));
+  background-color: var(--background-color);
+}
+
 /* style for game canvas */
 
+
 .game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* height: 100vh;
+  overflow: auto; */
+  height: var(--app-height);
 }
 
 .board {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    max-height: 600px;
+  width: calc(var(--app-height) - 100px);
+  max-width: 600px;
+  height: auto;
+  max-height: 600px;
 	border: #58ffeccf 2px solid;
 }
 

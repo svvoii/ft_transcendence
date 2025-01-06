@@ -5,6 +5,8 @@ from django.core.cache import cache
 from .models import GameSession
 from .game_logic import GameState
 from a_user.models import Account
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -65,14 +67,14 @@ def create_game_session(request):
 
 	# Create a new game state object for the new game session
 	game_state = GameState()
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))	
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)	
 
 	# Setting game_mode in the GameState object
 	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = game_mode_string
 	game_state.num_players = number_of_players
 
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
@@ -195,7 +197,7 @@ def move_paddle(request, game_id):
 		context = game_state.get_state()
 		# DEBUG #
 		# print(f'..after move_paddle: {game_state.get_state()}')
-		cache.set(game_id, pickle.dumps(game_state))
+		cache.set(game_id, pickle.dumps(game_state), timeout=None)
   
 		return Response(context, status=200)
 	
@@ -292,6 +294,16 @@ def quit_game_session(request):
 	if active_session.is_active:
 		active_session.is_active = False
 
+	# Notify the other players via WebSocket
+	channel_layer = get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		f'pong_{game_id}', {
+			'type': 'game_quit',
+			'message': f'{player_role} has quit the game.',
+			'quitting_player': player_role
+		}
+	)
+
 	# Delete the game state object from the cache
 	cache.delete(game_id)
 
@@ -327,7 +339,8 @@ def create_game_with_2_players(request):
 		return Response(context, status=400)
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
-		models.Q(player1=player1) | models.Q(player2=player1) | models.Q(player1=player2) | models.Q(player2=player2)
+		( models.Q(player1=player1) | models.Q(player1=player2) ) &
+		( models.Q(player2=player1) | models.Q(player2=player2) )
 	).first()
  
 	if active_session:
@@ -356,14 +369,14 @@ def create_game_with_2_players(request):
 
 	# Create a new game state object for the new game session
 	game_state = GameState()
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# Setting game_mode in the GameState object
 	game_state = pickle.loads(cache.get(new_game_session.game_id))
 	game_state.game_mode = 'Multi_2'
 	game_state.num_players = 2
 
-	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+	cache.set(new_game_session.game_id, pickle.dumps(game_state), timeout=None)
 
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')

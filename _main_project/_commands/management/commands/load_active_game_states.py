@@ -29,6 +29,6 @@ def load_active_game_states():
 		game_state.score2 = session.score2
 		game_state.score3 = session.score3
 		game_state.score4 = session.score4
-		cache.set(session.game_id, pickle.dumps(game_state))
+		cache.set(session.game_id, pickle.dumps(game_state), timeout=None)
 		# print(f'Active game state loaded into cache: {session.game_id}')
 	print(f'Active game states loaded into cache: {cache.keys("*")}')
