@@ -41,6 +41,7 @@ export default class extends AbstractView {
     // Create the button element
     const copyButton = document.createElement('button');
     copyButton.id = 'copyButton';
+    copyButton.type = 'select';
     copyButton.textContent = 'Copy tournament ID';
 
     const playersListTitle = document.createElement('p');
@@ -54,6 +55,12 @@ export default class extends AbstractView {
     fullLobbyDiv.className = 'full-lobby-message';
     fullLobbyDiv.textContent = 'Waiting for more players to join...';
 
+    ///// DEBUG BUTTON /////
+    const debugButton = document.createElement('button');
+    debugButton.id = 'debugButton';
+    debugButton.type = 'select';
+    debugButton.textContent = 'Start Tournament';
+
     // Append all elements to the container
     container.appendChild(paragraph);
     container.appendChild(h1);
@@ -62,6 +69,8 @@ export default class extends AbstractView {
     container.appendChild(playersListTitle);
     container.appendChild(playersList);
     container.appendChild(fullLobbyDiv);
+    // DEBUG BUTTON //
+    container.appendChild(debugButton);
     
     return container;
   }
@@ -172,7 +181,57 @@ export default class extends AbstractView {
       document.getElementById('copyButton').addEventListener('click', async () => {
         navigator.clipboard.writeText(lobbyLink.textContent);
       });
+
+      // DEBUG BUTTON //
+      document.getElementById('debugButton').addEventListener('click', async () => {
+        console.log('Starting the tournament');
+        this.showTournamentBracket();
+        await this.startCountdown();
+        // document.getElementById('view-content').innerHTML = '';
+        // document.getElementById('view-content').appendChild(this.getDomElements());
+      });
+      
     } catch (error) {
     }
   };
+
+  showTournamentBracket() {
+    const tournamentBracket = document.createElement('div');
+    tournamentBracket.className = 'tournament-bracket';
+    tournamentBracket.classList.add('text-container');
+
+    const title = document.createElement('h1');
+    title.textContent = 'Tournament Bracket';
+
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'This is the tournament bracket';
+
+    const countdown = document.createElement('p');
+    countdown.id = 'countdown';
+    countdown.textContent = '10';
+
+    tournamentBracket.appendChild(title);
+    tournamentBracket.appendChild(paragraph);
+    tournamentBracket.appendChild(countdown);
+
+    document.getElementById('view-content').innerHTML = '';
+    document.getElementById('view-content').appendChild(tournamentBracket);
+  }
+
+  startCountdown() {
+    const countdownElement = document.getElementById('countdown');
+    let countdown = 10;
+
+    countdownElement.style.display = 'block'; // Ensure the countdown is visible
+
+    const interval = setInterval(() => {
+      if (countdown >= 0) {
+        countdownElement.textContent = countdown;
+        countdown--;
+      } else {
+        clearInterval(interval);
+        countdownElement.style.display = 'none'; // Hide the countdown after it reaches 0
+      }
+    }, 1000);
+  }
 }
