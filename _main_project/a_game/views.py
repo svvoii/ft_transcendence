@@ -245,6 +245,9 @@ def end_game_session(request, game_id):
 	game_session.is_active = False
 	game_session.save()
 
+	# Update UserGameStats for each player
+	update_user_game_stats(game_session)
+
 	# DEBUG #
 	print(f'Game session ended. Winner: {winner}')
 	print(f'Player 1: {game_state.score1}, Player 2: {game_state.score2}')
@@ -256,6 +259,18 @@ def end_game_session(request, game_id):
 
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)
+
+# Helper function to update the UserGameStats for each player
+def update_user_game_stats(game_session):
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	for player in players:
+		if player:
+			player.usergamestats.total_games_played += 1
+			if player == game_session.winner:
+				player.usergamestats.total_wins += 1
+			else:
+				player.usergamestats.total_losses += 1
+			player.usergamestats.save()
 
 
 # This function is called when the user clicks the "Quit Game" button
