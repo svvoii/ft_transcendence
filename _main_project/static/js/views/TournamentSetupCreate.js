@@ -19,21 +19,26 @@ export default class extends AbstractView {
 
     // Create a container div
     const container = document.createElement('div');
-    container.classList.add('text-container');
+    container.classList.add('text-container', 'game-select-button-div');
 
     // Create the paragraph element
     const paragraph = document.createElement('p');
-    paragraph.textContent = 'You are viewing the Tournament Setup Create Page!';
+    paragraph.textContent = 'Click "Create tournament" to create a new tournament and invite your friends!';
+    paragraph.style.textAlign = 'center';
+
+    const breakElem = document.createElement('br');
 
     // Create the button
     const tournament_lobby_button = document.createElement('button');
     tournament_lobby_button.id = 'tournamentLobbyBtn';
+    tournament_lobby_button.classList.add('game-select-button');
     tournament_lobby_button.type = 'select';
     tournament_lobby_button.textContent = 'Create tournament';
 
 
     // Append the paragraph to the container
     container.appendChild(paragraph);
+    container.appendChild(breakElem);
     container.appendChild(tournament_lobby_button);
 
     return container;
