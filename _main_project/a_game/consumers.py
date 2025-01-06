@@ -3,7 +3,9 @@ import asyncio
 import pickle
 from django.core.cache import cache
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game_logic import FPS
+from channels.db import database_sync_to_async
+from .models import GameSession
+from .game_logic import GameState, FPS
 
 # `game_tasks` is a dictionary that stores the game loop task for each game_id.
 # This way there is only one task to run the game loop for each game_id.
@@ -12,6 +14,34 @@ game_tasks = {}
 # ready_players will store the list of players who are ready to play for each game_id
 ready_players = {}
 
+
+MODE_TO_STR = {0: 'AI', 1: 'Single', 2: 'Multi_2', 3: 'Multi_3', 4: 'Multi_4'}
+
+@database_sync_to_async
+def get_game_state_from_db(game_id):
+	active_session = GameSession.objects.filter(game_id=game_id, is_active=True).first()
+	if active_session:
+		game_state = GameState()
+		game_state.game_mode = MODE_TO_STR.get(active_session.mode, 'Single')
+		game_state.num_players = session.mode
+		game_state.score1 = session.score1
+		game_state.score2 = session.score2
+		game_state.score3 = session.score3
+		game_state.score4 = session.score4
+		return game_state
+	return None
+
+async def load_game_state(game_id):
+	cached_game_state = cache.get(game_id)
+	if cached_game_state is None:
+		print(f"Game state not found for game_id: {game_id}. Loading from the database...")
+		game_state = await get_game_state_from_db(game_id)
+		if game_state:
+			cache.set(game_id, pickle.dumps(game_state))
+		return game_state
+	return pickle.loads(cached_game_state)
+
+
 class PongConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
@@ -19,13 +49,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.game_group_name = f"pong_{self.game_id}"
 
 		# Get the game state for the game_id
-		cached_game_state = cache.get(self.game_id)
-		if cached_game_state is None:
+		# cached_game_state = cache.get(self.game_id)
+		# if cached_game_state is None:
+		self.game_state = await load_game_state(self.game_id)
+		if self.game_state is None:
 			print(f"Game state not found for game_id: {self.game_id}")
 			await self.close()
 			return
 		
-		self.game_state = pickle.loads(cached_game_state)
+		# self.game_state = pickle.loads(cached_game_state)
 
 		# DEBUG #
 		print(f"Retrieved game state for game_id: {self.game_id}: {self.game_state}")
@@ -54,7 +86,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		# Remove the player from the ready players list
 		if self.game_id in ready_players:
-			ready_players[self.game_id].remove(self.channel_name)
+			if self.channel_name in ready_players[self.game_id]:
+				ready_players[self.game_id].remove(self.channel_name)
 			if not ready_players[self.game_id]:
 				del ready_players[self.game_id]
 
@@ -90,6 +123,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 			else:
 				print("Waiting for another player to get ready..")
 
+	# This is called from the views.py file when the user clicks the quit button
+	async def game_quit(self, event):
+		message = event["message"]
+		await self.send(text_data=json.dumps({
+			"type": "game_quit",
+			"message": message,
+		}))
 
 	async def game_loop(self):
 		while not self.game_state.game_over:
@@ -121,7 +161,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-			cache.set(self.game_id, pickle.dumps(self.game_state))
+			cache.set(self.game_id, pickle.dumps(self.game_state), timeout=None)
 
 			await asyncio.sleep(1 / FPS)  # 60 FPS
 		

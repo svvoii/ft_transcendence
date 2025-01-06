@@ -202,7 +202,7 @@ export default class Chat {
     await this.setChatTitle(username);
     try {
       // Get the chatroom name
-      const response = await fetch(`http://localhost:8000/chat/chat/${username}`);
+      const response = await fetch(`/chat/chat/${username}`);
       const data = await response.json();
       // console.log("Data:", data);
       if (data.error) {

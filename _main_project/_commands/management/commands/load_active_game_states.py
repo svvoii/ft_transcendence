@@ -1,8 +1,8 @@
+import pickle # Used to serialize and deserialize the `GameState` objects. This is IMPORTANT! Otherwise, the `GameState` objects will not be restored correctly from the cache.
 from django.core.management.base import BaseCommand
 from a_game.models import GameSession
 from a_game.game_logic import GameState
 from django.core.cache import cache
-import pickle # Used to serialize and deserialize the `GameState` objects. This is IMPORTANT! Otherwise, the `GameState` objects will not be restored correctly from the cache.
 
 
 MODE_TO_STR = {0: 'AI', 1: 'Single', 2: 'Multi_2', 3: 'Multi_3', 4: 'Multi_4'}
@@ -29,6 +29,6 @@ def load_active_game_states():
 		game_state.score2 = session.score2
 		game_state.score3 = session.score3
 		game_state.score4 = session.score4
-		cache.set(session.game_id, pickle.dumps(game_state))
+		cache.set(session.game_id, pickle.dumps(game_state), timeout=None)
 		# print(f'Active game state loaded into cache: {session.game_id}')
 	print(f'Active game states loaded into cache: {cache.keys("*")}')

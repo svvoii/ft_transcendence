@@ -28,6 +28,9 @@ export default class GameBoard {
 		this.paragraph = document.createElement('p');
 		this.paragraph.textContent = '';
 
+		const buttonsDiv = document.createElement('div');
+		buttonsDiv.classList.add('game-select-buttons');
+
 		const quitGamebtn = document.createElement('button');
 		quitGamebtn.id = 'quitGameBtn';
 		quitGamebtn.classList.add('game-select-button');
@@ -40,6 +43,9 @@ export default class GameBoard {
 		readyBtn.classList.add('select');
 		readyBtn.textContent = 'Ready';
 
+		buttonsDiv.appendChild(readyBtn);
+		buttonsDiv.appendChild(quitGamebtn);
+
 		const canvas = document.createElement('canvas');
 		canvas.id = 'pongCanvas';
 		canvas.width = 600;
@@ -47,8 +53,7 @@ export default class GameBoard {
 		canvas.classList.add('board');
 
 		container.appendChild(this.paragraph);
-		container.appendChild(readyBtn);
-		container.appendChild(quitGamebtn);
+		container.appendChild(buttonsDiv);
 		container.appendChild(canvas);
 
 		return container;
@@ -140,7 +145,7 @@ export default class GameBoard {
 			this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/`);
 			// this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/pong/${game_id}/${mode}/`);
 
-			initializeGame(this.socket, role, game_id);
+			initializeGame(this.socket, role, game_id, this);
 		}
 	}
 
@@ -160,7 +165,7 @@ export default class GameBoard {
 
 		const readyBtn = document.getElementById('readyBtn');
 		readyBtn.addEventListener('click', async () => {
-			
+
 			this.socket.send(JSON.stringify({ 
 				'type': 'player_ready',
 			}));
