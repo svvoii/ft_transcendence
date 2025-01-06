@@ -113,6 +113,8 @@ class Round_1(models.Model):
     players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
     winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
+    game_id_1 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+    game_id_2 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
 
     def __str__(self):
         return f'round_1 {self.tournament.tournament_name}'

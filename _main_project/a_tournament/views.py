@@ -14,7 +14,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from a_game.views import create_game_with_2_players
+
+# from a_game.views import create_game_with_2_players_internal
 
 # Create your views here.
 
@@ -161,36 +162,70 @@ def delete_tournament(request, tournament_name):
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
   
 
+
+# #create the first round of the tournament
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def create_round_1_matches(tournament_name):
+#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
+#         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+#         if not tournament.round_1:
+#             round_1 = Round_1.objects.create(tournament=tournament)
+#             tournament.round_1 = round_1
+#             tournament.save()
+
+#         for player in tournament.players.all():
+#             tournament.round_1.players.add(player)
+
+#         player_names = [player.username for player in tournament.round_1.players.all()]
+
+#         match_1_context = create_game_with_2_players_internal(player_names[0], player_names[1])
+#         game_id_1 = match_1_context[0]['game_id']
+
+#         match_2_context = create_game_with_2_players_internal(player_names[2], player_names[3])
+#         game_id_2 = match_2_context[0]['game_id']
+
+#         tournament.round_1.game_id_1 = game_id_1
+#         tournament.round_1.game_id_2 = game_id_2
+#         tournament.save()
+
+#         return 200
+
+#     else:
+#         return 400
+
+
 #START TOURNAMENT
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def start_round_1(request, tournament_name):
+def get_game_id_round_1(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-        for player in tournament.players.all():
-            tournament.round_1.players.add(player)
 
-        # request_match_1 = HttpRequest()
-        # request_match_1.method = 'POST'
-        # request_match_1.POST['player_1'] = player_names[0]
-        # request_match_1.POST['player_2'] = player_names[1]
+        # if not tournament.round_1:
+        #     round_1 = Round_1.objects.create(tournament=tournament)
+        #     tournament.round_1 = round_1
+        #     tournament.save()
 
-        # match_1_Response = create_game_with_2_players(request_match_1)
+        # for player in tournament.players.all():
+        #     tournament.round_1.players.add(player)
 
-        # request_match_2 = HttpRequest()
-        # request_match_2.method = 'POST'
-        # request_match_2.POST['player_1'] = player_names[2]
-        # request_match_2.POST['player_2'] = player_names[3]
-
-        # match_2_Response = create_game_with_2_players(request_match_2)
+        player_names = [player.username for player in tournament.round_1.players.all()]
 
 
+        user_game_id = None
+        if request.user.username in [player_names[0], player_names[1]]:
+            user_game_id = tournament.round_1.game_id_1
+        elif request.user.username in [player_names[2], player_names[3]]:
+            user_game_id = tournament.round_1.game_id_2
 
         return Response({'status': 'success',
-            'player_1': f'{tournament.round_1.players[0]}',
-            'player_2': f'{tournament.round_1.players[1]}',
-            'player_3': f'{tournament.round_1.players[2]}',
-            'player_4': f'{tournament.round_1.players[3]}',
+            'user_game_id': user_game_id,
+            'player_1': f'{player_names[0]}',
+            'player_2': f'{player_names[1]}',
+            'player_3': f'{player_names[2]}',
+            'player_4': f'{player_names[3]}',
             
             'message': 'Round 1 started successfully.'},
             status=status.HTTP_200_OK)
@@ -200,7 +235,45 @@ def start_round_1(request, tournament_name):
             status=status.HTTP_400_BAD_REQUEST)
 
 
-            # 'match_1_player_1': f'{tournament.round_1.players[0]}',
-            # 'match_1_player_2': f'{tournament.round_1.players[1]}',
-            # 'match_2_player_1': f'{tournament.round_1.players[2]}',
-            # 'match_2_player_2': f'{tournament.round_1.players[3]}'
+# #START TOURNAMENT
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_game_id_round_1(request, tournament_name):
+#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
+#         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+#         if not tournament.round_1:
+#             round_1 = Round_1.objects.create(tournament=tournament)
+#             tournament.round_1 = round_1
+#             tournament.save()
+
+#         for player in tournament.players.all():
+#             tournament.round_1.players.add(player)
+
+#         player_names = [player.username for player in tournament.round_1.players.all()]
+
+#         match_1_context = create_game_with_2_players_internal(player_names[0], player_names[1])
+#         game_id_1 = match_1_context[0]['game_id']
+
+#         match_2_context = create_game_with_2_players_internal(player_names[2], player_names[3])
+#         game_id_2 = match_2_context[0]['game_id']
+
+#         user_game_id = None
+#         if request.user.username in [player_names[0], player_names[1]]:
+#             user_game_id = game_id_1
+#         elif request.user.username in [player_names[2], player_names[3]]:
+#             user_game_id = game_id_2
+
+#         return Response({'status': 'success',
+#             'user_game_id': user_game_id,
+#             'player_1': f'{player_names[0]}',
+#             'player_2': f'{player_names[1]}',
+#             'player_3': f'{player_names[2]}',
+#             'player_4': f'{player_names[3]}',
+            
+#             'message': 'Round 1 started successfully.'},
+#             status=status.HTTP_200_OK)
+#     else:
+#         return Response({'status': 'error', 
+#             'message': 'Tournament does not exist.'}, 
+#             status=status.HTTP_400_BAD_REQUEST)

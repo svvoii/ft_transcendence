@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Tournament, REQUIRED_NB_PLAYERS
-
+from .utils import create_round_1_matches
 
 class TournamentLobbyConsumer(WebsocketConsumer):
 	clients = {}
@@ -60,6 +60,10 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		players = self.room.players.all()
 		player_names = [player.username for player in players]
 		last_player_name = player_names[-1] if player_names else None
+
+		if len(player_names) == REQUIRED_NB_PLAYERS:
+			create_round_1_matches(self.tournament_name)
+
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_group_name,
 			{
