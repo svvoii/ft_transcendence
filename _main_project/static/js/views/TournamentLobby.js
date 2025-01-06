@@ -109,8 +109,6 @@ export default class extends AbstractView {
 
       };
 
-
-
       socket.addEventListener('message', async (event) => {
         const data = JSON.parse(event.data);
         console.log('Data received from the websocket :', data);
