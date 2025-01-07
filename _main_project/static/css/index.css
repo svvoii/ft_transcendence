@@ -212,7 +212,7 @@ input:focus {
 {
 	border: 2px solid var(--primary-color);
 	color: var(--primary-color);
-	background: var(--primary-color) url('/static/images/pixel_button_green.png') no-repeat center center;
+	background: var(--primary-color) url('/static/images/pixel_button_blue.png') no-repeat center center;
   background-size: cover;
 	transition-delay: 0.4s;
 	animation: animate 0.4s steps(8) forwards;
