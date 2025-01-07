@@ -232,7 +232,7 @@ export default class extends AbstractView {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
 
-    countdownElement.style.display = 'block'; // Ensure the countdown is visible
+    countdownElement.style.display = 'block';
 
     const interval = setInterval(() => {
       if (countdown >= 1) {
@@ -240,7 +240,7 @@ export default class extends AbstractView {
         countdown--;
       } else {
         clearInterval(interval);
-        countdownElement.style.display = 'none'; // Hide the countdown after it reaches 0
+        countdownElement.style.display = 'none';
       }
     }, 1000);
 
@@ -254,6 +254,7 @@ export default class extends AbstractView {
     // Reshowing the lobby but wont do this in the final version
     document.getElementById('view-content').innerHTML = '';
     document.getElementById('view-content').appendChild(this.getDomElements());
+    this.afterRender();
 
     // call function to start the round here
   }

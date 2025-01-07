@@ -12,3 +12,11 @@
 	height: calc(100vh - calc(var(--nav-height) + var(--footer-height)));
 	background-color: var(--background-color);
   }
+
+#countdown {
+	position: fixed;
+	left: 1rem;
+	bottom: calc(var(--footer-height) + 1rem);
+	color: var(--success-color);
+	font-size: 2rem;
+}
