@@ -44,7 +44,7 @@ export default class extends AbstractView {
     // Create the button element
     const copyButton = document.createElement('button');
     copyButton.id = 'copyButton';
-    copyButton.type = 'game-select';
+    copyButton.type = 'select';
     copyButton.textContent = 'Copy tournament ID';
 
     const playersListTitle = document.createElement('p');
@@ -61,7 +61,7 @@ export default class extends AbstractView {
     ///// DEBUG BUTTON /////
     const debugButton = document.createElement('button');
     debugButton.id = 'debugButton';
-    debugButton.type = 'game-select';
+    debugButton.type = 'select';
     debugButton.textContent = 'Start Tournament';
     const modalButton = document.createElement('button');
     modalButton.id = 'modalButton';
