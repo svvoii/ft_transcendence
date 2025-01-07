@@ -208,24 +208,114 @@ export default class extends AbstractView {
   showTournamentBracket() {
     const tournamentBracket = document.createElement('div');
     tournamentBracket.className = 'tournament-bracket';
-    tournamentBracket.classList.add('text-container');
+    tournamentBracket.classList.add('bracket-container');
 
     const title = document.createElement('h1');
     title.textContent = 'Tournament Bracket';
+    title.style.textAlign = 'center';
 
     const paragraph = document.createElement('p');
     paragraph.textContent = 'This is the tournament bracket';
 
+    // parent container for round divs
+    const roundDiv = document.createElement('div');
+    roundDiv.className = 'round-container';
+
+    // round 1 left div
+    const round1left = document.createElement('div');
+    round1left.className = 'round1-left';
+
+    const userInfo1 = document.createElement('p');
+    userInfo1.id = 'userInfo1';
+    userInfo1.textContent = 'Sample username';
+
+    const userInfo2 = document.createElement('p');
+    userInfo2.id = 'userInfo2';
+    userInfo2.textContent = 'Sample username';
+
+    round1left.appendChild(userInfo1);
+    round1left.appendChild(userInfo2);
+
+    // round 1 right div
+    const round1right = document.createElement('div');
+    round1right.className = 'round1-right';
+
+    const userInfo3 = document.createElement('p');
+    userInfo3.id = 'userInfo3';
+    userInfo3.textContent = 'Sample username';
+
+    const userInfo4 = document.createElement('p');
+    userInfo4.id = 'userInfo4';
+    userInfo4.textContent = 'Sample username';
+
+    round1right.appendChild(userInfo3);
+    round1right.appendChild(userInfo4);
+
+    // round 2 div
+    const round2 = document.createElement('div');
+    round2.className = 'round2';
+
+    const usernameDivrRound2 = document.createElement('div');
+    usernameDivrRound2.className = 'username-div-round2';
+
+    const round1leftWinner = document.createElement('p');
+    round1leftWinner.id = 'round1leftWinner';
+    round1leftWinner.textContent = 'Sample username';
+
+    const round1rightWinner = document.createElement('p');
+    round1rightWinner.id = 'round1rightWinner';
+    round1rightWinner.textContent = 'Sample username';
+
+    usernameDivrRound2.appendChild(round1leftWinner);
+    usernameDivrRound2.appendChild(round1rightWinner);
+
+    round2.appendChild(usernameDivrRound2);
+
+    // add all the rounds to the round div
+    roundDiv.appendChild(round1left);
+    roundDiv.appendChild(round2);
+    roundDiv.appendChild(round1right);
+
+    // winner div
+    const winnerDiv = document.createElement('div');
+    winnerDiv.className = 'winner-div';
+
+    const winnerText = document.createElement('p');
+    winnerText.textContent = 'Winner';
+
+    const winnerName = document.createElement('p');
+    winnerName.id = 'winnerName';
+    winnerName.textContent = 'Sample username';
+
+    winnerDiv.appendChild(winnerText);
+    winnerDiv.appendChild(winnerName);
+
+    // countdown
     const countdown = document.createElement('p');
     countdown.id = 'countdown';
     countdown.textContent = '10';
 
+    // append all the elements to the tournament bracket
     tournamentBracket.appendChild(title);
-    tournamentBracket.appendChild(paragraph);
+    tournamentBracket.appendChild(roundDiv);
+    tournamentBracket.appendChild(winnerDiv);
     tournamentBracket.appendChild(countdown);
 
     document.getElementById('view-content').innerHTML = '';
     document.getElementById('view-content').appendChild(tournamentBracket);
+
+    // should use data from the server to fill in the bracket
+    const sampleDataForBracket = {
+      user1round1: 'User1',
+      user2round1: 'User2',
+      user3round1: 'User3',
+      user4round1: 'User4',
+      user1round2: '',
+      user2round2: '',
+      userWinner: ''
+    }
+
+    this.bracketNameFill(sampleDataForBracket);
   }
 
   startCountdown() {
@@ -252,14 +342,30 @@ export default class extends AbstractView {
     console.log('Starting the round');
 
     // Reshowing the lobby but wont do this in the final version
-    document.getElementById('view-content').innerHTML = '';
-    document.getElementById('view-content').appendChild(this.getDomElements());
-    this.afterRender();
+    // document.getElementById('view-content').innerHTML = '';
+    // document.getElementById('view-content').appendChild(this.getDomElements());
+    // this.afterRender();
 
     // call function to start the round here
   }
 
   sleep(ms) { 
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  bracketNameFill(data) {
+    for (const key in data) {
+      if (data[key] === '') {
+        data[key] = 'TBD';
+      }
+    }
+
+    document.getElementById('userInfo1').textContent = data.user1round1;
+    document.getElementById('userInfo2').textContent = data.user2round1;
+    document.getElementById('userInfo3').textContent = data.user3round1;
+    document.getElementById('userInfo4').textContent = data.user4round1;
+    document.getElementById('round1leftWinner').textContent = data.user1round2;
+    document.getElementById('round1rightWinner').textContent = data.user2round2;
+    document.getElementById('winnerName').textContent = data.userWinner;
   }
 }
