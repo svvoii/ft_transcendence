@@ -191,7 +191,7 @@ export default class extends AbstractView {
       document.getElementById('debugButton').addEventListener('click', async () => {
         console.log('Starting the tournament');
         this.showTournamentBracket();
-        await this.startCountdown();
+        this.startCountdown();
         // document.getElementById('view-content').innerHTML = '';
         // document.getElementById('view-content').appendChild(this.getDomElements());
       });
@@ -230,12 +230,12 @@ export default class extends AbstractView {
 
   startCountdown() {
     const countdownElement = document.getElementById('countdown');
-    let countdown = 10;
+    let countdown = 9;
 
     countdownElement.style.display = 'block'; // Ensure the countdown is visible
 
     const interval = setInterval(() => {
-      if (countdown >= 0) {
+      if (countdown >= 1) {
         countdownElement.textContent = countdown;
         countdown--;
       } else {
@@ -243,5 +243,22 @@ export default class extends AbstractView {
         countdownElement.style.display = 'none'; // Hide the countdown after it reaches 0
       }
     }, 1000);
+
+    this.startRound();
+  }
+
+  async startRound() {
+    await this.sleep(10000);
+    console.log('Starting the round');
+
+    // Reshowing the lobby but wont do this in the final version
+    document.getElementById('view-content').innerHTML = '';
+    document.getElementById('view-content').appendChild(this.getDomElements());
+
+    // call function to start the round here
+  }
+
+  sleep(ms) { 
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
