@@ -29,20 +29,20 @@ export default class extends AbstractView {
 		const create_mp_match_btn_2 = document.createElement('button');
 		create_mp_match_btn_2.id = 'createMPMatchBtn_2';
 		create_mp_match_btn_2.classList.add('game-select-button');
-		create_mp_match_btn_2.type = 'select';
+		create_mp_match_btn_2.type = 'game-select';
 		create_mp_match_btn_2.textContent = 'Create a Multiplayer Match for 2 players';
 
 		const create_mp_match_btn_3 = document.createElement('button');
 		create_mp_match_btn_3.id = 'createMPMatchBtn_3';
 		create_mp_match_btn_3.classList.add('game-select-button');
-		create_mp_match_btn_3.type = 'select';
+		create_mp_match_btn_3.type = 'game-select';
 		create_mp_match_btn_3.textContent = 'Create a Muliplayer Match for 3 players';
 		// create_mp_match_btn.textContent = 'Create a Match and invite another player';
 
 		const create_mp_match_btn_4 = document.createElement('button');
 		create_mp_match_btn_4.id = 'createMPMatchBtn_4';
 		create_mp_match_btn_4.classList.add('game-select-button');
-		create_mp_match_btn_4.type = 'select';
+		create_mp_match_btn_4.type = 'game-select';
 		create_mp_match_btn_4.textContent = 'Create a Multiplayer Match for 4 players';
 
 		const orStatement = document.createElement('h1');
@@ -58,7 +58,7 @@ export default class extends AbstractView {
 		const join_mp_match_btn = document.createElement('button');
 		join_mp_match_btn.id = 'joinMPMatchBtn';
 		join_mp_match_btn.classList.add('game-select-button');
-		join_mp_match_btn.type = 'select';
+		join_mp_match_btn.type = 'game-select';
 		join_mp_match_btn.textContent = 'Join a Match with antoher player';
 
 		// Append the paragraph to the container

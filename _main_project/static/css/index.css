@@ -121,6 +121,22 @@ button[type=select]:hover {
   cursor: pointer;
 }
 
+button[type=game-select] {
+  display: block;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  border: 2px solid var(--primary-color);
+  background: var(--dark-color);
+  border-radius: 4px;
+}
+
+button[type=game-select]:hover {
+  color: var(--dark-color);
+  cursor: pointer;
+}
+
 button[type=submit] {
   display: block;
   padding: 12px 18px;
@@ -190,6 +206,28 @@ input:focus {
 
 .game-select-button {
   margin-top: 0.5rem;
+}
+
+.game-select-button:hover
+{
+	border: 2px solid var(--primary-color);
+	color: var(--primary-color);
+	background: var(--primary-color) url('/static/images/pixel_button_green.png') no-repeat center center;
+  background-size: cover;
+	transition-delay: 0.4s;
+	animation: animate 0.4s steps(8) forwards;
+}
+
+@keyframes animate
+{
+	0%
+	{
+		background-position-y: 0;
+	}
+	100%
+	{
+		background-position-y: -480px;
+	}
 }
 
 .game-select-button-div {

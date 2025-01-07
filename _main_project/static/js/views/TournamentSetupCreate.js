@@ -32,7 +32,7 @@ export default class extends AbstractView {
     const tournament_lobby_button = document.createElement('button');
     tournament_lobby_button.id = 'tournamentLobbyBtn';
     tournament_lobby_button.classList.add('game-select-button');
-    tournament_lobby_button.type = 'select';
+    tournament_lobby_button.type = 'game-select';
     tournament_lobby_button.textContent = 'Create tournament';
 
 

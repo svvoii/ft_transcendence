@@ -32,7 +32,7 @@ export default class extends AbstractView {
 		const create_mp_match_btn = document.createElement('button');
 		create_mp_match_btn.id = 'createMPMatchBtn';
     create_mp_match_btn.classList.add('game-select-button');
-		create_mp_match_btn.type = 'select';
+		create_mp_match_btn.type = 'game-select';
 		create_mp_match_btn.textContent = 'Create a tournament and invite other players';
 
     const orStatement = document.createElement('h1');
@@ -43,7 +43,7 @@ export default class extends AbstractView {
 		const join_mp_match_btn = document.createElement('button');
 		join_mp_match_btn.id = 'joinMPMatchBtn';
     join_mp_match_btn.classList.add('game-select-button');
-		join_mp_match_btn.type = 'select';
+		join_mp_match_btn.type = 'game-select';
 		join_mp_match_btn.textContent = 'Join a tournament with a link';
 
     const form = document.createElement('form');
