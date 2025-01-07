@@ -92,12 +92,12 @@ def api_logged_in_user_view(request):
 	return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def det_redirect_if_exists(request):
-	redirect = None
-	if request.GET:
-		if request.GET.get('next'):
-			redirect = str(request.GET.get('next'))
-	return redirect
+# def det_redirect_if_exists(request):
+# 	redirect = None
+# 	if request.GET:
+# 		if request.GET.get('next'):
+# 			redirect = str(request.GET.get('next'))
+# 	return redirect
 
 
 @api_view(['GET'])
@@ -259,3 +259,58 @@ def api_unblock_user_view(request, user_id):
 	# messages.success(request, f'You have unblocked {user_to_unblock.username}.')
 	return Response({"message": f'You have unblocked {user_to_unblock.username}.'}, status=status.HTTP_200_OK)
 	# return redirect('a_user:profile', user_id=user_id)
+
+	
+# Endpoint to update the Online status of the user
+@login_required
+@api_view(['POST'])
+def api_update_online_status_view(request):
+	context = {}
+	try:
+		user = request.user
+		online_status = request.data.get('online_status', False)
+		user.online = online_status
+		user.save()
+		context['message'] = f'Online status updated to {online_status}'
+		return Response(context, status=200)
+	except Exception as e:
+		context['message'] = f'Error: {str(e)}'
+		return Response(context, status=400)
+
+
+# Endpoint to get the Online status of the user
+@login_required
+@api_view(['GET'])
+def api_get_online_status_view(request, username):
+	context = {}
+	try:
+		user = Account.objects.get(username=username)
+		context = {
+			'username': user.username,
+			'online': user.online
+		}
+		return Response(context, status=200)
+	except Account.DoesNotExist:
+		context['message'] = 'User not found.'
+		return Response(context, status=404)
+
+
+# Endpoint to get the UseGameStats on the profile view page
+@login_required
+@api_view(['GET'])
+def api_user_game_stats_view(request, stats_username):
+	context = {}
+	# user = request.user
+	user_stats_account = Account.objects.get(username=stats_username)
+	user_game_stats = UserGameStats.objects.get(user=user_stats_account)
+	if not user_stats_account or not user_game_stats:
+		context['message'] = 'User not found.'
+		return Response(context, status=404)
+	
+	context['stats_str'] = str(user_game_stats)
+	context['total_games_played'] = user_game_stats.total_games_played
+	context['total_wins'] = user_game_stats.total_wins
+	context['total_losses'] = user_game_stats.total_losses
+
+	return Response(context, status=200)
+		
