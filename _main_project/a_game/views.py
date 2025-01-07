@@ -383,3 +383,49 @@ def create_game_with_2_players(request):
 
 	return Response(context, status=201)
 
+# This is an internal version of the above function for use in the tournament logic
+def create_game_with_2_players_internal(username1, username2):
+	context = {}
+
+	if not username1 or not username2:
+		context['message'] = 'Both players are required.'
+		return context, 400
+
+	player1 = Account.objects.filter(username=username1).first()
+	player2 = Account.objects.filter(username=username2).first()
+
+	if not player1 or not player2:
+		context['message'] = f'User {username1} or {username2} does not exist.'
+		return context, 400
+	
+	new_game_session = GameSession.objects.create(
+		player1=player1,
+		player2=player2,
+		mode=2
+	)
+	new_game_session.save()
+
+	context['game_id'] = new_game_session.game_id
+	# context['role'] = new_game_session.get_role(user)
+	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Game session created with ID {new_game_session.game_id}')
+	# # # # #
+
+	# Create a new game state object for the new game session
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# Setting game_mode in the GameState object
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
+	game_state.game_mode = 'Multi_2'
+	game_state.num_players = 2
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
+
+	return context, 201
+

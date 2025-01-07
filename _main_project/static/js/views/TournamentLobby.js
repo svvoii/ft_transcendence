@@ -1,5 +1,8 @@
 import AbstractView from "./AbstractView.js";
-import { user } from "../index.js";
+import { user, gameBoard } from "../index.js";
+
+import { joinGame } from '../game/GameAPI.js';
+
 
 export default class extends AbstractView {
   constructor(params) {
@@ -60,6 +63,9 @@ export default class extends AbstractView {
     debugButton.id = 'debugButton';
     debugButton.type = 'select';
     debugButton.textContent = 'Start Tournament';
+    const modalButton = document.createElement('button');
+    modalButton.id = 'modalButton';
+    modalButton.textContent = 'Open Modal';
 
     // Append all elements to the container
     container.appendChild(paragraph);
@@ -71,6 +77,8 @@ export default class extends AbstractView {
     container.appendChild(fullLobbyDiv);
     // DEBUG BUTTON //
     container.appendChild(debugButton);
+    container.appendChild(modalButton);
+
     
     return container;
   }
@@ -104,17 +112,12 @@ export default class extends AbstractView {
             'message': 'New player entering the lobby.'
           };
           socket.send(JSON.stringify(message));
-
         };
 
         socket.onclose = function() {
           console.log('WebSocket connection is closed.');
           user.setIsInTournament(false, '');
-
-
         };
-
-
 
         socket.addEventListener('message', async (event) => {
           const data = JSON.parse(event.data);
@@ -142,24 +145,27 @@ export default class extends AbstractView {
             console.log('check', data.message);
             fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
             
-            matchMaking = await fetch(`/tournament/start_round_1/${tournamentID}/`);
+
+
+            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
 
             const matchMakingData = await matchMaking.text();
             console.log('Match Making Data :', matchMakingData);
 
-                const gameModal = document.getElementById('gameModal');
-                console.log('Joining existing game, game_id: ', game_id);
-            
-                  const role = await joinGame(game_id);
-                  this.paragraph.textContent = `Game ID: ${game_id}`;
-                  gameModal.style.display = 'flex';
-            
-                  this.connectWebSocket(role, game_id);
+            // let game_id = matchMakingData.user_game_id;
 
 
+
+                // const gameModal = document.getElementById('gameModal');
+                // console.log('Joining existing game, game_id: ', game_id);
+            
+                //   const role = await joinGame(game_id);
+                //   this.paragraph.textContent = `Game ID: ${game_id}`;
+                //   gameModal.style.display = 'flex';
+            
+                //   this.connectWebSocket(role, game_id);
           }
         });
-
 
         // Getting the tournament object
         const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
@@ -175,7 +181,6 @@ export default class extends AbstractView {
       catch(error) {
         console.error('Error:', error);
       }
-      
 
       // Copy the lobby link to the clipboard
       document.getElementById('copyButton').addEventListener('click', async () => {
@@ -189,6 +194,11 @@ export default class extends AbstractView {
         await this.startCountdown();
         // document.getElementById('view-content').innerHTML = '';
         // document.getElementById('view-content').appendChild(this.getDomElements());
+      });
+
+      document.getElementById('modalButton').addEventListener('click', async () => {
+        gameBoard.joinExistingGame('game-id');
+        gameModal.style.display = 'flex';
       });
       
     } catch (error) {

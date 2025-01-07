@@ -12,7 +12,7 @@ from asgiref.sync import async_to_sync
 
 # import time
 
-REQUIRED_NB_PLAYERS = 2
+REQUIRED_NB_PLAYERS = 4
 
 # tournament_ids = set()
 
@@ -22,7 +22,8 @@ class Tournament(models.Model):
     nb_players = models.IntegerField(default=0, editable=True, validators=[MaxValueValidator(REQUIRED_NB_PLAYERS)])
     winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
-
+    round_1 = models.ForeignKey('Round_1', related_name='tournament_round_1', blank=True, null=True, on_delete=models.SET_NULL)
+    round_2 = models.ForeignKey('Round_2', related_name='tournament_round_2', blank=True, null=True, on_delete=models.SET_NULL)
 
     # def add_tournament_id(self):
     #     tournament_ids.add(self.tournament_name) 
@@ -72,20 +73,19 @@ class Tournament(models.Model):
 #         )
 
 
-class AllTournaments(models.Model):
-    tournaments = models.ManyToManyField(Tournament, related_name='all_tournaments')
-    created = models.DateTimeField(auto_now_add=True)
+# class AllTournaments(models.Model):
+#     tournaments = models.ManyToManyField(Tournament, related_name='all_tournaments')
+#     created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return ', '.join([tournament.tournament_name for tournament in self.tournaments.all()])
+#     def __str__(self):
+#         return ', '.join([tournament.tournament_name for tournament in self.tournaments.all()])
 
-    class Meta:
-        ordering = ['-created']
+#     class Meta:
+#         ordering = ['-created']
 
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
-    player1 = models.ForeignKey(Account, related_name='matches_as_player1', on_delete=models.CASCADE)
-    player2 = models.ForeignKey(Account, related_name='matches_as_player2', on_delete=models.CASCADE)
+    players = models.ManyToManyField(Account, related_name='Match_as_players', blank=True)
     winner = models.ForeignKey(Account, related_name='matches_won', blank=True, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -96,14 +96,37 @@ class Match(models.Model):
         ordering = ['-created']
 
 
-class TournamentMessage(models.Model):
-	tournament_room = models.ForeignKey(Tournament, related_name='tournament_messages', on_delete=models.CASCADE,)
-	msg_content = models.CharField(max_length=512)
-	created = models.DateTimeField(auto_now_add=True)
+# class TournamentMessage(models.Model):
+# 	tournament_room = models.ForeignKey(Tournament, related_name='tournament_messages', on_delete=models.CASCADE,)
+# 	msg_content = models.CharField(max_length=512)
+# 	created = models.DateTimeField(auto_now_add=True)
 
-	def __str__(self):
-		return f'{self.msg_content}'
+# 	def __str__(self):
+# 		return f'{self.msg_content}'
 	
-	class Meta:
-		ordering = ['-created']
+# 	class Meta:
+# 		ordering = ['-created']
+
+
+class Round_1(models.Model):
+    tournament_name = models.ForeignKey(Tournament, related_name='round_1_as_tournament', on_delete=models.CASCADE)
+    players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
+    winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
+    created = models.DateTimeField(auto_now_add=True)
+    game_id_1 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+    game_id_2 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+
+    def __str__(self):
+        return f'round_1 {self.tournament.tournament_name}'
+
+
+class Round_2(models.Model):
+    tournament_name = models.ForeignKey(Tournament, related_name='round_2_as_tournament', on_delete=models.CASCADE)
+    players = models.ForeignKey(Account, related_name='round_2_as_players', blank=True, null=True, on_delete=models.CASCADE)
+    winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'round_2 {self.tournament.tournament_name}'
+
 
