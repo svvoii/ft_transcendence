@@ -158,44 +158,17 @@ export default class extends AbstractView {
           console.log('Match Making Data :', matchMakingData);
           console.log('Game ID :', game_id);
 
-          const gameModal = document.getElementById('gameModal');
+          // const gameModal = document.getElementById('gameModal');
 
-          gameBoard.joinExistingGame(game_id);
-          gameModal.style.display = 'flex';
+          // gameBoard.joinExistingGame(game_id);
+          // gameModal.style.display = 'flex';
 
-
-
-              // console.log('Joining existing game, game_id: ', game_id);
-          
-              //   const role = await joinGame(game_id);
-                // this.paragraph.textContent = `Game ID: ${game_id}`;
-                // gameModal.style.display = 'flex';
-          
-              //   this.connectWebSocket(role, game_id);
-
+          this.showTournamentBracket();
+          this.bracketNameFill(matchMakingData);
+          this.startCountdown(game_id);
 
         }
       });
-
-
-      // //Getting the tournament object
-      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-
-
-      //printing the tournament data
-      // const tournamentDataText = await tournament.text();
-      // console.log('Data after entering the lobby :', tournamentDataText);
-
-
-      // socket.addEventListener('message', async (event) => {
-      //   const data = JSON.parse(event.data);
-      //   console.log('Data received from the websocket :', data);
-      //   if (data.type == 'new_player') {
-      //     listOfPlayers.innerHTML = '';
-      //     }
-      //   });
-
-        /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
       }
       catch(error) {
@@ -324,26 +297,14 @@ export default class extends AbstractView {
     document.getElementById('view-content').innerHTML = '';
     document.getElementById('view-content').appendChild(tournamentBracket);
 
-    // should use data from the server to fill in the bracket
-    const sampleDataForBracket = {
-      user1round1: 'User1',
-      user2round1: 'User2',
-      user3round1: 'User3',
-      user4round1: 'User4',
-      user1round2: '',
-      user2round2: '',
-      userWinner: ''
-    }
-
-    this.bracketNameFill(sampleDataForBracket);
   }
-
-  startCountdown() {
+  
+  startCountdown(game_id) {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
-
+    
     countdownElement.style.display = 'block';
-
+    
     const interval = setInterval(() => {
       if (countdown >= 1) {
         countdownElement.textContent = countdown;
@@ -354,26 +315,39 @@ export default class extends AbstractView {
       }
     }, 1000);
 
-    this.startRound();
+    this.startRound(game_id);
   }
-
-  async startRound() {
+  
+  async startRound(game_id) {
     await this.sleep(10000);
     console.log('Starting the round');
 
-    // Reshowing the lobby but wont do this in the final version
-    // document.getElementById('view-content').innerHTML = '';
-    // document.getElementById('view-content').appendChild(this.getDomElements());
-    // this.afterRender();
-
     // call function to start the round here
-  }
 
+    gameBoard.joinExistingGame(game_id);
+    gameModal.style.display = 'flex';
+    
+  }
+  
   sleep(ms) { 
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
+  
   bracketNameFill(data) {
+    // should use data from the server to fill in the bracket
+    // const sampleDataForBracket = {
+    //   user1round1: 'User1',
+    //   user2round1: 'User2',
+    //   user3round1: 'User3',
+    //   user4round1: 'User4',
+    //   user1round2: '',
+    //   user2round2: '',
+    //   userWinner: ''
+    // }
+  
+    // this.bracketNameFill(sampleDataForBracket);
+
+    
     for (const key in data) {
       if (data[key] === '') {
         data[key] = 'TBD';
