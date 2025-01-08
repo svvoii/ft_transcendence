@@ -174,22 +174,25 @@ def get_game_id_round_1(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-        if not tournament.round_1:
-            print('PROBLEM HERE')
-        else:
-            print('NO PROBLEM HERE')
+        # if not tournament.round_1:
+        #     print('ROUND_1 PROBLEM HERE')
+        # else:
+        #     print('NO ROUND_1 PROBLEM HERE')
+
+        # if not tournament.round_1.game_session_1:
+        #     print('GAME_SESSION_1 PROBLEM HERE')
+        # else:
+        #     print('NO GAME_SESSION_1 PROBLEM HERE')
 
         player_names = [player.username for player in tournament.round_1.players.all()]
 
 
-        print(f'[get function] {request.user.username} tournament.round_1.game_id_1', tournament.round_1.game_id_1)
-        print(f'[get function] {request.user.username} tournament.round_1.game_id_2', tournament.round_1.game_id_2)
-
         user_game_id = None
-        if request.user.username in [player_names[0], player_names[1]]:
-            user_game_id = tournament.round_1.game_id_1
-        elif request.user.username in [player_names[2], player_names[3]]:
-            user_game_id = tournament.round_1.game_id_2
+        if (len(player_names) == 4):
+            if request.user.username in [player_names[0], player_names[1]]:
+                user_game_id = tournament.round_1.game_session_1.game_id
+            elif request.user.username in [player_names[2], player_names[3]]:
+                user_game_id = tournament.round_1.game_session_2.game_id
 
 
         return Response({'status': 'success',

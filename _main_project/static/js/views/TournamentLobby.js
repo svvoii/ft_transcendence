@@ -150,7 +150,7 @@ export default class extends AbstractView {
         {
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
 
-            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
+          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
 
           const matchMakingData = await matchMaking.json();
           let game_id = matchMakingData.user_game_id;

@@ -429,5 +429,5 @@ def create_game_with_2_players_internal(username1, username2):
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
 
-	return context, 201
+	return new_game_session, 201
 

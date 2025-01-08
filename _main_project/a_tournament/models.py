@@ -17,7 +17,7 @@ from django.shortcuts import get_object_or_404
 
 import json
 
-from a_game.views import create_game_with_2_players_internal
+from a_game.views import GameSession, create_game_with_2_players_internal
 
 
 REQUIRED_NB_PLAYERS = 4
@@ -75,19 +75,28 @@ class Tournament(models.Model):
 
 		player_names = [player.username for player in self.round_1.players.all()]
 
-		match_1_context = create_game_with_2_players_internal(player_names[0], player_names[1])
-		game_id_1 = match_1_context[0]['game_id']
+		game_session_1, status_1 = create_game_with_2_players_internal(player_names[0], player_names[1])
+		game_session_2, status_2 = create_game_with_2_players_internal(player_names[2], player_names[3])
 
-		match_2_context = create_game_with_2_players_internal(player_names[2], player_names[3])
-		game_id_2 = match_2_context[0]['game_id']
+		if not isinstance(game_session_1, GameSession):
+			raise ValueError("game_session_1 must be a GameSession instance")
+		if not isinstance(game_session_2, GameSession):
+			raise ValueError("game_session_2 must be a GameSession instance")
 
-		self.round_1.game_id_1 = game_id_1
-		self.round_1.game_id_2 = game_id_2
-
-		print('[create function] self.round_1.game_id_1', self.round_1.game_id_1)
-		print('[create function] self.round_1.game_id_2', self.round_1.game_id_2)
-
+		self.round_1.game_session_1 = game_session_1
+		self.round_1.game_session_2 = game_session_2
+		self.round_1.save()
 		self.save()
+
+		if not self.round_1.game_session_1:
+			print('GAME_SESSION_1 PROBLEM HERE')
+		else:
+			print('NO GAME_SESSION_1 PROBLEM HERE')
+
+		print('[create function] game id 1', self.round_1.game_session_1.game_id)
+		print('[create function] game id 2', self.round_1.game_session_2.game_id)
+
+		# self.save()
 
 		return 200
 
@@ -123,8 +132,8 @@ class Round_1(models.Model):
 	players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
 	winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
-	game_id_1 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
-	game_id_2 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+	game_session_1 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_1', blank=True, null=True, on_delete=models.SET_NULL)
+	game_session_2 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_2', blank=True, null=True, on_delete=models.SET_NULL)
 
 	def __str__(self):
 		return f'round_1 {self.tournament.tournament_name}'
