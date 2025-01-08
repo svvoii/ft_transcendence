@@ -63,6 +63,7 @@ export default class extends AbstractModalView {
         // Generate and render the list of friend requests
         this.friendsListButton(container);
         this.getFriendRequests(container, userData);
+        this.matchHistoryButton(container);
       } else {
         // Create the send a message button
         this.sendAMessageButton(container, userData);
@@ -85,6 +86,7 @@ export default class extends AbstractModalView {
         container.appendChild(friendButtonDiv);
         // Create the block or unblock button
         this.blockUnblockButtons(container, userData);
+        this.matchHistoryButton(container);
       }
 
       return container;
@@ -106,6 +108,17 @@ export default class extends AbstractModalView {
       this.modal.showForm('friendsListForm');
     });
     container.appendChild(friendsListBtn);
+  }
+
+  async matchHistoryButton(container) {
+    const matchHistoryButton = document.createElement('button');
+    matchHistoryButton.id = 'matchHistoryButton';
+    matchHistoryButton.classList.add('select-button');
+    matchHistoryButton.textContent = 'Match History';
+    matchHistoryButton.addEventListener('click', async() => {
+      this.modal.showForm('matchHistoryForm');
+    });
+    container.appendChild(matchHistoryButton);
   }
 
   async getFriendRequests(container, userData) {
