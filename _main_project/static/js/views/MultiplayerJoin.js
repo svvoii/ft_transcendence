@@ -24,14 +24,14 @@ export default class extends AbstractView {
 		const create_mp_match_btn = document.createElement('button');
 		create_mp_match_btn.id = 'createMPMatchBtn';
     create_mp_match_btn.classList.add('game-select-button');
-		create_mp_match_btn.type = 'select';
+		create_mp_match_btn.type = 'game-select';
 		create_mp_match_btn.textContent = 'Create a Match and invite another player';
 
 		// Button to start multiplayer game against another player
 		const join_mp_match_btn = document.createElement('button');
 		join_mp_match_btn.id = 'joinMPMatchBtn';
     join_mp_match_btn.classList.add('game-select-button');
-		join_mp_match_btn.type = 'select';
+		join_mp_match_btn.type = 'game-select';
 		join_mp_match_btn.textContent = 'Join a Match with antoher player';
 
     // Append the paragraph to the container

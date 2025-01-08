@@ -9,6 +9,11 @@ export default class extends AbstractView {
   }
 
   getDomElements() {
+		// Check that the user is logged in
+		const logCheck = this.checkUserLoggedIn();
+		if (logCheck) return logCheck;
+
+		// Continue creating the view if the user is logged in
     // Set the game modal to hidden
     document.getElementById("gameModal").style.display = "none";
 
@@ -24,21 +29,21 @@ export default class extends AbstractView {
 		const local_match_button = document.createElement('button');
 		local_match_button.id = 'localMatchBtn';
     local_match_button.classList.add('game-select-button');
-		local_match_button.type = 'select';
+		local_match_button.type = 'game-select';
 		local_match_button.textContent = 'Local Match';
 
 		// Button to start multiplayer game against another player
 		const multi_player_button = document.createElement('button');
 		multi_player_button.id = 'multiPlayerBtn';
     multi_player_button.classList.add('game-select-button');
-		multi_player_button.type = 'select';
+		multi_player_button.type = 'game-select';
 		multi_player_button.textContent = 'Online Multiplayer';
 
     // Create the button
     const tournament_button = document.createElement('button');
     tournament_button.id = 'tournamentBtn';
     tournament_button.classList.add('game-select-button');
-    tournament_button.type = 'select';
+    tournament_button.type = 'game-select';
     tournament_button.textContent = 'Tournament';
 
     // Append the paragraph to the container
@@ -51,17 +56,19 @@ export default class extends AbstractView {
   }
 
   async afterRender() {
+    try {
+      document.getElementById('localMatchBtn').addEventListener('click', async() => {
+        navigateTo('/local_match_select/');
+      });
 
-    document.getElementById('localMatchBtn').addEventListener('click', async() => {
-			navigateTo('/local_match_select/');
-		});
+      document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
+        navigateTo('/multiplayer_select/');
+      });
 
-		document.getElementById('multiPlayerBtn').addEventListener('click', async() => {
-			navigateTo('/multiplayer_select/');
-		});
-
-    document.getElementById('tournamentBtn').addEventListener('click', () => {
-      navigateTo('/tournament_select/');
-    });
+      document.getElementById('tournamentBtn').addEventListener('click', () => {
+        navigateTo('/tournament_select/');
+      });
+    } catch (error) {
+    }
   }
 }
