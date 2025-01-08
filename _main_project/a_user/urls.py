@@ -12,5 +12,5 @@ urlpatterns = [
 	path('<user_id>/unblock/', views.api_unblock_user_view, name='unblock-user'),
 	path('/update_online_status/', views.api_update_online_status_view, name='update-online-status'),
 	path('/check_online_status/<str:username>/', views.api_get_online_status_view, name='get-online-status'),
-	path('/stats/<str:username>/', views.api_user_game_stats_view, name='stats'),
+	path('stats/<str:stats_username>/', views.api_user_game_stats_view, name='stats'),
 ]

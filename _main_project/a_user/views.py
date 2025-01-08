@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
-from a_user.models import Account, BlockedUser
+from a_user.models import Account, BlockedUser, UserGameStats
 from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
@@ -312,5 +312,6 @@ def api_user_game_stats_view(request, stats_username):
 	context['total_wins'] = user_game_stats.total_wins
 	context['total_losses'] = user_game_stats.total_losses
 
+	print("context: ", context)
 	return Response(context, status=200)
 		

@@ -76,13 +76,12 @@ export async function getOnlineStatus(username) {
 // API endpoint in `a_user/views.py` --> api_user_game_stats_view
 // The request shall pass the username of the profile to get the stats for.
 export async function getUserGameStats(username) {
-	const response = await fetch(`/api_user_game_stats_view/stats/${username}`, {
+	const response = await fetch(`/user/stats/${username}/`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
 		},
-		body: JSON.stringify({}),
 	});
 
 	const data = await response.json();
