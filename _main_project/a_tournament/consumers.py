@@ -4,7 +4,9 @@ from django.shortcuts import get_object_or_404
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Tournament, REQUIRED_NB_PLAYERS
-from .utils import create_round_1_matches
+# from .utils import create_round_1_matches
+
+from django.db import transaction
 
 class TournamentLobbyConsumer(WebsocketConsumer):
 	clients = {}
@@ -14,8 +16,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		self.room = get_object_or_404(Tournament, tournament_name=self.tournament_name)
 		self.room_group_name = f"tournament_{self.tournament_name}"
 		
-
-
 		async_to_sync(self.channel_layer.group_add)(
 			self.room_group_name,
 			self.channel_name
@@ -25,7 +25,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		if self.room_group_name not in TournamentLobbyConsumer.clients:
 			TournamentLobbyConsumer.clients[self.room_group_name] = []
 		TournamentLobbyConsumer.clients[self.room_group_name].append(self.channel_name)
-
 
 
 	def disconnect(self, code):
@@ -61,8 +60,8 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		player_names = [player.username for player in players]
 		last_player_name = player_names[-1] if player_names else None
 
-		if len(player_names) == REQUIRED_NB_PLAYERS:
-			create_round_1_matches(self.tournament_name)
+		# if len(player_names) == REQUIRED_NB_PLAYERS:
+		# 	create_round_1_matches(self.tournament_name)
 
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_group_name,

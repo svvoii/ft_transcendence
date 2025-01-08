@@ -59,7 +59,7 @@ def create_tournament(request):
     tournament.round_2 = round_2
     tournament.save()
     # Tournament.tournament_ids.add(tournament_url)
-    print(Tournament)
+    # print(Tournament)
     return Response({'status': 'success', 
         'message': 'Tournament created successfully.', 
         'url': f'{tournament_url}' }, 
@@ -78,6 +78,11 @@ def get_tournament(request, tournament_name):
         players = [player.username for player in tournament.players.all()]
         nb_players = f'{tournament_nb_players}'
         max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
+
+        # print('[PRINTING USERNAME && LAST PLAYER] ', request.user.username, players[-1])
+
+        if (max_nb_players_reached and request.user.username == players[-1]):
+            tournament.create_round_1_matches()
         return Response({'status': 'success', 
             'players': players,
             'nb_players': nb_players,
@@ -160,40 +165,6 @@ def delete_tournament(request, tournament_name):
         return Response({'status': 'success', 'tournament_name': f'{tournamentName}', 'message': 'Tournament deleted successfully.'}, status=status.HTTP_200_OK)
     else:
         return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
-  
-
-
-# #create the first round of the tournament
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def create_round_1_matches(tournament_name):
-#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
-#         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-
-#         if not tournament.round_1:
-#             round_1 = Round_1.objects.create(tournament=tournament)
-#             tournament.round_1 = round_1
-#             tournament.save()
-
-#         for player in tournament.players.all():
-#             tournament.round_1.players.add(player)
-
-#         player_names = [player.username for player in tournament.round_1.players.all()]
-
-#         match_1_context = create_game_with_2_players_internal(player_names[0], player_names[1])
-#         game_id_1 = match_1_context[0]['game_id']
-
-#         match_2_context = create_game_with_2_players_internal(player_names[2], player_names[3])
-#         game_id_2 = match_2_context[0]['game_id']
-
-#         tournament.round_1.game_id_1 = game_id_1
-#         tournament.round_1.game_id_2 = game_id_2
-#         tournament.save()
-
-#         return 200
-
-#     else:
-#         return 400
 
 
 #START TOURNAMENT
@@ -203,22 +174,23 @@ def get_game_id_round_1(request, tournament_name):
     if Tournament.objects.filter(tournament_name=tournament_name).exists():
         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-        # if not tournament.round_1:
-        #     round_1 = Round_1.objects.create(tournament=tournament)
-        #     tournament.round_1 = round_1
-        #     tournament.save()
-
-        # for player in tournament.players.all():
-        #     tournament.round_1.players.add(player)
+        if not tournament.round_1:
+            print('PROBLEM HERE')
+        else:
+            print('NO PROBLEM HERE')
 
         player_names = [player.username for player in tournament.round_1.players.all()]
 
+
+        print(f'[get function] {request.user.username} tournament.round_1.game_id_1', tournament.round_1.game_id_1)
+        print(f'[get function] {request.user.username} tournament.round_1.game_id_2', tournament.round_1.game_id_2)
 
         user_game_id = None
         if request.user.username in [player_names[0], player_names[1]]:
             user_game_id = tournament.round_1.game_id_1
         elif request.user.username in [player_names[2], player_names[3]]:
             user_game_id = tournament.round_1.game_id_2
+
 
         return Response({'status': 'success',
             'user_game_id': user_game_id,

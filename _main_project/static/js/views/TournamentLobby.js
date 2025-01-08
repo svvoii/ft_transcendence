@@ -88,8 +88,13 @@ export default class extends AbstractView {
 
     try {
 
-      // console.log('Entering the lobby');
 
+      //Entering new player to the database
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      const tournamentDataText = await tournament.text();
+      console.log('Data before websocket connection :', tournamentDataText);
+
+      //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
       user.setTournamentSocket(socket);
       socket.onopen = function() {
@@ -105,10 +110,10 @@ export default class extends AbstractView {
       socket.onclose = function() {
         console.log('WebSocket connection is closed.');
         user.setIsInTournament(false, '');
-
-
       };
 
+
+      //Waiting for server websocket messages
       socket.addEventListener('message', async (event) => {
         const data = JSON.parse(event.data);
         console.log('Data received from the websocket :', data);
@@ -132,26 +137,28 @@ export default class extends AbstractView {
 
         if (data.max_nb_players_reached == true)
         {
-          console.log('check', data.message);
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
-          
-
 
           matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
 
-          const matchMakingData = await matchMaking.text();
+          const matchMakingData = await matchMaking.json();
+          let game_id = matchMakingData.user_game_id;
+
           console.log('Match Making Data :', matchMakingData);
+          console.log('Game ID :', game_id);
 
-          // let game_id = matchMakingData.user_game_id;
+          const gameModal = document.getElementById('gameModal');
+
+          gameBoard.joinExistingGame(game_id);
+          gameModal.style.display = 'flex';
 
 
 
-              // const gameModal = document.getElementById('gameModal');
               // console.log('Joining existing game, game_id: ', game_id);
           
               //   const role = await joinGame(game_id);
-              //   this.paragraph.textContent = `Game ID: ${game_id}`;
-              //   gameModal.style.display = 'flex';
+                // this.paragraph.textContent = `Game ID: ${game_id}`;
+                // gameModal.style.display = 'flex';
           
               //   this.connectWebSocket(role, game_id);
 
@@ -160,13 +167,22 @@ export default class extends AbstractView {
       });
 
 
-      // Getting the tournament object
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // //Getting the tournament object
+      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
 
 
       //printing the tournament data
-      const tournamentDataText = await tournament.text();
-      console.log('Data after entering the lobby :', tournamentDataText);
+      // const tournamentDataText = await tournament.text();
+      // console.log('Data after entering the lobby :', tournamentDataText);
+
+
+      // socket.addEventListener('message', async (event) => {
+      //   const data = JSON.parse(event.data);
+      //   console.log('Data received from the websocket :', data);
+      //   if (data.type == 'new_player') {
+      //     listOfPlayers.innerHTML = '';
+      //     }
+      //   });
 
       /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
