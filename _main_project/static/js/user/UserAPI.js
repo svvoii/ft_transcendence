@@ -90,12 +90,6 @@ export async function getUserGameStats(username) {
 		throw new Error(`ERROR: Server saying: ${data.error}`);
 	}
 
-	if (data) {
-		// DEBUG //
-		console.log('..getUserGameStats, data: ', data);
-		return data;
-	} else {
-		throw new Error('Data not found in the response');
-	}
+	return data;
 }
 

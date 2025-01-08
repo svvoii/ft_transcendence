@@ -17,9 +17,7 @@ export default class extends AbstractModalView {
     title.classList.add('modal-title');
     container.appendChild(title);
 
-    const response = await getUserGameStats(user.getUserName());
-
-    const matchData = await response.json();
+    const matchData = await getUserGameStats(user.getUserName());
 
     console.log(matchData);
 
