@@ -119,6 +119,7 @@ def api_profile_view(request, *args, **kwargs):
 		context['username'] = account_data['username']
 		context['profile_image'] = account_data['profile_image'] if account.profile_image else None
 		context['hide_email'] = account_data['hide_email']
+		context['online'] = account_data['online']
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
 		try:

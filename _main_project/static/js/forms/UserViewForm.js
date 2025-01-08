@@ -49,6 +49,12 @@ export default class extends AbstractModalView {
         friendBadge.classList.add('friend-badge');
         usernameDiv.appendChild(friendBadge);
       }
+      if (userData.online === true) {
+        const onlineBadge = document.createElement('span');
+        onlineBadge.textContent = ' (Online)';
+        onlineBadge.classList.add('friend-badge');
+        usernameDiv.appendChild(onlineBadge);
+      }
       container.appendChild(usernameDiv);
 
       // Create the email paragraph
