@@ -47,6 +47,12 @@ def api_register_view(request, *args, **kwargs):
 
 @api_view(["GET"])
 def api_logout_view(request):
+
+	anonUser = request.user
+	user = Account.objects.get(username=anonUser.username)
+	user.online = False
+	user.save()
+
 	logout(request)
 	return Response({"message": "You have been logged out."})
 	# return redirect('home')
@@ -67,6 +73,9 @@ def api_login_view(request, *args, **kwargs):
 		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
 		if account:
 			login(request, account)
+			account.online = True
+			account.save()
+			print("account.online is currently set to ", account.online)
 			return Response({
 				"message": "Login Successful", 
 				"redirect": reverse('js_home'),
