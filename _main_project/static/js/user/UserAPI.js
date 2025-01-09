@@ -79,7 +79,7 @@ export async function getOnlineStatus(username) {
 // The request shall pass the username of the profile to get the stats for.
 export async function getUserGameStats(username) {
 	const response = await fetch(`/user/stats/${username}/`, {
-		method: 'GET',
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
