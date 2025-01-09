@@ -1,6 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import { user, gameBoard } from "../index.js";
-
+import { user, gameBoard, chat } from "../index.js";
 import { joinGame } from '../game/GameAPI.js';
 
 
@@ -302,6 +301,10 @@ export default class extends AbstractView {
   startCountdown(game_id) {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
+
+    chat.openChat();
+    chat.addChatMessage('system', 'The tournament will start in 10 seconds');
+    chat.addChatMessage('system', 'Good luck!!!');
     
     countdownElement.style.display = 'block';
     
@@ -320,6 +323,7 @@ export default class extends AbstractView {
   
   async startRound(game_id) {
     await this.sleep(10000);
+    chat.closeChat();
     console.log('Starting the round');
 
     // call function to start the round here
