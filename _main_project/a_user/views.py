@@ -272,42 +272,42 @@ def api_unblock_user_view(request, user_id):
 
 	
 # Endpoint to update the Online status of the user
-@login_required
-@api_view(['POST'])
-def api_update_online_status_view(request):
-	context = {}
-	try:
-		user = request.user
-		online_status = request.data.get('online_status', False)
-		user.online = online_status
-		user.save()
-		context['message'] = f'Online status updated to {online_status}'
-		return Response(context, status=200)
-	except Exception as e:
-		context['message'] = f'Error: {str(e)}'
-		return Response(context, status=400)
+# @login_required
+# @api_view(['POST'])
+# def api_update_online_status_view(request):
+# 	context = {}
+# 	try:
+# 		user = request.user
+# 		online_status = request.data.get('online_status', False)
+# 		user.online = online_status
+# 		user.save()
+# 		context['message'] = f'Online status updated to {online_status}'
+# 		return Response(context, status=200)
+# 	except Exception as e:
+# 		context['message'] = f'Error: {str(e)}'
+# 		return Response(context, status=400)
 
 
 # Endpoint to get the Online status of the user
-@login_required
-@api_view(['GET'])
-def api_get_online_status_view(request, username):
-	context = {}
-	try:
-		user = Account.objects.get(username=username)
-		context = {
-			'username': user.username,
-			'online': user.online
-		}
-		return Response(context, status=200)
-	except Account.DoesNotExist:
-		context['message'] = 'User not found.'
-		return Response(context, status=404)
+# @login_required
+# @api_view(['GET'])
+# def api_get_online_status_view(request, username):
+# 	context = {}
+# 	try:
+# 		user = Account.objects.get(username=username)
+# 		context = {
+# 			'username': user.username,
+# 			'online': user.online
+# 		}
+# 		return Response(context, status=200)
+# 	except Account.DoesNotExist:
+# 		context['message'] = 'User not found.'
+# 		return Response(context, status=404)
 
 
 # Endpoint to get the UseGameStats on the profile view page
 @login_required
-@api_view(['GET'])
+@api_view(['POST'])
 def api_user_game_stats_view(request, stats_username):
 	context = {}
 	# user = request.user
@@ -324,4 +324,45 @@ def api_user_game_stats_view(request, stats_username):
 
 	print("context: ", context)
 	return Response(context, status=200)
+
+
+# Endpoint to get the Match History of the user
+@login_required
+@api_view(['POST'])
+def api_get_match_history_view(request, username):
+	context = {}
+	try:
+		user = Account.objects.get(username=username)
+	except Account.DoesNotExist:
+		context['message'] = 'User not found.'
+		return Response(context, status=404)
+
+	# Querying all game sessions where the user is involved
+	game_sessions = GameSession.objects.filter(
+		Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user)
+	).order_by('-created_at')
 		
+	# Serializing the game sessions data
+	match_history = []
+	for session in game_sessions:
+		match_history.append({
+			'game_id': session.game_id,
+			'mode': session.get_mode_string(),
+			'players': {
+				'player1': session.player1.username if session.player1 else None,
+				'player2': session.player2.username if session.player2 else None,
+				'player3': session.player3.username if session.player3 else None,
+				'player4': session.player4.username if session.player4 else None,
+			},
+			'scores': {
+				'score1': session.score1,
+				'score2': session.score2,
+				'score3': session.score3,
+				'score4': session.score4,
+			},
+			'winner': session.winner.username if session.winner else None,
+			'date': session.created_at,
+		})
+	context['match_history'] = match_history
+	return Response(context, status=200)
+

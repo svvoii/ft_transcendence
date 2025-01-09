@@ -18,8 +18,9 @@ function getCookie(name) {
 
 // This fetch request will update the online status of the user.
 // API endpoint in `a_user/views.py` --> api_update_online_status_view
+/*
 export async function updateOnlineStatus(online) {
-	const response = await fetch('/api_update_online_status_view/', {
+	const response = await fetch('/update_online_status/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export async function updateOnlineStatus(online) {
 // This fetch request will check if the user is online.
 // API endpoint in `a_user/views.py` --> api_get_online_status_view
 export async function getOnlineStatus(username) {
-	const response = await fetch(`/api_get_online_status_view/${username}`, {
+	const response = await fetch(`/check_online_status/${username}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -70,14 +71,37 @@ export async function getOnlineStatus(username) {
 		throw new Error('Data not found in the response');
 	}
 }
+*/
 
 
 // This fetch request will get the data from UserGameStats model.
-// API endpoint in `a_user/views.py` --> api_user_game_stats_view
+// API endpoint in `a_user/views.py` --> /user/stats/<str:stats_username>/
 // The request shall pass the username of the profile to get the stats for.
 export async function getUserGameStats(username) {
 	const response = await fetch(`/user/stats/${username}/`, {
 		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+		},
+	});
+
+	const data = await response.json();
+
+	if (!response.ok) {
+		throw new Error(`ERROR: Server saying: ${data.error}`);
+	}
+
+	return data;
+}
+
+
+// This fetch request will get the match history for the fiven user.
+// API endpoint in `a_user/views.py` --> /user/match_history/<str:username>/
+// The request shall pass the username of the profile to get the match history for.
+export async function getUserMatchHistory(username) {
+	const response = await fetch(`/user/match_history/${username}/`, {
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),

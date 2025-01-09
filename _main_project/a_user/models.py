@@ -87,6 +87,14 @@ class UserGameStats(models.Model):
 	total_games_played = models.IntegerField(default=0)
 	total_wins = models.IntegerField(default=0)
 	total_losses = models.IntegerField(default=0)
+
+	def update_stats(self, is_win):
+		self.total_games_played += 1
+		if is_win:
+			self.total_wins += 1
+		else:
+			self.total_losses += 1
+		self.save()
 	
 	def __str__(self):
 		return f'{self.user.username}\'s game stats'

@@ -4,7 +4,7 @@ from django.db import models
 from django.core.cache import cache
 from .models import GameSession
 from .game_logic import GameState
-from a_user.models import Account
+from a_user.models import Account, UserGameStats
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -265,12 +265,9 @@ def update_user_game_stats(game_session):
 	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
 	for player in players:
 		if player:
-			player.usergamestats.total_games_played += 1
-			if player == game_session.winner:
-				player.usergamestats.total_wins += 1
-			else:
-				player.usergamestats.total_losses += 1
-			player.usergamestats.save()
+			user_game_stats = UserGameStats.objects.get(user=player)
+			is_win = (player == game_session.winner)
+			user_game_stats.update_stats(is_win)
 
 
 # This function is called when the user clicks the "Quit Game" button
