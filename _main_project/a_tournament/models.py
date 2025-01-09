@@ -10,90 +10,109 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-# import time
+# from .utils import create_round_1_matches
+
+from django.http import Http404, JsonResponse, HttpRequest
+from django.shortcuts import get_object_or_404
+
+import json
+
+from a_game.views import GameSession, create_game_with_2_players_internal
+
 
 REQUIRED_NB_PLAYERS = 4
 
-# tournament_ids = set()
 
 class Tournament(models.Model):
-    tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
-    players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
-    nb_players = models.IntegerField(default=0, editable=True, validators=[MaxValueValidator(REQUIRED_NB_PLAYERS)])
-    winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
-    round_1 = models.ForeignKey('Round_1', related_name='tournament_round_1', blank=True, null=True, on_delete=models.SET_NULL)
-    round_2 = models.ForeignKey('Round_2', related_name='tournament_round_2', blank=True, null=True, on_delete=models.SET_NULL)
+	tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+	players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
+	nb_players = models.IntegerField(default=0, editable=True, validators=[MaxValueValidator(REQUIRED_NB_PLAYERS)])
+	winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
+	created = models.DateTimeField(auto_now_add=True)
+	round_1 = models.ForeignKey('Round_1', related_name='tournament_round_1', blank=True, null=True, on_delete=models.SET_NULL)
+	round_2 = models.ForeignKey('Round_2', related_name='tournament_round_2', blank=True, null=True, on_delete=models.SET_NULL)
 
-    # def add_tournament_id(self):
-    #     tournament_ids.add(self.tournament_name) 
-        
+	def __str__(self):
+		return self.tournament_name
 
-    def __str__(self):
-        return self.tournament_name
+	def updateNbPlayers(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		self.nb_players = self.players.count()
+		super().save(*args, **kwargs)
 
-    def updateNbPlayers(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.nb_players = self.players.count()
-        super().save(*args, **kwargs)
-
-    def clean(self):
-        if self.players.count() != NB_PLAYERS:
-            raise ValidationError(f'The number of players must be exactly {NB_PLAYERS}.')
-
-    class Meta:
-        ordering = ['-created']
-
-    def create_matches(self):
-        players = list(self.players.all())
-        matches = []
-        for i in range(0, len(players), 2):
-            if i+1 < len(players):
-                match = Match.objects.create(tournament=self, player1=player[i], player2=players[i+1])
-                matches.append(match)
-        return matches
-
-    # def update_players_with_winners
-    #     winners = []
-    #     for match in self.matches
-
-# @receiver(m2m_changed, sender=Tournament.players.through)
-# def check_players_count(sender, instance, **kwargs):
-#     if instance.players.count() == REQUIRED_NB_PLAYERS:
-#         channel_layer = get_channel_layer()
-
-#         # time.sleep(5)
-
-#         async_to_sync(channel_layer.group_send)(
-#             f"tournament_{instance.tournament_name}",
-#             {
-#                 'type': 'full_lobby',
-#                 'message': "The lobby is full. The game will start soon.",
-#             }
-#         )
+		# if (self.nb_players == REQUIRED_NB_PLAYERS):
+		# 	print('[MAX NB PLAYERS REACHED] creating round 1 matches')
+		# 	self.create_round_1_matches()
 
 
-# class AllTournaments(models.Model):
-#     tournaments = models.ManyToManyField(Tournament, related_name='all_tournaments')
-#     created = models.DateTimeField(auto_now_add=True)
+	def clean(self):
+		if self.players.count() != NB_PLAYERS:
+			raise ValidationError(f'The number of players must be exactly {NB_PLAYERS}.')
 
-#     def __str__(self):
-#         return ', '.join([tournament.tournament_name for tournament in self.tournaments.all()])
+	class Meta:
+		ordering = ['-created']
 
-#     class Meta:
-#         ordering = ['-created']
+	def create_matches(self):
+		players = list(self.players.all())
+		matches = []
+		for i in range(0, len(players), 2):
+			if i+1 < len(players):
+				match = Match.objects.create(tournament=self, player1=player[i], player2=players[i+1])
+				matches.append(match)
+		return matches
+
+
+	#create the first round of the tournament
+	def create_round_1_matches(self):
+		tournament_name = self.tournament_name
+		if not self.round_1:
+			round_1 = Round_1.objects.create(tournament=self)
+			self.round_1 = round_1
+			self.save()
+
+		for player in self.players.all():
+			self.round_1.players.add(player)
+
+		player_names = [player.username for player in self.round_1.players.all()]
+
+		game_session_1, status_1 = create_game_with_2_players_internal(player_names[0], player_names[1])
+		game_session_2, status_2 = create_game_with_2_players_internal(player_names[2], player_names[3])
+
+		if not isinstance(game_session_1, GameSession):
+			raise ValueError("game_session_1 must be a GameSession instance")
+		if not isinstance(game_session_2, GameSession):
+			raise ValueError("game_session_2 must be a GameSession instance")
+
+		self.round_1.game_session_1 = game_session_1
+		self.round_1.game_session_2 = game_session_2
+		self.round_1.save()
+		self.save()
+
+		if not self.round_1.game_session_1:
+			print('GAME_SESSION_1 PROBLEM HERE')
+		else:
+			print('NO GAME_SESSION_1 PROBLEM HERE')
+
+		print('[create function] game id 1', self.round_1.game_session_1.game_id)
+		print('[create function] game id 2', self.round_1.game_session_2.game_id)
+
+		# self.save()
+
+		return 200
+
+
 
 class Match(models.Model):
-    tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
-    players = models.ManyToManyField(Account, related_name='Match_as_players', blank=True)
-    winner = models.ForeignKey(Account, related_name='matches_won', blank=True, null=True, on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
+	tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
+	players = models.ManyToManyField(Account, related_name='Match_as_players', blank=True)
+	winner = models.ForeignKey(Account, related_name='matches_won', blank=True, null=True, on_delete=models.SET_NULL)
+	created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.player1.username} vs {self.player2.username}'
+	def __str__(self):
+		return f'{self.player1.username} vs {self.player2.username}'
 
-    class Meta:
-        ordering = ['-created']
+	class Meta:
+		ordering = ['-created']
 
 
 # class TournamentMessage(models.Model):
@@ -109,24 +128,24 @@ class Match(models.Model):
 
 
 class Round_1(models.Model):
-    tournament_name = models.ForeignKey(Tournament, related_name='round_1_as_tournament', on_delete=models.CASCADE)
-    players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
-    winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
-    game_id_1 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
-    game_id_2 = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
+	tournament_name = models.ForeignKey(Tournament, related_name='round_1_as_tournament', on_delete=models.CASCADE)
+	players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
+	winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
+	created = models.DateTimeField(auto_now_add=True)
+	game_session_1 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_1', blank=True, null=True, on_delete=models.SET_NULL)
+	game_session_2 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_2', blank=True, null=True, on_delete=models.SET_NULL)
 
-    def __str__(self):
-        return f'round_1 {self.tournament.tournament_name}'
+	def __str__(self):
+		return f'round_1 {self.tournament.tournament_name}'
 
 
 class Round_2(models.Model):
-    tournament_name = models.ForeignKey(Tournament, related_name='round_2_as_tournament', on_delete=models.CASCADE)
-    players = models.ForeignKey(Account, related_name='round_2_as_players', blank=True, null=True, on_delete=models.CASCADE)
-    winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
+	tournament_name = models.ForeignKey(Tournament, related_name='round_2_as_tournament', on_delete=models.CASCADE)
+	players = models.ForeignKey(Account, related_name='round_2_as_players', blank=True, null=True, on_delete=models.CASCADE)
+	winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
+	created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'round_2 {self.tournament.tournament_name}'
+	def __str__(self):
+		return f'round_2 {self.tournament.tournament_name}'
 
 
