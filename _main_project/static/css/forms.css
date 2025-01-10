@@ -226,10 +226,11 @@
   display: flex;
 }
 
-.user-view-left {
-
-}
+/* .user-view-left {
+} */
 
 .user-view-right {
-
+  position: relative;
+  left: 2rem;
+  top: 2rem;
 }

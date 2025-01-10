@@ -108,12 +108,33 @@ export default class extends AbstractModalView {
       ///// rightContainer /////
 
       const userStatsTitle = document.createElement('h2');
-      userStatsTitle.textContent = 'Stats';
+      userStatsTitle.textContent = 'User Stats';
 
       rightContainer.appendChild(userStatsTitle);
 
       const userStats = await getUserGameStats(userData.username);
       console.log(userStats);
+
+      const statsList = document.createElement('ul');
+      statsList.classList.add('user-stats-list');
+
+      const statStr = document.createElement('li');
+      statStr.textContent = `${userStats.stats_str}`;
+      statsList.appendChild(statStr);
+
+      const statTGP = document.createElement('li');
+      statTGP.textContent = `${userStats.total_games_played} games played`;
+      statsList.appendChild(statTGP);
+
+      const statTW = document.createElement('li');
+      statTW.textContent = `${userStats.total_wins} wins`;
+      statsList.appendChild(statTW);
+
+      const statTL = document.createElement('li');
+      statTL.textContent = `${userStats.total_losses} losses`;
+      statsList.appendChild(statTL);
+
+      rightContainer.appendChild(statsList);
 
       ///// Append the containers to the main container /////
 
