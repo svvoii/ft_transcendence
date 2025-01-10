@@ -220,3 +220,15 @@
 .username-search {
   margin-right: 0.5rem;
 }
+
+.user-view-container {
+  display: flex;
+}
+
+.user-view-left {
+
+}
+
+.user-view-right {
+
+}
