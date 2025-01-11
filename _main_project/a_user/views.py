@@ -35,6 +35,8 @@ def api_register_view(request, *args, **kwargs):
 		account = authenticate(email=email, password=raw_password)
 		login(request, account)
 		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		account.online = True
+		account.save()
 		return Response({
 			"message": "Registration Successful", 
 			"redirect": reverse('js_home'),
