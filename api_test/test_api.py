@@ -6,13 +6,16 @@ BASE_URL = 'http://127.0.0.1:8000/'
 # Function to test the `api_register_view` endpoint
 def test_register_user(email, username, password1, password2):
 	api_endpoint = f'{BASE_URL}/register/'
+	headers = {
+		'X-Requested-With': 'XMLHttpRequest'
+	}
 	data = {
 		'email': email,
 		'username': username,
 		'password1': password1,
 		'password2': password2
 	}
-	response = requests.post(api_endpoint, json=data)
+	response = requests.post(api_endpoint, headers=headers, json=data)
 	print('POST /register/')
 	print('Status Code:', response.status_code)
 	try:
@@ -24,12 +27,15 @@ def test_register_user(email, username, password1, password2):
 # Function to test the `api_login_view` endpoint
 def test_login_user(email, password):
 	api_endpoint = f'{BASE_URL}/login/'
+	headers = {
+		'X-Requested-With': 'XMLHttpRequest'
+	}
 	data = {
 		'email': email,
 		'password': password
 	}
 	session = requests.Session()
-	response = session.post(api_endpoint, json=data)
+	response = session.post(api_endpoint, headers=headers, json=data)
 	print('POST /login/')
 	print('Status Code:', response.status_code)
 	try:
@@ -46,7 +52,8 @@ def test_login_user(email, password):
 def test_create_game_session(session, csrf_token, mode):
 	api_endpoint = f'{BASE_URL}/game/create_game/'
 	headers = {
-		'X-CSRFToken': csrf_token
+		'X-CSRFToken': csrf_token,
+		'X-Requested-With': 'XMLHttpRequest'
 	}
 	data = {
 		'mode': mode
@@ -67,7 +74,8 @@ def test_create_game_session(session, csrf_token, mode):
 def test_join_game_session(session, csrf_token, game_id):
 	api_endpoint = f'{BASE_URL}/game/join_game/{game_id}/'
 	headers = {
-		'X-CSRFToken': csrf_token
+		'X-CSRFToken': csrf_token,
+		'X-Requested-With': 'XMLHttpRequest'
 	}
 	response = session.post(api_endpoint, headers=headers)
 	print(f'POST /game/join_game/{game_id}/')
@@ -85,6 +93,7 @@ def test_join_game_session(session, csrf_token, game_id):
 def test_get_game_state(session, game_id):
 	api_endpoint = f'{BASE_URL}/game/game_state/{game_id}/'
 	headers = {
+		'X-Requested-With': 'XMLHttpRequest'
     }
 	response = session.get(api_endpoint, headers=headers)
 	print(f'GET /game/game_state/{game_id}/')
@@ -99,7 +108,8 @@ def test_get_game_state(session, game_id):
 def test_move_paddle(session, csrf_token, game_id, paddle, direction):
 	api_endpoint = f'{BASE_URL}/game/move_paddle/{game_id}/'
 	headers = {
-		'X-CSRFToken': csrf_token
+		'X-CSRFToken': csrf_token,
+		'X-Requested-With': 'XMLHttpRequest'
     }
 	data = {
         'paddle': paddle,
@@ -119,7 +129,8 @@ def test_move_paddle(session, csrf_token, game_id, paddle, direction):
 def test_end_game_session(session, csrf_token, game_id):
 	api_endpoint = f'{BASE_URL}/game/end_game/{game_id}/'
 	headers = {
-		'X-CSRFToken': csrf_token
+		'X-CSRFToken': csrf_token,
+		'X-Requested-With': 'XMLHttpRequest'
 	}
 	response = session.post(api_endpoint, headers=headers)
 	print(f'POST /game/end_game_session/{game_id}/')
@@ -134,7 +145,8 @@ def test_end_game_session(session, csrf_token, game_id):
 def test_quit_game_session(session, csrf_token):
 	api_endpoint = f'{BASE_URL}/game/quit_game/'
 	headers = {
-		'X-CSRFToken': csrf_token
+		'X-CSRFToken': csrf_token,
+		'X-Requested-With': 'XMLHttpRequest' 
 	}
 	response = session.post(api_endpoint, headers=headers)
 	print(f'POST /game/quit_game/')
