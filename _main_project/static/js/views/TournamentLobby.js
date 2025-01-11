@@ -147,7 +147,11 @@ export default class extends AbstractView {
             
 
 
-            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
+            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			});
 
             const matchMakingData = await matchMaking.text();
             console.log('Match Making Data :', matchMakingData);
@@ -168,7 +172,11 @@ export default class extends AbstractView {
         });
 
         // Getting the tournament object
-        const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+        const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
+		  headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		  }
+		});
 
 
         //printing the tournament data

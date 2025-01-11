@@ -15,9 +15,17 @@ export default class extends AbstractModalView {
       }
       let userResponse = null;
       if (data) {
-        userResponse = await fetch(`/user/${data.id}/`);
+        userResponse = await fetch(`/user/${data.id}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
       } else {
-        userResponse = await fetch(`/user/${user.getUserId()}/`);
+        userResponse = await fetch(`/user/${user.getUserId()}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
       }
       const userData = await userResponse.json();
 
@@ -138,7 +146,11 @@ export default class extends AbstractModalView {
       friendRequestsHeading.textContent = 'Friend Requests';
 
       for (const request of friend_requests) {
-        const response = await fetch(`/user/${request.sender}/`);
+        const response = await fetch(`/user/${request.sender}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
 
         const senderAccount = await response.json();
 
@@ -176,7 +188,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/accept-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -198,7 +211,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/decline-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -238,7 +252,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/send-friend-request/${userData.username}/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
         });
@@ -264,7 +279,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/cancel-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
         });
@@ -298,7 +314,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/remove-friend/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -324,7 +341,8 @@ export default class extends AbstractModalView {
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-csrftoken': this.getCookie('csrftoken')
+            'x-csrftoken': this.getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest'
           },
           body: JSON.stringify({
             'blocked_user': userData.id
@@ -344,7 +362,8 @@ export default class extends AbstractModalView {
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-csrftoken': this.getCookie('csrftoken')
+            'x-csrftoken': this.getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest'
           }
         });
         if (response.status === 200) {

@@ -16,7 +16,11 @@ export default class extends AbstractModalView {
     title.classList.add('modal-title');
     container.appendChild(title);
 
-    const response = await fetch(`/user/${user.getUserId()}/`);
+    const response = await fetch(`/user/${user.getUserId()}/`, {
+	  headers: {
+	    'X-Requested-With': 'XMLHttpRequest'
+	  }
+	});
 
     const userData = await response.json();
 

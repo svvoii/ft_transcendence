@@ -25,6 +25,7 @@ export async function updateOnlineStatus(online) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({ online: online }),
 	});
@@ -53,6 +54,7 @@ export async function getOnlineStatus(username) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({}),
 	});
@@ -83,6 +85,7 @@ export async function getUserGameStats(username) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 	});
 
@@ -105,6 +108,7 @@ export async function getUserMatchHistory(username) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 	});
 

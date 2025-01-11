@@ -95,7 +95,11 @@ export default class extends AbstractView {
 
   async navigate_to_tournamentURL_if_valid(linkFormText) {
 
-    const response = await fetch(`/tournament/tournament_check_in/${linkFormText.value}/`, {});
+    const response = await fetch(`/tournament/tournament_check_in/${linkFormText.value}/`, {
+	  headers: {
+		'X-Requested-With': 'XMLHttpRequest'
+	  }
+	});
 
     const responseText = await response.text();
     const data = JSON.parse(responseText);
