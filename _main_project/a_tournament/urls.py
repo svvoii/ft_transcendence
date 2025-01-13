@@ -13,4 +13,6 @@ urlpatterns = [
     # path('start_round_1/<str:tournament_name>/', views.start_round_1, name='start_round_1'),
     path('get_game_id_round_1/<str:tournament_name>/', views.get_game_id_round_1, name='get_game_id_round_1'),
     # path('check_if_exists/<str:tournament_name>/', views.check_if_exists, name='check_if_exists'),
+	path('is_part_of_tournament/<str:game_id>/', views.is_part_of_tournament, name='is_part_of_tournament'),
+
 ]

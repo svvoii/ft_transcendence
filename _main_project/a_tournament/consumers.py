@@ -56,23 +56,56 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 
 	def receive(self, text_data):
 		text_data_json = json.loads(text_data)
+		message_type = text_data_json.get('type')
 		players = self.room.players.all()
 		player_names = [player.username for player in players]
 		last_player_name = player_names[-1] if player_names else None
 
 		# if len(player_names) == REQUIRED_NB_PLAYERS:
 		# 	create_round_1_matches(self.tournament_name)
+		# print('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+		# print(f"Received message: {text_data_json}")
 
-		async_to_sync(self.channel_layer.group_send)(
-			self.room_group_name,
-			{
-				'type': 'new_player',
-				'message': 'A new player has entered the lobby',
-				'player_names': player_names,
-				'max_nb_players_reached': len(player_names) == REQUIRED_NB_PLAYERS,
-				'last_player_name': last_player_name,
-			}
-		)
+		if (message_type == 'new_player' and len(player_names) < REQUIRED_NB_PLAYERS):
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'new_player',
+					'message': 'A new player has entered the lobby',
+					'player_names': player_names,
+					'max_nb_players_reached': len(player_names) == REQUIRED_NB_PLAYERS,
+					'last_player_name': last_player_name,
+				}
+			)
+		elif (message_type == 'new_player' and len(player_names) == REQUIRED_NB_PLAYERS):
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'start_round_1',
+					'message': 'Round 1 has started',
+					'player_names': player_names,
+				}
+			)
+		elif (message_type == 'game_finished'):
+			# print('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
+			# print('game_index is : ', text_data_json.get('game_index'))
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'game_finished',
+					'game_index': text_data_json.get('game_index'),
+					'winner': text_data_json.get('winner'),
+				}
+			)			
+		# elif (message_type == 'start_round_2'):
+		# 	async_to_sync(self.channel_layer.group_send)(
+		# 		self.room_group_name,
+		# 		{
+		# 			'type': 'start_round_2',
+		# 			'message': 'Round 2 has started',
+		# 			'player_names': player_names,
+		# 		}
+		# 	)
 
 	def new_player(self, event):
 		message = event['message']
@@ -87,15 +120,33 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'last_player_name': last_player_name,
 		}))
 
-	# def full_lobby(self, event):
-	# 	message = event['message']
+	def start_round_1(self, event):
+		message = event['message']
+		player_names = event['player_names']
+		self.send(text_data=json.dumps({
+			'type': 'start_round_1',
+			'message': message,
+			'player_names': player_names,
+		}))
 
+	def game_finished(self, event):
+		game_index = event['game_index']
+		winner = event['winner']
+		self.send(text_data=json.dumps({
+			'type': 'game_finished',
+			'game_index': game_index,
+			'winner': winner,
+		}))
+
+	# def start_round_2(self, event):
+	# 	message = event['message']
+	# 	player_names = event['player_names']
 	# 	self.send(text_data=json.dumps({
-	# 		# 'type': event['type'],
-	# 		'type': 'full_lobby',
+	# 		'type': 'start_round_2',
 	# 		'message': message,
-	# 		'list_of_clients': self.list_clients(),
+	# 		'player_names': player_names,
 	# 	}))
+
 
 	def list_clients(self):
 		return TournamentLobbyConsumer.clients.get(self.room_group_name, [])

@@ -9,6 +9,7 @@ export default class extends AbstractView {
     super(params);
     this.setTitle("Tounament Lobby");
     this.name = "TournamentLobby";
+    this.round_1_finished = 0;
   }
 
   // async function start_tournament(tournamentID) {
@@ -96,16 +97,13 @@ export default class extends AbstractView {
       currentUrl = currentUrl.slice(0, -1);
       const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
       lobbyLink.textContent = tournamentID;
-      
-      let matchMaking;
+
 
       try {
-
 
       //Entering new player to the database
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
       const tournamentDataText = await tournament.text();
-      console.log('Data before websocket connection :', tournamentDataText);
 
       //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -114,7 +112,8 @@ export default class extends AbstractView {
         console.log('WebSocket connection is established.');
         user.setIsInTournament(true, tournamentID);
         const message = {
-          'message': 'New player entering the lobby.'
+          'message': 'New player entering the lobby.',
+          'type': 'new_player',
         };
         socket.send(JSON.stringify(message));
 
@@ -125,51 +124,48 @@ export default class extends AbstractView {
         user.setIsInTournament(false, '');
       };
 
-        socket.addEventListener('message', async (event) => {
-          const data = JSON.parse(event.data);
-          console.log('Data received from the websocket :', data);
-          if (data.type == 'new_player') {
-            listOfPlayers.innerHTML = '';
-            data.player_names.forEach( player => {
-                const li = document.createElement('li');
-                li.innerText = player;
-                listOfPlayers.appendChild(li);
-              });
-            }
-          else if (data.type == 'player_leaving_tournament') {
-            listOfPlayers.innerHTML = '';
-            data.player_names.forEach( player => {
-                const li = document.createElement('li');
-                li.innerText = player;
-                listOfPlayers.appendChild(li);
-                fullLobbyDiv.textContent = 'Waiting for more players to join...';
-              });
-            }
-
-        if (data.max_nb_players_reached == true)
+      socket.addEventListener('message', async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type == 'new_player') 
+        {
+          listOfPlayers.innerHTML = '';
+          data.player_names.forEach( player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+            });
+        }
+        else if (data.type == 'player_leaving_tournament') 
+        {
+          listOfPlayers.innerHTML = '';
+          data.player_names.forEach( player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+              fullLobbyDiv.textContent = 'Waiting for more players to join...';
+            });
+        }
+        else if (data.type == 'start_round_1')
         {
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
+          this.start_tournament(tournamentID);
+        } 
+        else if (data.type == 'game_finished')
+        {
+          console.log('MESSAGE');
+          // console.log(data.message);
+          if (data.game_index == 'round_1_game_1') {
+            document.getElementById('round1leftWinner').textContent = data.winner;
+          }
+          else if (data.game_index == 'round_1_game_2') {
+            document.getElementById('round1rightWinner').textContent = data.winner;
+          }
+          else if (data.game_index == 'round_2_game_') {
+            document.getElementById('winnerName').textContent = data.winner;
+          }
 
-          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
-
-          const matchMakingData = await matchMaking.json();
-          let game_id = matchMakingData.user_game_id;
-
-          console.log('Match Making Data :', matchMakingData);
-          console.log('Game ID :', game_id);
-
-          // const gameModal = document.getElementById('gameModal');
-
-          // gameBoard.joinExistingGame(game_id);
-          // gameModal.style.display = 'flex';
-
-          this.showTournamentBracket();
-          this.bracketNameFill(matchMakingData);
-          this.startCountdown(game_id);
-
-        }
-      });
-
+          }
+        });
       }
       catch(error) {
         console.error('Error:', error);
@@ -197,6 +193,42 @@ export default class extends AbstractView {
     } catch (error) {
     }
   };
+
+  async start_tournament(tournamentID) {
+    await this.start_round_1(tournamentID);
+
+    // await this.start_round_2(tournamentID);
+    // await this.finish_tournament(tournamentID);
+  }
+
+
+  async start_round_1(tournamentID) {
+
+    const matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
+
+    const matchMakingData = await matchMaking.json();
+
+    if (matchMakingData.status == 'error') {
+      throw new Error(matchMakingData.message);
+    }
+
+    let game_id = matchMakingData.user_game_id;
+
+    console.log('Match Making Data :', matchMakingData);
+    console.log('Game ID :', game_id);
+
+    this.showTournamentBracket();
+    this.bracketNameFill(matchMakingData);
+    await this.startCountdown(game_id);
+    await this.startRound(game_id);
+
+    // while (waiting)
+    // {
+    //   check that the round isnt finish
+    //   await this.sleep(1000);
+    // }
+
+  }
 
   showTournamentBracket() {
     const tournamentBracket = document.createElement('div');
@@ -299,7 +331,7 @@ export default class extends AbstractView {
 
   }
   
-  startCountdown(game_id) {
+  async startCountdown() {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
     
@@ -314,12 +346,10 @@ export default class extends AbstractView {
         countdownElement.style.display = 'none';
       }
     }, 1000);
-
-    this.startRound(game_id);
+    await this.sleep(10000);
   }
   
   async startRound(game_id) {
-    await this.sleep(10000);
     console.log('Starting the round');
 
     // call function to start the round here

@@ -144,6 +144,7 @@ class Round_2(models.Model):
 	players = models.ForeignKey(Account, related_name='round_2_as_players', blank=True, null=True, on_delete=models.CASCADE)
 	winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
+	game_session = models.ForeignKey(GameSession, related_name='round_2_as_game_session', blank=True, null=True, on_delete=models.SET_NULL)
 
 	def __str__(self):
 		return f'round_2 {self.tournament.tournament_name}'

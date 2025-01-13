@@ -3,6 +3,7 @@ from django.http import Http404, JsonResponse, HttpRequest
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.db import models
 
 from .models import Tournament, Round_1, Round_2, REQUIRED_NB_PLAYERS
 from .consumers import TournamentLobbyConsumer
@@ -14,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+from a_game.models import GameSession
 
 # from a_game.views import create_game_with_2_players_internal
 
@@ -174,16 +176,6 @@ def get_game_id_round_1(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-		# if not tournament.round_1:
-		#     print('ROUND_1 PROBLEM HERE')
-		# else:
-		#     print('NO ROUND_1 PROBLEM HERE')
-
-		# if not tournament.round_1.game_session_1:
-		#     print('GAME_SESSION_1 PROBLEM HERE')
-		# else:
-		#     print('NO GAME_SESSION_1 PROBLEM HERE')
-
 		player_names = [player.username for player in tournament.round_1.players.all()]
 
 
@@ -194,6 +186,12 @@ def get_game_id_round_1(request, tournament_name):
 			elif request.user.username in [player_names[2], player_names[3]]:
 				user_game_id = tournament.round_1.game_session_2.game_id
 
+		else:
+			return Response({'status': 'error', 
+				'message': 'Not enough players to start the tournament.'}, 
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		
 		return Response({'status': 'success',
 			'user_game_id': user_game_id,
 			'user1round1': f'{player_names[0]}',
@@ -211,45 +209,43 @@ def get_game_id_round_1(request, tournament_name):
 			status=status.HTTP_400_BAD_REQUEST)
 
 
-# #START TOURNAMENT
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def get_game_id_round_1(request, tournament_name):
-#     if Tournament.objects.filter(tournament_name=tournament_name).exists():
-#         tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+#For GameLogic.js, when closing the game, checking if the game is part of a tournament
+#If so, send a Websocket that informs that the game has ended
+@api_view(['GET'])
+def is_part_of_tournament(request, game_id):
+	gameSession = get_object_or_404(GameSession, game_id=game_id)
 
-#         if not tournament.round_1:
-#             round_1 = Round_1.objects.create(tournament=tournament)
-#             tournament.round_1 = round_1
-#             tournament.save()
+	is_round_1_game_1 = Round_1.objects.filter(
+		models.Q(game_session_1=gameSession)
+	).exists()
 
-#         for player in tournament.players.all():
-#             tournament.round_1.players.add(player)
+	is_round_1_game_2 = Round_1.objects.filter(
+		models.Q(game_session_2=gameSession)
+	).exists()
 
-#         player_names = [player.username for player in tournament.round_1.players.all()]
+	is_round_2_game = Round_2.objects.filter(
+		models.Q(game_session=gameSession)
+	).exists()
+	
+	player1_name = gameSession.player1.username
+	player2_name = gameSession.player2.username
+	# winnerName = gameSession.winner.username
+	winnerName = 'Player'
+	winner = gameSession.winner
+	if winner:
+		print('WINNER', winner.username)
+	else:
+		print('NO WINNER')
 
-#         match_1_context = create_game_with_2_players_internal(player_names[0], player_names[1])
-#         game_id_1 = match_1_context[0]['game_id']
+	print('HERE IT IS', winnerName)
+	# is_round_1_game_1 = True;
+	# is_part_of_tournament_round_2 = True;
 
-#         match_2_context = create_game_with_2_players_internal(player_names[2], player_names[3])
-#         game_id_2 = match_2_context[0]['game_id']
-
-#         user_game_id = None
-#         if request.user.username in [player_names[0], player_names[1]]:
-#             user_game_id = game_id_1
-#         elif request.user.username in [player_names[2], player_names[3]]:
-#             user_game_id = game_id_2
-
-#         return Response({'status': 'success',
-#             'user_game_id': user_game_id,
-#             'player_1': f'{player_names[0]}',
-#             'player_2': f'{player_names[1]}',
-#             'player_3': f'{player_names[2]}',
-#             'player_4': f'{player_names[3]}',
-			
-#             'message': 'Round 1 started successfully.'},
-#             status=status.HTTP_200_OK)
-#     else:
-#         return Response({'status': 'error', 
-#             'message': 'Tournament does not exist.'}, 
-#             status=status.HTTP_400_BAD_REQUEST)
+	if is_round_1_game_1:
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_1_game_1'}, status=status.HTTP_200_OK)
+	elif is_round_1_game_2:
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_1_game_2'}, status=status.HTTP_200_OK)
+	elif is_round_2_game:
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_2_game'}, status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'Error'}, status=status.HTTP_400_BAD_REQUEST)
