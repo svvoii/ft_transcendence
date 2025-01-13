@@ -31,14 +31,18 @@ export default class extends AbstractModalView {
           console.log("found a match: ", match);
 
           const matchItem = document.createElement('div');
-          friendItem.classList.add('search-result');
+          matchItem.classList.add('match-result');
 
+          for (let i = 0; i < 112; i++) {
+            const matchGameID = document.createElement('span');
+            matchGameID.classList.add('match-game-id');
+            matchGameID.textContent = `Game ID: ${match.game_id}`;
+            matchItem.appendChild(matchGameID);
+          }
+
+          container.appendChild(matchItem);
         }
 
-      //   const profImgElement = document.createElement('img');
-      //   profImgElement.classList.add('profile-image-search');
-      //   profImgElement.src = friend.profile_image;
-      //   friendItem.appendChild(profImgElement);
 
       //   const usernameElement = document.createElement('span');
       //   usernameElement.classList.add('username-search');

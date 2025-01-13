@@ -115,20 +115,16 @@ export default class extends AbstractModalView {
 
       ///// rightContainer /////
 
-      const userStatsTitle = document.createElement('h2');
-      userStatsTitle.textContent = 'User Stats';
-
-      rightContainer.appendChild(userStatsTitle);
-
       const userStats = await getUserGameStats(userData.username);
       // console.log(userStats);
 
+      const userStatsTitle = document.createElement('h3');
+      userStatsTitle.textContent =`${userStats.stats_str}` ;
+      userStatsTitle.style.color = 'var(--primary-color)';
+      rightContainer.appendChild(userStatsTitle);
+
       const statsList = document.createElement('ul');
       statsList.classList.add('user-stats-list');
-
-      const statStr = document.createElement('li');
-      statStr.textContent = `${userStats.stats_str}`;
-      statsList.appendChild(statStr);
 
       const statTGP = document.createElement('li');
       statTGP.textContent = `${userStats.total_games_played} games played`;
