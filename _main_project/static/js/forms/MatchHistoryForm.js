@@ -1,6 +1,6 @@
 import AbstractModalView from "./AbstractModalView.js";
 import { user } from "../index.js";
-import { getUserGameStats } from "../user/UserAPI.js";
+import { getUserMatchHistory } from "../user/UserAPI.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -17,9 +17,40 @@ export default class extends AbstractModalView {
     title.classList.add('modal-title');
     container.appendChild(title);
 
-    const matchData = await getUserGameStats(user.getUserName());
-
+    const matchData = await getUserMatchHistory(data);
     console.log(matchData);
+
+    if (matchData.match_history.length === 0) {
+      const noMatches = document.createElement('p');
+      noMatches.textContent = 'No matches to show';
+      container.appendChild(noMatches);
+    } else {
+      console.log('There are matches to show');
+      for (const match of matchData.match_history) {
+        if (match.winner !== null) {
+          console.log("found a match: ", match);
+
+          const matchItem = document.createElement('div');
+          friendItem.classList.add('search-result');
+
+        }
+
+      //   const profImgElement = document.createElement('img');
+      //   profImgElement.classList.add('profile-image-search');
+      //   profImgElement.src = friend.profile_image;
+      //   friendItem.appendChild(profImgElement);
+
+      //   const usernameElement = document.createElement('span');
+      //   usernameElement.classList.add('username-search');
+      //   usernameElement.textContent = friend.username;
+      //   friendItem.appendChild(usernameElement);
+
+      //   friendItem.addEventListener('click', async () => {
+      //     this.modal.showForm('userViewForm', friend);
+      //   });
+      //   friendsList.appendChild(friendItem);
+      }
+    }
 
     return container;
 
