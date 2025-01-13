@@ -26,6 +26,11 @@ export default class extends AbstractModalView {
       container.appendChild(noMatches);
     } else {
       console.log('There are matches to show');
+
+      const matchHistory = document.createElement('div');
+      matchHistory.classList.add('match-history');
+      container.appendChild(matchHistory);
+
       for (const match of matchData.match_history) {
         if (match.winner !== null) {
           console.log("found a match: ", match);
@@ -33,59 +38,64 @@ export default class extends AbstractModalView {
           const matchItem = document.createElement('div');
           matchItem.classList.add('match-result');
 
-          for (let i = 0; i < 112; i++) {
-            const matchGameID = document.createElement('span');
-            matchGameID.classList.add('match-game-id');
-            matchGameID.textContent = `Game ID: ${match.game_id}`;
-            matchItem.appendChild(matchGameID);
+          // Game ID
+          const matchGameID = document.createElement('p');
+          matchGameID.classList.add('match-game-id');
+          matchGameID.textContent = `Game ID: ${match.game_id}`;
+          matchItem.appendChild(matchGameID);
+
+          // Date
+          const matchDate = document.createElement('p');
+          matchDate.classList.add('match-date');
+          matchDate.textContent = `Date: ${match.date.substring(0, 10)}`;
+          matchItem.appendChild(matchDate);
+
+          // Scores
+          const scoresTitle = document.createElement('p');
+          scoresTitle.classList.add('match-scores-title');
+          scoresTitle.textContent = 'Scores:';
+          matchItem.appendChild(scoresTitle);
+
+          const scoresDiv = document.createElement('div');
+          scoresDiv.classList.add('match-scores');
+
+          const player1Score = document.createElement('p');
+          player1Score.classList.add('match-score');
+          player1Score.textContent = `${match.players.player1}: ${match.scores.score1}`;
+          scoresDiv.appendChild(player1Score);
+
+          const player2Score = document.createElement('p');
+          player2Score.classList.add('match-score');
+          player2Score.textContent = `${match.players.player2}: ${match.scores.score2}`;
+          scoresDiv.appendChild(player2Score);
+
+          if (match.players.player3 !== null) {
+            const player3Score = document.createElement('p');
+            player3Score.classList.add('match-score');
+            player3Score.textContent = `${match.players.player3}: ${match.scores.score3}`;
+            scoresDiv.appendChild(player3Score);
           }
 
-          container.appendChild(matchItem);
+          if (match.players.player4 !== null) {
+            const player4Score = document.createElement('p');
+            player4Score.classList.add('match-score');
+            player4Score.textContent = `${match.players.player4}: ${match.scores.score4}`;
+            scoresDiv.appendChild(player4Score);
+          }
+
+          matchItem.appendChild(scoresDiv);
+
+          // Winner
+          const matchWinner = document.createElement('p');
+          matchWinner.classList.add('match-winner');
+          matchWinner.textContent = `Winner: ${match.winner}`;
+          matchItem.appendChild(matchWinner);
+
+          matchHistory.appendChild(matchItem);
         }
-
-
-      //   const usernameElement = document.createElement('span');
-      //   usernameElement.classList.add('username-search');
-      //   usernameElement.textContent = friend.username;
-      //   friendItem.appendChild(usernameElement);
-
-      //   friendItem.addEventListener('click', async () => {
-      //     this.modal.showForm('userViewForm', friend);
-      //   });
-      //   friendsList.appendChild(friendItem);
       }
+      container.appendChild(matchHistory);
     }
-
     return container;
-
-    // const friendsList = document.createElement('ul');
-    // friendsList.classList.add('search-results');
-
-    // if (userData.friends.length === 0) {
-    //   console.log('no matches to show');
-    // } else {
-    //   for (const friend of userData.friends) {
-    //     const friendItem = document.createElement('div');
-    //     friendItem.classList.add('search-result');
-
-    //     const profImgElement = document.createElement('img');
-    //     profImgElement.classList.add('profile-image-search');
-    //     profImgElement.src = friend.profile_image;
-    //     friendItem.appendChild(profImgElement);
-
-    //     const usernameElement = document.createElement('span');
-    //     usernameElement.classList.add('username-search');
-    //     usernameElement.textContent = friend.username;
-    //     friendItem.appendChild(usernameElement);
-
-    //     friendItem.addEventListener('click', async () => {
-    //       this.modal.showForm('userViewForm', friend);
-    //     });
-    //     friendsList.appendChild(friendItem);
-    //   }
-    //   container.appendChild(friendsList);
-    // }
-
-    // return container;
   }
 }
