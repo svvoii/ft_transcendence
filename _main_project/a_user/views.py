@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
-from a_user.models import Account, BlockedUser
+from a_user.models import Account, BlockedUser, UserGameStats
 from a_friends.models import FriendList, FriendRequest
 from a_friends.utils import get_friend_request_or_false
 from a_friends.friend_request_status import FriendRequestStatus
@@ -35,6 +35,8 @@ def api_register_view(request, *args, **kwargs):
 		account = authenticate(email=email, password=raw_password)
 		login(request, account)
 		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
+		account.online = True
+		account.save()
 		return Response({
 			"message": "Registration Successful", 
 			"redirect": reverse('js_home'),
@@ -47,6 +49,12 @@ def api_register_view(request, *args, **kwargs):
 
 @api_view(["GET"])
 def api_logout_view(request):
+
+	anonUser = request.user
+	user = Account.objects.get(username=anonUser.username)
+	user.online = False
+	user.save()
+
 	logout(request)
 	return Response({"message": "You have been logged out."})
 	# return redirect('home')
@@ -67,6 +75,9 @@ def api_login_view(request, *args, **kwargs):
 		profile_image_url = account.profile_image.url if account.profile_image else get_default_profile_image()
 		if account:
 			login(request, account)
+			account.online = True
+			account.save()
+			print("account.online is currently set to ", account.online)
 			return Response({
 				"message": "Login Successful", 
 				"redirect": reverse('js_home'),
@@ -92,12 +103,12 @@ def api_logged_in_user_view(request):
 	return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def det_redirect_if_exists(request):
-	redirect = None
-	if request.GET:
-		if request.GET.get('next'):
-			redirect = str(request.GET.get('next'))
-	return redirect
+# def det_redirect_if_exists(request):
+# 	redirect = None
+# 	if request.GET:
+# 		if request.GET.get('next'):
+# 			redirect = str(request.GET.get('next'))
+# 	return redirect
 
 
 @api_view(['GET'])
@@ -119,6 +130,7 @@ def api_profile_view(request, *args, **kwargs):
 		context['username'] = account_data['username']
 		context['profile_image'] = account_data['profile_image'] if account.profile_image else None
 		context['hide_email'] = account_data['hide_email']
+		context['online'] = account_data['online']
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
 		try:
@@ -259,3 +271,100 @@ def api_unblock_user_view(request, user_id):
 	# messages.success(request, f'You have unblocked {user_to_unblock.username}.')
 	return Response({"message": f'You have unblocked {user_to_unblock.username}.'}, status=status.HTTP_200_OK)
 	# return redirect('a_user:profile', user_id=user_id)
+
+	
+# Endpoint to update the Online status of the user
+# @login_required
+# @api_view(['POST'])
+# def api_update_online_status_view(request):
+# 	context = {}
+# 	try:
+# 		user = request.user
+# 		online_status = request.data.get('online_status', False)
+# 		user.online = online_status
+# 		user.save()
+# 		context['message'] = f'Online status updated to {online_status}'
+# 		return Response(context, status=200)
+# 	except Exception as e:
+# 		context['message'] = f'Error: {str(e)}'
+# 		return Response(context, status=400)
+
+
+# Endpoint to get the Online status of the user
+# @login_required
+# @api_view(['GET'])
+# def api_get_online_status_view(request, username):
+# 	context = {}
+# 	try:
+# 		user = Account.objects.get(username=username)
+# 		context = {
+# 			'username': user.username,
+# 			'online': user.online
+# 		}
+# 		return Response(context, status=200)
+# 	except Account.DoesNotExist:
+# 		context['message'] = 'User not found.'
+# 		return Response(context, status=404)
+
+
+# Endpoint to get the UseGameStats on the profile view page
+@login_required
+@api_view(['POST'])
+def api_user_game_stats_view(request, stats_username):
+	context = {}
+	# user = request.user
+	user_stats_account = Account.objects.get(username=stats_username)
+	user_game_stats = UserGameStats.objects.get(user=user_stats_account)
+	if not user_stats_account or not user_game_stats:
+		context['message'] = 'User not found.'
+		return Response(context, status=404)
+	
+	context['stats_str'] = str(user_game_stats)
+	context['total_games_played'] = user_game_stats.total_games_played
+	context['total_wins'] = user_game_stats.total_wins
+	context['total_losses'] = user_game_stats.total_losses
+
+	print("context: ", context)
+	return Response(context, status=200)
+
+
+# Endpoint to get the Match History of the user
+@login_required
+@api_view(['POST'])
+def api_get_match_history_view(request, username):
+	context = {}
+	try:
+		user = Account.objects.get(username=username)
+	except Account.DoesNotExist:
+		context['message'] = 'User not found.'
+		return Response(context, status=404)
+
+	# Querying all game sessions where the user is involved
+	game_sessions = GameSession.objects.filter(
+		Q(player1=user) | Q(player2=user) | Q(player3=user) | Q(player4=user)
+	).order_by('-created_at')
+		
+	# Serializing the game sessions data
+	match_history = []
+	for session in game_sessions:
+		match_history.append({
+			'game_id': session.game_id,
+			'mode': session.get_mode_string(),
+			'players': {
+				'player1': session.player1.username if session.player1 else None,
+				'player2': session.player2.username if session.player2 else None,
+				'player3': session.player3.username if session.player3 else None,
+				'player4': session.player4.username if session.player4 else None,
+			},
+			'scores': {
+				'score1': session.score1,
+				'score2': session.score2,
+				'score3': session.score3,
+				'score4': session.score4,
+			},
+			'winner': session.winner.username if session.winner else None,
+			'date': session.created_at,
+		})
+	context['match_history'] = match_history
+	return Response(context, status=200)
+

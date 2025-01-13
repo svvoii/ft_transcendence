@@ -4,7 +4,7 @@ from django.db import models
 from django.core.cache import cache
 from .models import GameSession
 from .game_logic import GameState
-from a_user.models import Account
+from a_user.models import Account, UserGameStats
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -245,6 +245,9 @@ def end_game_session(request, game_id):
 	game_session.is_active = False
 	game_session.save()
 
+	# Update UserGameStats for each player
+	update_user_game_stats(game_session)
+
 	# DEBUG #
 	print(f'Game session ended. Winner: {winner}')
 	print(f'Player 1: {game_state.score1}, Player 2: {game_state.score2}')
@@ -256,6 +259,15 @@ def end_game_session(request, game_id):
 
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)
+
+# Helper function to update the UserGameStats for each player
+def update_user_game_stats(game_session):
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	for player in players:
+		if player:
+			user_game_stats = UserGameStats.objects.get(user=player)
+			is_win = (player == game_session.winner)
+			user_game_stats.update_stats(is_win)
 
 
 # This function is called when the user clicks the "Quit Game" button
@@ -382,4 +394,50 @@ def create_game_with_2_players(request):
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
 
 	return Response(context, status=201)
+
+# This is an internal version of the above function for use in the tournament logic
+def create_game_with_2_players_internal(username1, username2):
+	context = {}
+
+	if not username1 or not username2:
+		context['message'] = 'Both players are required.'
+		return context, 400
+
+	player1 = Account.objects.filter(username=username1).first()
+	player2 = Account.objects.filter(username=username2).first()
+
+	if not player1 or not player2:
+		context['message'] = f'User {username1} or {username2} does not exist.'
+		return context, 400
+	
+	new_game_session = GameSession.objects.create(
+		player1=player1,
+		player2=player2,
+		mode=2
+	)
+	new_game_session.save()
+
+	context['game_id'] = new_game_session.game_id
+	# context['role'] = new_game_session.get_role(user)
+	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Game session created with ID {new_game_session.game_id}')
+	# # # # #
+
+	# Create a new game state object for the new game session
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# Setting game_mode in the GameState object
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
+	game_state.game_mode = 'Multi_2'
+	game_state.num_players = 2
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
+
+	return context, 201
 
