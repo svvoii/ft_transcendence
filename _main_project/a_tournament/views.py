@@ -136,6 +136,13 @@ def remove_player_from_tournament(request, tournament_name):
 			tournament.players.remove(player)
 			tournament.updateNbPlayers()
 			tournament_nb_players = tournament.nb_players
+
+			if tournament_nb_players == 0:
+				tournament.delete()
+				return Response({'status': 'success', 
+					'message': 'Tournament deleted as there are no players left.'}, 
+					status=status.HTTP_200_OK)
+
 			players = [player.username for player in tournament.players.all()]
 			nb_players = f'{tournament_nb_players}'
 			max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
@@ -144,11 +151,14 @@ def remove_player_from_tournament(request, tournament_name):
 				'nb_players': nb_players,
 				'max_nb_players_reached': max_nb_players_reached}, 
 				status=status.HTTP_200_OK)
+
 		else:
 			return Response({'status': 'error', 
 				'message': 'Player does not exist in the tournament.',
 				'request.user.username': request.user.username,}, 
 				status=status.HTTP_400_BAD_REQUEST)
+	
+
 	else:
 		return Response({'status': 'error', 
 			'message': 'Tournament does not exist.'}, 

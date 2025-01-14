@@ -118,14 +118,16 @@ export default class extends AbstractView {
     const responseText = await response.text();
     const data = JSON.parse(responseText);
 
-    console.log("Data before entering lobby :", data);
+    // console.log("Data before entering lobby :", data);
 
     if (data.status === 'success') {
-      console.log('Tournament exists');
+      // console.log('Tournament exists');
       navigateTo(`/tournament_lobby/${linkFormText.value}/`);
     } 
     else if (data.message == 'Tournament is full.') {
       console.log('Max number of players reached. You cannot join that tournament.');
+      alert('Max number of players reached. You cannot join that tournament.');
+
     }
     else {
       console.log('Tournament does not exist');
