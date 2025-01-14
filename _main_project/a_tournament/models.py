@@ -103,6 +103,9 @@ class Tournament(models.Model):
 
 		player_names = [player.username for player in self.round_2.players.all()]
 
+		if (len(player_names) != 2):
+			raise ValueError("Not enough players for round 2")
+
 		game_session, status = create_game_with_2_players_internal(player_names[0], player_names[1])
 
 		self.round_2.game_session = game_session

@@ -155,18 +155,13 @@ export default class extends AbstractView {
         } 
         else if (data.type == 'game_finished')
         {
-          // console.log('MESSAGE');
-          // console.log(data.message);
           if (data.game_index == 'round_1_game_1') {
             document.getElementById('round1leftWinner').textContent = data.winner;
             this.round_1_game_1_finished = 1;
-            // console.log('this.round_1_game_1_finished : ', this.round_1_game_1_finished);
           }
           else if (data.game_index == 'round_1_game_2') {
             document.getElementById('round1rightWinner').textContent = data.winner;
             this.round_1_game_2_finished = 1;
-            // console.log('this.round_1_game_2_finished : ', this.round_1_game_2_finished);
-
           }
           else if (data.game_index == 'round_2_game') {
             document.getElementById('winnerName').textContent = data.winner;
@@ -174,7 +169,6 @@ export default class extends AbstractView {
 
           if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1) 
           {
-            // this.update_round_1_winners(tournamentID);
             console.log('Starting round 2');
             this.round_1_game_1_finished = 0;
             this.round_1_game_2_finished = 0;
@@ -223,9 +217,6 @@ export default class extends AbstractView {
 
     let game_id = matchMakingData.user_game_id;
 
-    // console.log('Match Making Data :', matchMakingData);
-    // console.log('Game ID :', game_id);
-
     this.showTournamentBracket();
     this.bracketNameFill(matchMakingData);
     await this.startCountdown(game_id);
@@ -233,39 +224,38 @@ export default class extends AbstractView {
 
   }
 
-  // async update_round_1_winners(tournamentID) {  
-  //   const updateVar = await fetch(`/tournament/update_round_1_winners/${tournamentID}/`);
-  //   const updateVarData = await updateVar.json();
-  //   console.log('END OF ROUND 1 DATA:', updateVarData);
-  // }
-
   async start_round_2(tournamentID) {
 
     //UPDATING ROUND 1 WINNERS
-    await fetch(`/tournament/update_round_1_winners/${tournamentID}/`);
-
-
-    //CREATING ROUND 2
-    const round_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`);
-    const round2Data = await round_2.json();
-
-    if (round2Data.status == 'error') {
-      throw new Error(round2Data.message);
+    const updateVar = await fetch(`/tournament/update_round_1_winners/${tournamentID}/`);
+    const updateVarData = await updateVar.json();
+    if (updateVarData.status == 'error') {
+      throw new Error('Waiting for the other player to finish the round.');
     }
+    else if (updateVarData.is_part_of_round_2 == 'true') {
+      
+      //CREATING ROUND 2
+      const round_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`);
+      const round2Data = await round_2.json();
+        
+      if (round2Data.status == 'error') {
+        throw new Error(round2Data.message);
+      }
+      
+      //GETTING GAME ID FOR ROUND 2
+      const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`);
+      const matchMakingData = await matchMaking.json();
 
-    //GETTING GAME ID FOR ROUND 2
-    const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`);
-    const matchMakingData = await matchMaking.json();
-
-    if (matchMakingData.status == 'error') {
-      throw new Error(matchMakingData.message);
+      if (matchMakingData.status == 'error') {
+        throw new Error(matchMakingData.message);
+      }
+      
+      let game_id = matchMakingData.user_game_id;
+      
+      await this.startCountdown(game_id);
+      await this.startRound(game_id);
+    
     }
-
-    let game_id = matchMakingData.user_game_id;
-
-    await this.startCountdown(game_id);
-    await this.startRound(game_id);
-
   }
 
   showTournamentBracket() {

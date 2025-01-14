@@ -238,15 +238,27 @@ def update_round_1_winners(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
+		if not tournament.round_1.game_session_1.winner or not tournament.round_1.game_session_2.winner:
+			return Response({'status': 'error', 
+				'message': 'Round 1 winners have not been determined yet.'}, 
+				status=status.HTTP_400_BAD_REQUEST)
+		
 		round_1 = tournament.round_1
 		round_1.winners.add(tournament.round_1.game_session_1.winner)
 		round_1.winners.add(tournament.round_1.game_session_2.winner)
 		round_1.save()
 		tournament.save()
 
-		return Response({'status': 'success',
-			'message': 'Round 1 winners updated successfully.'},
-			status=status.HTTP_200_OK)
+		if (request.user.username in [player.username for player in round_1.winners.all()]):
+			return Response({'status': 'success',
+				'message': 'Round 1 winners updated successfully.',
+				'is_part_of_round_2': 'true'},
+				status=status.HTTP_200_OK)
+		else:
+			return Response({'status': 'success', 
+				'message': 'Round 1 winners updated successfully.',
+				'is_part_of_round_2': 'false'}, 
+				status=status.HTTP_200_OK)
 	else:
 		return Response({'status': 'error', 
 			'message': 'Tournament does not exist.'}, 
