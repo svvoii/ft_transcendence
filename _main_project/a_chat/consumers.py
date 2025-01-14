@@ -8,8 +8,9 @@ from .serializers import MessageSerializer
 class ChatConsumer(WebsocketConsumer):
 
 	def connect(self):
-		self.user = self.scope['user']
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
+		# self.room_group_name = f'chat_{self.room_name}'
+		self.user = self.scope['user']
 		self.room = get_object_or_404(ChatRoom, room_name=self.room_name)
 
 		async_to_sync(self.channel_layer.group_add)(
@@ -80,3 +81,16 @@ class ChatConsumer(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'online_count': count,
 		}))
+	
+
+	def chat_close_connection(self, event):
+		message = event['message']
+
+		self.send(text_data=json.dumps({
+			'message': message,
+		}))
+
+		# DEBUG #
+		print(f'Closing connection for {self.user.username}, in room_name: {self.room_name}')
+
+		self.close()

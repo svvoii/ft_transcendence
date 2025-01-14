@@ -67,9 +67,11 @@ def api_get_or_create_chatroom(request, username):
 
 	# Check if the user is blocked by any of the members of the chat room.
 	if BlockedUser.objects.filter(user=other_user, blocked_user=request.user).exists():
-		# messages.warning(request, 'You are blocked by this user and cannot send messages.')
 		return Response({'error': 'You are blocked by this user and cannot send messages.'}, status=status.HTTP_403_FORBIDDEN)
-		# return redirect('a_user:profile', user_id=other_user.id)
+	
+	# Check if the user has blocked any of the members of the chat room.
+	if BlockedUser.objects.filter(user=request.user, blocked_user=other_user).exists():
+		return Response({'error': 'You have blocked this user and cannot send messages.'}, status=status.HTTP_403_FORBIDDEN)
 
 	my_chatrooms = request.user.chat_rooms.filter(is_private=True)
 
@@ -176,7 +178,11 @@ def chatroom_leave_view(request, room_name):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_get_user_chatrooms(request):
-	chatrooms = request.user.chat_rooms.all()
+	# Getting BlockedUser objects where the current user is the blocked_user.
+	blocked_by_users = BlockedUser.objects.filter(blocked_user=request.user).values_list('user', flat=True)
+
+	# chatrooms = request.user.chat_rooms.all()
+	chatrooms = request.user.chat_rooms.exclude(admin__in=blocked_by_users)
 	chatrooms_data = []
 
 	for chatroom in chatrooms:

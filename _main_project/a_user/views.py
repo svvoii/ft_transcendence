@@ -18,8 +18,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Account
 from .serializers import AccountSerializer
+
+from a_chat.models import ChatRoom
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 @api_view(["POST"])
@@ -246,9 +249,26 @@ def api_account_search_view(request, *args, **kwargs):
 def api_block_user_view(request, user_id):
 	user_to_block = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.get_or_create(user=request.user, blocked_user=user_to_block)
-	# messages.success(request, f'You have blocked {user_to_block.username}.')
+	
+	chat_room = ChatRoom.objects.filter(members=user_to_block).filter(members=request.user).first()
+
+	if chat_room:
+		room_name = chat_room.room_name
+
+		channel_layer = get_channel_layer()
+
+		# DEBUG #
+		print(f"Room name: {room_name}, chat.close_connection")
+
+		async_to_sync(channel_layer.group_send)(
+			room_name,
+			{
+				"type": "chat.close_connection",
+				"message": f"You have been blocked by {request.user.username}.",
+			}
+		)
+
 	return Response({"message": f'You have blocked {user_to_block.username}.'}, status=status.HTTP_200_OK)
-	# return redirect('a_user:profile', user_id=user_id)
 
 
 @login_required
