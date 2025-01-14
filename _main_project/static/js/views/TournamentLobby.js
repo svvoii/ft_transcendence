@@ -157,32 +157,30 @@ export default class extends AbstractView {
               });
             }
 
-        if (data.max_nb_players_reached == true)
-        {
+        if (data.max_nb_players_reached == true) {
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
 
-            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
-				headers: {
-					'X-Requested-With': 'XMLHttpRequest'
-				}
-			});
+          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
 
-          const matchMakingData = await matchMaking.json();
-          let game_id = matchMakingData.user_game_id;
+        const matchMakingData = await matchMaking.json();
+        let game_id = matchMakingData.user_game_id;
 
-          console.log('Match Making Data :', matchMakingData);
-          console.log('Game ID :', game_id);
+        console.log('Match Making Data :', matchMakingData);
+        console.log('Game ID :', game_id);
+        // const gameModal = document.getElementById('gameModal');
 
-                // const gameModal = document.getElementById('gameModal');
-                // console.log('Joining existing game, game_id: ', game_id);
-            
-                //   const role = await joinGame(game_id);
-                //   this.paragraph.textContent = `Game ID: ${game_id}`;
-                //   gameModal.style.display = 'flex';
-            
-                //   this.connectWebSocket(role, game_id);
-          }
-        });
+        // gameBoard.joinExistingGame(game_id);
+        // gameModal.style.display = 'flex';
+
+        this.showTournamentBracket();
+        this.bracketNameFill(matchMakingData);
+        this.startCountdown(game_id);
+        }
+      });
 
 
         /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
