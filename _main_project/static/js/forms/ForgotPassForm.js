@@ -58,7 +58,8 @@ export default class extends AbstractModalView {
         method: 'POST',
         headers: {
           'accept': 'application/json',
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       };

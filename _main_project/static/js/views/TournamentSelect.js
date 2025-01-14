@@ -108,7 +108,11 @@ export default class extends AbstractView {
       throw new Error('Invalid link');
     }
 
-    const response = await fetch(`/tournament/tournament_check_in/${linkFormText.value}/`, {});
+    const response = await fetch(`/tournament/tournament_check_in/${linkFormText.value}/`, {
+	  headers: {
+		'X-Requested-With': 'XMLHttpRequest'
+	  }
+	});
 
     if (!response.ok) {
       const data = await response.json();

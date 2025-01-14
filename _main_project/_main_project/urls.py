@@ -19,13 +19,13 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.conf.urls import handler404
 
 from a_user.views import api_register_view, api_login_view, api_logout_view, api_account_search_view, api_logged_in_user_view
-from a_spa_frontend.views import index
+from a_spa_frontend.views import index, custom_404_view
 from a_pass import views
 
-
-
+handler404 = custom_404_view
 
 urlpatterns = [
     path('', index, name='js_home'),
@@ -52,7 +52,8 @@ urlpatterns = [
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
 
-    re_path(r'^.*/', include('a_spa_frontend.urls')),
+    re_path(r'^.*/', include('a_spa_frontend.urls'), name='catch_all'),
+
 ]
 
 

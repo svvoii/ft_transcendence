@@ -380,8 +380,12 @@ input:focus {
 	border: #58ffeccf 2px solid;
 }
 
-.game-select-button {
+.game-buttons {
     margin: 10px;
+}
+
+.game-button {
+  margin-right: 1rem;
 }
 
 /* * * * * * * * * * * * * * */

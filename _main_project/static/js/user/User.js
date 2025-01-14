@@ -18,6 +18,7 @@ export default class User {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+		  'X-Requested-With': 'XMLHttpRequest',
         },
       });
 
@@ -47,7 +48,11 @@ export default class User {
   async userLogout() {
     try {
       chat.clearChat();
-      await fetch('/logout/')
+      await fetch('/logout/', {
+		headers: {
+		  'X-Requested-With': 'XMLHttpRequest'
+		}
+	  })
       this.userName = '';
       this.userImg = '';
       this.loggedIn = false;

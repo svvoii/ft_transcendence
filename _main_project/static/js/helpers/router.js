@@ -63,7 +63,11 @@ export const router = async () => {
 
     // // Remove the player from the tournament
     const tournamentURL = user.getTournamentURL();
-    const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`)
+    const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`, {
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		}
+	})
   
 
     const responseText = await response.text();

@@ -54,6 +54,7 @@ class Account(AbstractBaseUser):
 	is_superuser = models.BooleanField(default=False)
 	profile_image = models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
 	hide_email = models.BooleanField(default=True)
+	online = models.BooleanField(default=False)
 
 	objects = MyAccountManager()
 
@@ -72,6 +73,31 @@ class Account(AbstractBaseUser):
 
 	def has_module_perms(self, app_label):
 		return True
+
+	# Here we override the default save method to create a UserGameStats object for the user as soon as the user is created
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		if not hasattr(self, 'usergamestats'):
+			UserGameStats.objects.create(user=self)
+
+
+# This model is addition to the default Account model to store the uo to date statistics of games played by the user
+class UserGameStats(models.Model):
+	user = models.OneToOneField(Account, on_delete=models.CASCADE)
+	total_games_played = models.IntegerField(default=0)
+	total_wins = models.IntegerField(default=0)
+	total_losses = models.IntegerField(default=0)
+
+	def update_stats(self, is_win):
+		self.total_games_played += 1
+		if is_win:
+			self.total_wins += 1
+		else:
+			self.total_losses += 1
+		self.save()
+	
+	def __str__(self):
+		return f'{self.user.username}\'s game stats'
 
 
 # The following model / db table will store the blocked users relationship.
