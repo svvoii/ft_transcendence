@@ -102,8 +102,20 @@ export default class extends AbstractView {
 
 
       //Entering new player to the database
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // const tournamentDataText = await tournament.text();
+
+      // Getting the tournament object
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      //printing the tournament data
       const tournamentDataText = await tournament.text();
+
+      console.log('Data after entering the lobby :', tournamentDataText);
+
       console.log('Data before websocket connection :', tournamentDataText);
 
       //Establishing the websocket connection
@@ -172,17 +184,6 @@ export default class extends AbstractView {
           }
         });
 
-        // Getting the tournament object
-        const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
-		  headers: {
-			'X-Requested-With': 'XMLHttpRequest'
-		  }
-		});
-
-
-        //printing the tournament data
-        const tournamentDataText = await tournament.text();
-        console.log('Data after entering the lobby :', tournamentDataText);
 
         /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 

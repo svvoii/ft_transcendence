@@ -54,13 +54,13 @@ export default class extends AbstractView {
                   const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
 
                   const response = await fetch(`/tournament/create_tournament/`, {
-                      method: 'POST',
-                      headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json',
-                          'X-CSRFToken': csrftoken,
-						  'X-Requested-With': 'XMLHttpRequest'
-                      },
+                    method: 'POST',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': csrftoken,
+                      'X-Requested-With': 'XMLHttpRequest'
+                    },
                       body: JSON.stringify({ }),
                   });
 
@@ -81,7 +81,7 @@ export default class extends AbstractView {
                 }
         /////////////////////////////// DELETE TOURNAMENT //////////////////////////////////////
 
-        //     const csrftoken = getCookie('csrftoken'); // Function to get the CSRF token from cookies
+        //     const csrftoken = getCookie('csrftoken'); // Function to get thCSRF token from cookies
 
         //     const response = await fetch(`/tournament/delete_tournament/${tournamentName}/`, {
         //       method: 'DELETE',
