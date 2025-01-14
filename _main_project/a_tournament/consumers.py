@@ -96,7 +96,9 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 					'game_index': text_data_json.get('game_index'),
 					'winner': text_data_json.get('winner'),
 				}
-			)			
+			)
+			# game_index = text_data_json.get('game_index')
+			
 		# elif (message_type == 'start_round_2'):
 		# 	async_to_sync(self.channel_layer.group_send)(
 		# 		self.room_group_name,

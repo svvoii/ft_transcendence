@@ -82,19 +82,13 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			}			
 			
 			const text = await is_part_of_tournament.text();
-			// console.log('TEXT ', text);
-			
 			const data = JSON.parse(text);
-			console.log('Winner ', winner);
-			console.log('Is part of tournament : ', data.status);
 
 			if (data.status === 'Error') {
 				return false;
 			}
 
 			let winnerName = '';
-			// console.log('Type of winner:', typeof(winner));
-			// console.log('Winner:', winner);
 			if (winner == 'player1') {
 				winnerName = data.player1;
 			}
@@ -102,16 +96,7 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 				winnerName = data.player2;	
 			}
 
-			// const winnerName = data.winner;
-			//////////////////////////////////////////////////////////
-			//Get the game session if game_id
-			// get the winner name according to player_1 or player_2
-			// send the winner's name
-			//////////////////////////////////////////////////////////
-
 			socket = user.getTournamentSocket();
-
-			// if (data.game_index == )
 			
 			const message = {
 				'message': 'Game finished.',
@@ -123,7 +108,6 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			socket.send(JSON.stringify(message));
 
 			if (data.status === 'success') {
-				
 				return true;
 			} else {
 				return false;

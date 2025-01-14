@@ -208,6 +208,70 @@ def get_game_id_round_1(request, tournament_name):
 			'message': 'Tournament does not exist.'}, 
 			status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def create_round_2(request, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		tournament.create_round_2_matches();
+
+		player_names = [player.username for player in tournament.round_2.players.all()]
+
+		user_game_id = tournament.round_2.game_session.game_id
+
+		return Response({'status': 'success',
+			'user_game_id': user_game_id,
+			'user1round2': player_names[0],
+			'user2round2': player_names[1],
+			'userWinner': '',
+			'message': 'Round 2 started successfully.'},
+			status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'error', 
+			'message': 'Tournament does not exist.'}, 
+			status=status.HTTP_400_BAD_REQUEST)
+			
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def update_round_1_winners(request, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		round_1 = tournament.round_1
+		round_1.winners.add(tournament.round_1.game_session_1.winner)
+		round_1.winners.add(tournament.round_1.game_session_2.winner)
+		round_1.save()
+		tournament.save()
+
+		return Response({'status': 'success',
+			'message': 'Round 1 winners updated successfully.'},
+			status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'error', 
+			'message': 'Tournament does not exist.'}, 
+			status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_game_id_round_2(request, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		player_names = [player.username for player in tournament.round_2.players.all()]
+
+		user_game_id = tournament.round_2.game_session.game_id
+
+		return Response({'status': 'success',
+			'user_game_id': user_game_id,
+			'user1round2': f'{player_names[0]}',
+			'user2round2': f'{player_names[1]}',
+			'message': 'Round 2 started successfully.'},
+			status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'error', 
+			'message': 'Tournament does not exist.'}, 
+			status=status.HTTP_400_BAD_REQUEST)
 
 #For GameLogic.js, when closing the game, checking if the game is part of a tournament
 #If so, send a Websocket that informs that the game has ended
@@ -230,22 +294,18 @@ def is_part_of_tournament(request, game_id):
 	player1_name = gameSession.player1.username
 	player2_name = gameSession.player2.username
 	# winnerName = gameSession.winner.username
-	winnerName = 'Player'
-	winner = gameSession.winner
-	if winner:
-		print('WINNER', winner.username)
-	else:
-		print('NO WINNER')
+	# winnerName = 'Player'
+	# winner = gameSession.winner
 
-	print('HERE IT IS', winnerName)
+
 	# is_round_1_game_1 = True;
 	# is_part_of_tournament_round_2 = True;
 
 	if is_round_1_game_1:
-		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_1_game_1'}, status=status.HTTP_200_OK)
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'game_index': 'round_1_game_1'}, status=status.HTTP_200_OK)
 	elif is_round_1_game_2:
-		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_1_game_2'}, status=status.HTTP_200_OK)
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'game_index': 'round_1_game_2'}, status=status.HTTP_200_OK)
 	elif is_round_2_game:
-		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'winner': winnerName, 'game_index': 'round_2_game'}, status=status.HTTP_200_OK)
+		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'game_index': 'round_2_game'}, status=status.HTTP_200_OK)
 	else:
 		return Response({'status': 'Error'}, status=status.HTTP_400_BAD_REQUEST)

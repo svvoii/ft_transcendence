@@ -88,19 +88,28 @@ class Tournament(models.Model):
 		self.round_1.save()
 		self.save()
 
-		if not self.round_1.game_session_1:
-			print('GAME_SESSION_1 PROBLEM HERE')
-		else:
-			print('NO GAME_SESSION_1 PROBLEM HERE')
-
-		print('[create function] game id 1', self.round_1.game_session_1.game_id)
-		print('[create function] game id 2', self.round_1.game_session_2.game_id)
-
-		# self.save()
-
 		return 200
 
 
+	def create_round_2_matches(self):
+		tournament_name = self.tournament_name
+		if not self.round_2:
+			round_2 = Round_2.objects.create(tournament=self)
+			self.round_2 = round_2
+			self.save()
+
+		for player in self.round_1.winners.all():
+			self.round_2.players.add(player)
+
+		player_names = [player.username for player in self.round_2.players.all()]
+
+		game_session, status = create_game_with_2_players_internal(player_names[0], player_names[1])
+
+		self.round_2.game_session = game_session
+		self.round_2.save()
+		self.save()
+
+		return 200
 
 class Match(models.Model):
 	tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
@@ -130,7 +139,7 @@ class Match(models.Model):
 class Round_1(models.Model):
 	tournament_name = models.ForeignKey(Tournament, related_name='round_1_as_tournament', on_delete=models.CASCADE)
 	players = models.ManyToManyField(Account, related_name='round_1_as_players', blank=True)
-	winners = models.ForeignKey(Account, related_name='round_1_as_winners', blank=True, null=True, on_delete=models.SET_NULL)
+	winners = models.ManyToManyField(Account, related_name='round_1_as_winners', blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	game_session_1 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_1', blank=True, null=True, on_delete=models.SET_NULL)
 	game_session_2 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_2', blank=True, null=True, on_delete=models.SET_NULL)
@@ -141,7 +150,7 @@ class Round_1(models.Model):
 
 class Round_2(models.Model):
 	tournament_name = models.ForeignKey(Tournament, related_name='round_2_as_tournament', on_delete=models.CASCADE)
-	players = models.ForeignKey(Account, related_name='round_2_as_players', blank=True, null=True, on_delete=models.CASCADE)
+	players = models.ManyToManyField(Account, related_name='round_2_as_players', blank=True)
 	winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
 	game_session = models.ForeignKey(GameSession, related_name='round_2_as_game_session', blank=True, null=True, on_delete=models.SET_NULL)
