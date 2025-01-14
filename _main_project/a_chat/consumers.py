@@ -86,11 +86,14 @@ class ChatConsumer(WebsocketConsumer):
 	def chat_close_connection(self, event):
 		message = event['message']
 
+		# DEBUG #
+		print(f'..chat consumer, message: {message}')
+
 		self.send(text_data=json.dumps({
-			'message': message,
+			'blocked': message,
 		}))
 
 		# DEBUG #
-		print(f'Closing connection for {self.user.username}, in room_name: {self.room_name}')
+		# print(f'Closing connection for {self.user.username}, in room_name: {self.room_name}')
 
 		self.close()

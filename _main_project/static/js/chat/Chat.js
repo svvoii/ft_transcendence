@@ -237,7 +237,10 @@ export default class Chat {
           if (message.online_count) {
             this.addChatMessage('system', `Online Users: ${message.online_count}`);
             return;
-          } else if (message.user !== user.getUserName()) {
+          } else if (message.blocked) {
+			this.addChatMessage('system', message.blocked);
+			return;
+		  } else if (message.user !== user.getUserName()) {
             this.addChatMessage(message.user, message.message.msg_content);
           }
         } catch (error) {

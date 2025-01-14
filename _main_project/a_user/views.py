@@ -268,17 +268,16 @@ def api_block_user_view(request, user_id):
 
 	if chat_room:
 		room_name = chat_room.room_name
-
 		channel_layer = get_channel_layer()
+		message = f"This chat is now Void. User {user_to_block.username} has been blocked by {request.user.username}."
 
 		# DEBUG #
-		print(f"Room name: {room_name}, chat.close_connection")
-
+		# print(f"Room name: {room_name}, chat.close_connection")
 		async_to_sync(channel_layer.group_send)(
 			room_name,
 			{
 				"type": "chat.close_connection",
-				"message": f"You have been blocked by {request.user.username}.",
+				"message": message,
 			}
 		)
 
