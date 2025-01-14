@@ -55,6 +55,14 @@ export default class extends AbstractView {
     tournamentLinkInput.placeholder = 'Enter link';
     tournamentLinkInput.required = true;
     tournamentLinkInput.autofocus = true;
+    tournamentLinkInput.minLength = 23;
+
+    const errorText = document.createElement('p');
+    errorText.id = 'errorText';
+    errorText.classList.add('message');
+    errorText.textContent = '';
+    errorText.style.display = 'block';
+    errorText.style.marginBottom = '0';
 
     // Append the paragraph to the container
     container.appendChild(setTitle);
@@ -63,6 +71,7 @@ export default class extends AbstractView {
     container.appendChild(orStatement);
     container.appendChild(form);
     container.appendChild(tournamentLinkInput);
+    container.appendChild(errorText);
     container.appendChild(join_mp_match_btn);
 
     return container;
@@ -80,13 +89,13 @@ export default class extends AbstractView {
         console.log('link sent by user : ', document.getElementById('tournamentLinkInput').value);
       });
 
-      document.getElementById('joinMPMatchBtn').addEventListener('click', () => {
-        console.log('Join Tournament Lobby Button Clicked');
+      document.getElementById('joinMPMatchBtn').addEventListener('click', async() => {
+        // console.log('Join Tournament Lobby Button Clicked');
 
         try {
-            this.navigate_to_tournamentURL_if_valid(document.getElementById('tournamentLinkInput'));
+          await this.navigate_to_tournamentURL_if_valid(document.getElementById('tournamentLinkInput'));
         } catch (error) {
-          console.error('Error:', error);
+          document.getElementById('errorText').textContent = error;
         }
       });
     } catch (error) {
@@ -95,7 +104,16 @@ export default class extends AbstractView {
 
   async navigate_to_tournamentURL_if_valid(linkFormText) {
 
+    if (linkFormText.value.length < 22) {
+      throw new Error('Invalid link');
+    }
+
     const response = await fetch(`/tournament/tournament_check_in/${linkFormText.value}/`, {});
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
 
     const responseText = await response.text();
     const data = JSON.parse(responseText);
