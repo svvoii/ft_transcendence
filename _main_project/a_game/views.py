@@ -395,6 +395,10 @@ def create_game_with_2_players(request):
 
 	return Response(context, status=201)
 
+
+
+
+
 # This is an internal version of the above function for use in the tournament logic
 def create_game_with_2_players_internal(username1, username2):
 	context = {}
@@ -418,12 +422,10 @@ def create_game_with_2_players_internal(username1, username2):
 	new_game_session.save()
 
 	context['game_id'] = new_game_session.game_id
-	# context['role'] = new_game_session.get_role(user)
 	context['message'] = 'Game session created successfully.'
 
 	# DEBUG #
-	print(f'NEW Game session created with ID {new_game_session.game_id}')
-	# # # # #
+	print(f'NEW Tournament Game session created with ID {new_game_session.game_id}')
 
 	# Create a new game state object for the new game session
 	game_state = GameState()
@@ -439,5 +441,5 @@ def create_game_with_2_players_internal(username1, username2):
 	# DEBUG #
 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
 
-	return context, 201
+	return new_game_session, 201
 
