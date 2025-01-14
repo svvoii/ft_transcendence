@@ -63,6 +63,7 @@ export default class extends AbstractModalView {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+		'X-Requested-With': 'XMLHttpRequest'
       },
     });
 

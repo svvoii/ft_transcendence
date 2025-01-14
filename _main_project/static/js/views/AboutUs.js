@@ -92,6 +92,7 @@ export default class extends AbstractView {
 
     const link_drew = document.createElement('a');
     link_drew.href = 'https://github.com/Drewski6';
+    // link_drew.target = '_blank';
 
     const photo_drew = document.createElement('img');
     photo_drew.classList.add('profile-photo');

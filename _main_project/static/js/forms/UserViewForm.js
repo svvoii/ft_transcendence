@@ -1,5 +1,6 @@
 import AbstractModalView from "./AbstractModalView.js";
 import { user, chat } from "../index.js";
+import { getUserGameStats, getUserMatchHistory } from "../user/UserAPI.js";
 
 export default class extends AbstractModalView {
   constructor(modal) {
@@ -15,27 +16,44 @@ export default class extends AbstractModalView {
       }
       let userResponse = null;
       if (data) {
-        userResponse = await fetch(`/user/${data.id}/`);
+        userResponse = await fetch(`/user/${data.id}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
       } else {
-        userResponse = await fetch(`/user/${user.getUserId()}/`);
+        userResponse = await fetch(`/user/${user.getUserId()}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
       }
       const userData = await userResponse.json();
 
       // Create the container
       const container = document.createElement('div');
+      container.classList.add('user-view-container');
+
+      const leftContainer = document.createElement('div');
+      leftContainer.classList.add('user-view-left');
+
+      const rightContainer = document.createElement('div');
+      rightContainer.classList.add('user-view-right');
+
+      ///// leftContainer /////
 
       // Create the title
       const title = document.createElement('h2');
       title.textContent = 'View User Profile';
       title.classList.add('modal-title');
-      container.appendChild(title);
+      leftContainer.appendChild(title);
 
       // Create the image element
       const img = document.createElement('img');
       img.src = userData.profile_image;
       img.alt = 'user image';
       img.classList.add('user-image');
-      container.appendChild(img);
+      leftContainer.appendChild(img);
 
       // Create the username heading
       const usernameDiv = document.createElement('div');
@@ -49,23 +67,30 @@ export default class extends AbstractModalView {
         friendBadge.classList.add('friend-badge');
         usernameDiv.appendChild(friendBadge);
       }
-      container.appendChild(usernameDiv);
+      if (userData.online === true) {
+        const onlineBadge = document.createElement('span');
+        onlineBadge.textContent = ' (Online)';
+        onlineBadge.classList.add('friend-badge');
+        usernameDiv.appendChild(onlineBadge);
+      }
+      leftContainer.appendChild(usernameDiv);
 
       // Create the email paragraph
       if (userData.hide_email === false) {
         const emailParagraph = document.createElement('p');
         emailParagraph.textContent = `Email: ${userData.email}`;
-        container.appendChild(emailParagraph);
+        leftContainer.appendChild(emailParagraph);
       }
 
       // Checks if the user is viewing their own profile and renders appropriate buttons
       if (userData.is_self) {
         // Generate and render the list of friend requests
-        this.friendsListButton(container);
-        this.getFriendRequests(container, userData);
+        this.friendsListButton(leftContainer);
+        this.getFriendRequests(leftContainer, userData);
+        this.matchHistoryButton(leftContainer, userData);
       } else {
         // Create the send a message button
-        this.sendAMessageButton(container, userData);
+        this.sendAMessageButton(leftContainer, userData);
         // Create the add friend button
         const friendButtonDiv = document.createElement('div');
         friendButtonDiv.id = 'friend-button-div';
@@ -82,10 +107,43 @@ export default class extends AbstractModalView {
         } else if (userData.is_friend === true) {
           this.unfriendButton(friendButtonDiv, userData);
         }
-        container.appendChild(friendButtonDiv);
+        leftContainer.appendChild(friendButtonDiv);
         // Create the block or unblock button
-        this.blockUnblockButtons(container, userData);
+        this.blockUnblockButtons(leftContainer, userData);
+        this.matchHistoryButton(leftContainer, userData);
       }
+
+      ///// rightContainer /////
+
+      const userStats = await getUserGameStats(userData.username);
+      // console.log(userStats);
+
+      const userStatsTitle = document.createElement('h3');
+      userStatsTitle.textContent =`${userStats.stats_str}` ;
+      userStatsTitle.style.color = 'var(--primary-color)';
+      rightContainer.appendChild(userStatsTitle);
+
+      const statsList = document.createElement('ul');
+      statsList.classList.add('user-stats-list');
+
+      const statTGP = document.createElement('li');
+      statTGP.textContent = `${userStats.total_games_played} games played`;
+      statsList.appendChild(statTGP);
+
+      const statTW = document.createElement('li');
+      statTW.textContent = `${userStats.total_wins} wins`;
+      statsList.appendChild(statTW);
+
+      const statTL = document.createElement('li');
+      statTL.textContent = `${userStats.total_losses} losses`;
+      statsList.appendChild(statTL);
+
+      rightContainer.appendChild(statsList);
+
+      ///// Append the containers to the main container /////
+
+      container.appendChild(leftContainer);
+      container.appendChild(rightContainer);
 
       return container;
 
@@ -108,6 +166,17 @@ export default class extends AbstractModalView {
     container.appendChild(friendsListBtn);
   }
 
+  async matchHistoryButton(container, userData) {
+    const matchHistoryButton = document.createElement('button');
+    matchHistoryButton.id = 'matchHistoryButton';
+    matchHistoryButton.classList.add('select-button');
+    matchHistoryButton.textContent = 'Match History';
+    matchHistoryButton.addEventListener('click', async() => {
+      this.modal.showForm('matchHistoryForm', userData.username);
+    });
+    container.appendChild(matchHistoryButton);
+  }
+
   async getFriendRequests(container, userData) {
     // Create a list like the search list for displaying friend requests
     // might also consider moving userData.is_self to a function
@@ -119,7 +188,11 @@ export default class extends AbstractModalView {
       friendRequestsHeading.textContent = 'Friend Requests';
 
       for (const request of friend_requests) {
-        const response = await fetch(`/user/${request.sender}/`);
+        const response = await fetch(`/user/${request.sender}/`, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		});
 
         const senderAccount = await response.json();
 
@@ -157,7 +230,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/accept-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -179,7 +253,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/decline-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -219,7 +294,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/send-friend-request/${userData.username}/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
         });
@@ -245,7 +321,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/cancel-friend-request/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
         });
@@ -279,7 +356,8 @@ export default class extends AbstractModalView {
       const response = await fetch(`/friends/remove-friend/`, {
         method: 'POST',
         headers: {
-          'x-csrftoken': this.getCookie('csrftoken')
+          'x-csrftoken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       });
@@ -305,7 +383,8 @@ export default class extends AbstractModalView {
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-csrftoken': this.getCookie('csrftoken')
+            'x-csrftoken': this.getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest'
           },
           body: JSON.stringify({
             'blocked_user': userData.id
@@ -325,7 +404,8 @@ export default class extends AbstractModalView {
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-csrftoken': this.getCookie('csrftoken')
+            'x-csrftoken': this.getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest'
           }
         });
         if (response.status === 200) {

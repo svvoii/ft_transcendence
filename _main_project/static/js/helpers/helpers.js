@@ -7,6 +7,7 @@ export const loginCheck = async (return_data = false) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+		'X-Requested-With': 'XMLHttpRequest',
       },
     });
 

@@ -102,8 +102,20 @@ export default class extends AbstractView {
 
 
       //Entering new player to the database
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // const tournamentDataText = await tournament.text();
+
+      // Getting the tournament object
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      //printing the tournament data
       const tournamentDataText = await tournament.text();
+
+      console.log('Data after entering the lobby :', tournamentDataText);
+
       console.log('Data before websocket connection :', tournamentDataText);
 
       //Establishing the websocket connection
@@ -145,29 +157,33 @@ export default class extends AbstractView {
               });
             }
 
-        if (data.max_nb_players_reached == true)
-        {
+        if (data.max_nb_players_reached == true) {
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
 
-          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
+          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
 
-          const matchMakingData = await matchMaking.json();
-          let game_id = matchMakingData.user_game_id;
+        const matchMakingData = await matchMaking.json();
+        let game_id = matchMakingData.user_game_id;
 
-          console.log('Match Making Data :', matchMakingData);
-          console.log('Game ID :', game_id);
+        console.log('Match Making Data :', matchMakingData);
+        console.log('Game ID :', game_id);
+        // const gameModal = document.getElementById('gameModal');
 
-          // const gameModal = document.getElementById('gameModal');
+        // gameBoard.joinExistingGame(game_id);
+        // gameModal.style.display = 'flex';
 
-          // gameBoard.joinExistingGame(game_id);
-          // gameModal.style.display = 'flex';
-
-          this.showTournamentBracket();
-          this.bracketNameFill(matchMakingData);
-          this.startCountdown(game_id);
-
+        this.showTournamentBracket();
+        this.bracketNameFill(matchMakingData);
+        this.startCountdown(game_id);
         }
       });
+
+
+        /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
       }
       catch(error) {

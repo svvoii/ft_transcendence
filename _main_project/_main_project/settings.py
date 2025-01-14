@@ -85,6 +85,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
 	'allauth.account.middleware.AccountMiddleware',
+	'_main_project.middleware.UnauthorizedAccessMiddleware',
 ]
 
 ROOT_URLCONF = '_main_project.urls'
@@ -243,3 +244,4 @@ SOCIALACCOUNT_PROVIDERS = {
 
 if DEBUG:
 	EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

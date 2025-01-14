@@ -160,7 +160,11 @@ export default class Chat {
     document.querySelector('.chat-title').textContent = `${title}`;
 
     const titleClick = async() => {
-      const response = await fetch(`/search/?q=${encodeURIComponent(title)}`);
+      const response = await fetch(`/search/?q=${encodeURIComponent(title)}`, {
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		}
+	  });
       if (response.ok) {
         const data = await response.json();
         modal.showForm('userViewForm', data.accounts[0][0]);
@@ -202,7 +206,11 @@ export default class Chat {
     await this.setChatTitle(username);
     try {
       // Get the chatroom name
-      const response = await fetch(`/chat/chat/${username}`);
+      const response = await fetch(`/chat/chat/${username}`, {
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		}
+	  });
       const data = await response.json();
       // console.log("Data:", data);
       if (data.error) {
@@ -299,7 +307,11 @@ export default class Chat {
 
   async getMessageHistory(room_name) {
     try {
-      const response = await fetch(`/chat/chat/${room_name}/messages`);
+      const response = await fetch(`/chat/chat/${room_name}/messages`, {
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'	
+		}
+	  });
 
       const data = await response.json();
 
@@ -326,7 +338,11 @@ export default class Chat {
   // Returns an array of chatroom objects
   async getAllUserChatrooms() {
     try {
-      const response = await fetch('/chat/chat/get_chatrooms/');
+      const response = await fetch('/chat/chat/get_chatrooms/', {
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		}
+	  });
       const data = await response.json();
       return data;
     } catch (error) {
