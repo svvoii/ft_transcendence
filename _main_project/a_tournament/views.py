@@ -197,6 +197,8 @@ def get_game_id_round_1(request, tournament_name):
 				user_game_id = tournament.round_1.game_session_2.game_id
 
 		else:
+			print('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+			print(player for player in player_names)
 			return Response({'status': 'error', 
 				'message': 'Not enough players to start the tournament.'}, 
 				status=status.HTTP_400_BAD_REQUEST
