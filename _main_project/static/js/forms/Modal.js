@@ -9,6 +9,7 @@ import ForgotPassForm from './ForgotPassForm.js';
 import UserSearchForm from './UserSearchForm.js';
 import MessagesForm from './MessagesForm.js';
 import FriendsListForm from './FriendsListForm.js';
+import MatchHistoryForm from './MatchHistoryForm.js';
 
 export default class Modal {
   constructor(appId) {
@@ -33,6 +34,7 @@ export default class Modal {
     this.userSearchForm = new UserSearchForm(this);
     this.messagesForm = new MessagesForm(this);
     this.friendsListForm = new FriendsListForm(this);
+    this.MatchHistoryForm = new MatchHistoryForm(this);
 
     // Most recent
     this.mostRecent = null;
@@ -50,6 +52,7 @@ export default class Modal {
       'forgotPassForm': this.forgotPassForm,
       'messagesForm': this.messagesForm,
       'friendsListForm': this.friendsListForm,
+      'matchHistoryForm': this.MatchHistoryForm
     }
   }
 

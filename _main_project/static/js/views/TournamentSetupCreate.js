@@ -59,6 +59,7 @@ export default class extends AbstractView {
                           'Accept': 'application/json',
                           'Content-Type': 'application/json',
                           'X-CSRFToken': csrftoken,
+						  'X-Requested-With': 'XMLHttpRequest'
                       },
                       body: JSON.stringify({ }),
                   });
@@ -87,6 +88,7 @@ export default class extends AbstractView {
         //       headers: {
         //           'Content-Type': 'application/json',
         //           'X-CSRFToken': csrftoken,
+		// 		  	 'X-Requested-With': 'XMLHttpRequest'
         //       },
         //       body: JSON.stringify({ name: tournamentName }), // Include any data you need to send with the request
         //     });

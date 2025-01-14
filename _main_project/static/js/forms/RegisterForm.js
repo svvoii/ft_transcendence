@@ -116,7 +116,8 @@ export default class extends AbstractModalView {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'X-CSRFToken': this.getCookie('csrftoken') // Include CSRF token
+          'X-CSRFToken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify(data)
       };

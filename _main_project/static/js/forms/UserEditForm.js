@@ -14,7 +14,11 @@ export default class extends AbstractModalView {
       if (user.getLoginStatus() === false) {
         return ;
       }
-      const userResponse = await fetch(`/user/${user.getUserId()}/`);
+      const userResponse = await fetch(`/user/${user.getUserId()}/`, {
+		headers: {
+		  'X-Requested-With': 'XMLHttpRequest'
+		}
+	  });
       const userData = await userResponse.json();
 
       // Create the container
@@ -128,7 +132,8 @@ export default class extends AbstractModalView {
       const content = {
         method: 'POST',
         headers: {
-          'X-CSRFToken': this.getCookie('csrftoken')
+          'X-CSRFToken': this.getCookie('csrftoken'),
+		  'X-Requested-With': 'XMLHttpRequest'
         },
         body: formData
       };

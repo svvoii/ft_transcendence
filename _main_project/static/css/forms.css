@@ -109,7 +109,8 @@
   /* margin: 15% auto; 15% from the top and centered */
   margin: calc(5vw) calc(5vw);
   padding: 20px;
-  border: 1px solid #888;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
   width: 80%; /* Could be more or less depending on screen size */
 }
 
@@ -218,5 +219,49 @@
 }
 
 .username-search {
+  margin-right: 0.5rem;
+}
+
+.user-view-container {
+  display: flex;
+}
+
+/* .user-view-left {
+} */
+
+.user-view-right {
+  position: relative;
+  left: 2rem;
+  top: 2rem;
+}
+
+/* Match History Page */
+
+.match-history {
+  max-height: 70vh;
+  /* justify-content: space-between; */
+  margin-bottom: 0.5rem;
+  overflow-y: auto;
+}
+
+.match-result {
+  /* display: flex; */
+  border: 2px solid var(--primary-color);
+}
+
+.match-game-id {
+  color: var(--primary-color);
+}
+
+.match-date {
+  color: var(--secondary-color);
+}
+
+.match-scores {
+  display: flex;
+}
+
+.match-score {
+  color: var(--tertiary-color);
   margin-right: 0.5rem;
 }

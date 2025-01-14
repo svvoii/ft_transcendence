@@ -21,6 +21,7 @@ export async function getGameSession(mode) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({
 			mode: mode,
@@ -49,6 +50,7 @@ export async function joinGame(game_id) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({}),
 	});
@@ -69,7 +71,12 @@ export async function joinGame(game_id) {
 // Game state includes the position of paddles, ball, and scores
 export async function fetchGameState(game_id) {
 
-    const response = await fetch(`/game/game_state/${game_id}/`);
+    const response = await fetch(`/game/game_state/${game_id}/`, {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Requested-With': 'XMLHttpRequest',
+		},
+	});
     if (!response.ok) {
         throw new Error('Failed to fetch game state');
     }
@@ -89,6 +96,7 @@ export async function movePaddle(game_id, paddle, direction) {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({ paddle, direction }),
     });
@@ -111,6 +119,7 @@ export async function endGame(game_id) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({}),
 	});
@@ -129,6 +138,7 @@ export async function quitGame() {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({}),
 	});
@@ -149,6 +159,7 @@ export async function createGameWith2Players(username1, username2) {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
 		},
 		body: JSON.stringify({
 			player1: username1,

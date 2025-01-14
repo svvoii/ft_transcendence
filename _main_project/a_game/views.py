@@ -4,7 +4,7 @@ from django.db import models
 from django.core.cache import cache
 from .models import GameSession
 from .game_logic import GameState
-from a_user.models import Account
+from a_user.models import Account, UserGameStats
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -245,6 +245,9 @@ def end_game_session(request, game_id):
 	game_session.is_active = False
 	game_session.save()
 
+	# Update UserGameStats for each player
+	update_user_game_stats(game_session)
+
 	# DEBUG #
 	print(f'Game session ended. Winner: {winner}')
 	print(f'Player 1: {game_state.score1}, Player 2: {game_state.score2}')
@@ -256,6 +259,15 @@ def end_game_session(request, game_id):
 
 	context['message'] = 'Game session ended successfully.'
 	return Response(context, status=200)
+
+# Helper function to update the UserGameStats for each player
+def update_user_game_stats(game_session):
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	for player in players:
+		if player:
+			user_game_stats = UserGameStats.objects.get(user=player)
+			is_win = (player == game_session.winner)
+			user_game_stats.update_stats(is_win)
 
 
 # This function is called when the user clicks the "Quit Game" button

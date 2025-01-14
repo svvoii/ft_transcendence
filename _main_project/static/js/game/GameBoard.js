@@ -29,17 +29,17 @@ export default class GameBoard {
 		this.paragraph.textContent = '';
 
 		const buttonsDiv = document.createElement('div');
-		buttonsDiv.classList.add('game-select-buttons');
+		buttonsDiv.classList.add('game-buttons');
 
 		const quitGamebtn = document.createElement('button');
 		quitGamebtn.id = 'quitGameBtn';
-		quitGamebtn.classList.add('game-select-button');
+		quitGamebtn.classList.add('game-button');
 		quitGamebtn.classList.add('select');
 		quitGamebtn.textContent = 'Quit Game';
 
 		const readyBtn = document.createElement('button');
 		readyBtn.id = 'readyBtn';
-		readyBtn.classList.add('game-select-button');
+		readyBtn.classList.add('game-button');
 		readyBtn.classList.add('select');
 		readyBtn.textContent = 'Ready';
 
@@ -170,8 +170,7 @@ export default class GameBoard {
 				'type': 'player_ready',
 			}));
 			readyBtn.style.display = 'none';
+
 		});
-
 	}
-
 };
