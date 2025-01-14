@@ -69,7 +69,7 @@ export const router = async () => {
     const responseText = await response.text();
     const data = JSON.parse(responseText);
     
-    console.log('Data after leaving the tournament :', data);
+    // console.log('Data after leaving the tournament :', data);
 
     if (data.status === 'error') {
       console.error('Error while leaving tournament:', data.message);

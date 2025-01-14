@@ -1,4 +1,5 @@
 import { fetchGameState, movePaddle, endGame } from './GameAPI.js';
+import { user } from '../index.js';
 
 // This will initialize the game logic
 // It will draw the paddles and ball on the canvas
@@ -59,10 +60,61 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 	}
 
 	function resetGameBoard() {
+
+		check_if_part_of_tournament(game_id);
+
 		if (socket) socket.close();
 		gameBoardInstance.resetGameBoard();
 		const gameModal = document.getElementById('gameModal');
 		gameModal.style.display = 'none';
+		
+
+
+		//CHECKING IF THE GAME IS PART OF A TOURNAMENT
+
+	}
+
+	async function check_if_part_of_tournament(game_id) {
+		try {
+			const is_part_of_tournament = await fetch(`/tournament/is_part_of_tournament/${game_id}/`);
+			if (!is_part_of_tournament.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}			
+			
+			const text = await is_part_of_tournament.text();
+			const data = JSON.parse(text);
+
+			if (data.status === 'Error') {
+				return false;
+			}
+
+			let winnerName = '';
+			if (winner == 'player1') {
+				winnerName = data.player1;
+			}
+			else if (winner == 'player2') {
+				winnerName = data.player2;	
+			}
+
+			socket = user.getTournamentSocket();
+			
+			const message = {
+				'message': 'Game finished.',
+				'type': 'game_finished',
+				'game_index': data.game_index,
+				'game_id': game_id,
+				'winner': winnerName,
+			  };
+			socket.send(JSON.stringify(message));
+
+			if (data.status === 'success') {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (error) {
+			console.log('Error in checking if part of tournament : ', error);
+		}
 	}
 
     socket.onmessage = function(event) {
