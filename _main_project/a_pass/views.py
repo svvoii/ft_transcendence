@@ -6,10 +6,12 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_custom_password_change_view(request, *args, **kwargs):
   form = PasswordChangeForm(user=request.user, data=request.POST)
   if form.is_valid():
@@ -21,6 +23,7 @@ def api_custom_password_change_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_custom_password_reset_view(request, *args, **kwargs):
   form = PasswordResetForm(data=request.POST)
   if form.is_valid():

@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Q
 
@@ -53,6 +52,7 @@ def api_register_view(request, *args, **kwargs):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def api_logout_view(request):
 
 	anonUser = request.user
@@ -108,15 +108,8 @@ def api_logged_in_user_view(request):
 	return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# def det_redirect_if_exists(request):
-# 	redirect = None
-# 	if request.GET:
-# 		if request.GET.get('next'):
-# 			redirect = str(request.GET.get('next'))
-# 	return redirect
-
-
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def api_profile_view(request, *args, **kwargs):
 	context = {}
 	user_id = kwargs.get('user_id')
@@ -125,8 +118,6 @@ def api_profile_view(request, *args, **kwargs):
 		account = Account.objects.get(pk=user_id)
 	except Account.DoesNotExist:
 		return Response({"message": "User not found."}, status=status.HTTP_204_NO_CONTENT)
-
-# FriendRequestSerializer(friend_request, many=True).data
 
 	if account:
 		account_data = AccountSerializer(account).data
@@ -233,35 +224,34 @@ def api_edit_profile_view(request, *args, **kwargs):
 def api_account_search_view(request, *args, **kwargs):
 	context = {}
 
-	if request.method == 'GET':
-		search_query = request.GET.get('q')
-		if search_query and len(search_query) > 0:
-			search_results = Account.objects.filter(username__icontains=search_query).distinct()
-			user = request.user
-			accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
+	search_query = request.GET.get('q')
+	if search_query and len(search_query) > 0:
+		search_results = Account.objects.filter(username__icontains=search_query).distinct()
+		user = request.user
+		accounts = [] # ..list structure: `[(account1, True), (account2, False), ...]` true/False is for friend status
 
-		if user.is_authenticated:
-			try:
-				user_friend_list = FriendList.objects.get(user=user)
-				for account in search_results:
-					account_data = AccountSerializer(account).data
-					accounts.append((account_data, user_friend_list.is_mutual_friend(account)))
-			except FriendList.DoesNotExist:
-				for account in search_results:
-					account_data = AccountSerializer(account).data
-					accounts.append((account_data, False))
-			context['accounts'] = accounts
-		else:
+	if user.is_authenticated:
+		try:
+			user_friend_list = FriendList.objects.get(user=user)
 			for account in search_results:
 				account_data = AccountSerializer(account).data
-				accounts.append((account_data, False)) # False for indicating that the user is not a friend
-			context['accounts'] = accounts
+				accounts.append((account_data, user_friend_list.is_mutual_friend(account)))
+		except FriendList.DoesNotExist:
+			for account in search_results:
+				account_data = AccountSerializer(account).data
+				accounts.append((account_data, False))
+		context['accounts'] = accounts
+	else:
+		for account in search_results:
+			account_data = AccountSerializer(account).data
+			accounts.append((account_data, False)) # False for indicating that the user is not a friend
+		context['accounts'] = accounts
 
 	return Response(context, status=status.HTTP_200_OK)
 
 
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_block_user_view(request, user_id):
 	user_to_block = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.get_or_create(user=request.user, blocked_user=user_to_block)
@@ -286,8 +276,8 @@ def api_block_user_view(request, user_id):
 	return Response({"message": f'You have blocked {user_to_block.username}.'}, status=status.HTTP_200_OK)
 
 
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_unblock_user_view(request, user_id):
 	user_to_unblock = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.filter(user=request.user, blocked_user=user_to_unblock).delete()
@@ -296,43 +286,9 @@ def api_unblock_user_view(request, user_id):
 	# return redirect('a_user:profile', user_id=user_id)
 
 	
-# Endpoint to update the Online status of the user
-# @login_required
-# @api_view(['POST'])
-# def api_update_online_status_view(request):
-# 	context = {}
-# 	try:
-# 		user = request.user
-# 		online_status = request.data.get('online_status', False)
-# 		user.online = online_status
-# 		user.save()
-# 		context['message'] = f'Online status updated to {online_status}'
-# 		return Response(context, status=200)
-# 	except Exception as e:
-# 		context['message'] = f'Error: {str(e)}'
-# 		return Response(context, status=400)
-
-
-# Endpoint to get the Online status of the user
-# @login_required
-# @api_view(['GET'])
-# def api_get_online_status_view(request, username):
-# 	context = {}
-# 	try:
-# 		user = Account.objects.get(username=username)
-# 		context = {
-# 			'username': user.username,
-# 			'online': user.online
-# 		}
-# 		return Response(context, status=200)
-# 	except Account.DoesNotExist:
-# 		context['message'] = 'User not found.'
-# 		return Response(context, status=404)
-
-
 # Endpoint to get the UseGameStats on the profile view page
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_user_game_stats_view(request, stats_username):
 	context = {}
 	# user = request.user
@@ -352,8 +308,8 @@ def api_user_game_stats_view(request, stats_username):
 
 
 # Endpoint to get the Match History of the user
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_get_match_history_view(request, username):
 	context = {}
 	try:

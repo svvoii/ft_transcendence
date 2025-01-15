@@ -1,5 +1,5 @@
 import pickle
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.core.cache import cache
 from .models import GameSession
@@ -9,8 +9,9 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from rest_framework import generics
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 # This function is called when the user clicks the "Create Game" button
@@ -18,7 +19,7 @@ from rest_framework.response import Response
 # - The `user` is passed in the request body
 # The logic creates a new game session if an active game session does not already exist for the user
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def create_game_session(request):
 	# DEBUG #
 	print('Create game session called.. request.data:', request.data)
@@ -88,7 +89,7 @@ def create_game_session(request):
 # The logic checks if the game session is active and if the user is already in the active game session
 # Players are assigned to the game session in the order they join
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def join_game_session(request, game_id):
 	print('Join game session called.. request.data:', request.data)
 	context = {}
@@ -141,7 +142,7 @@ def join_game_session(request, game_id):
 # (On the front-end in the `fetch` call to this endpoint) - this functionality is changed to be performed via the WebSocket due possible issues with the race conditions in an async environment of the game loop
 # - The `game_id` is passed as a URL parameter
 @api_view(["GET"])
-@login_required
+@permission_classes([IsAuthenticated])
 def get_game_state(request, game_id):
 	context = {}
 	# DEBUG #
@@ -172,7 +173,7 @@ def get_game_state(request, game_id):
 # - The `paddle` value must be either 1, 2, 3 or 4, representing the player's paddle
 # - The `direction` value must be either -1 or 1, representing the up or down / left or right movement
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def move_paddle(request, game_id):
 	# print('Move paddle called.. request.data:', request.data)
 	context = {}
@@ -210,7 +211,7 @@ def move_paddle(request, game_id):
 # The game results and the winner are saved to the GameSession object / model
 # The GameState object is deleted from the Redis cache
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def end_game_session(request, game_id):
 	context = {}
 
@@ -273,7 +274,7 @@ def update_user_game_stats(game_session):
 # This function is called when the user clicks the "Quit Game" button
 # The logic is to mark the game session as inactive as soon as at least one player quits the game
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def quit_game_session(request):
 	context = {}
 	user = request.user
@@ -330,7 +331,7 @@ def quit_game_session(request):
 
 # This is an API endpoint to create a game session with 2 players
 @api_view(["POST"])
-@login_required
+@permission_classes([IsAuthenticated])
 def create_game_with_2_players(request):
 	context = {}
 	

@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib import messages
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 from .models import ChatRoom, Message
@@ -13,48 +12,47 @@ from .forms import ChatMessageCreateForm, NewGroupChatForm, ChatRoomEditForm
 from a_user.models import Account, BlockedUser
 
 
-@login_required
-def chat_view(request, room_name='public-chat'):
-	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
-	chat_messages = chat_room.chat_messages.all()[:20]
-	form = ChatMessageCreateForm()
-	other_user = None
+# def chat_view(request, room_name='public-chat'):
+# 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
+# 	chat_messages = chat_room.chat_messages.all()[:20]
+# 	form = ChatMessageCreateForm()
+# 	other_user = None
 
-	if chat_room.is_private:
-		if request.user not in chat_room.members.all():
-			raise Http404()
-		for member in chat_room.members.all():
-			if member != request.user:
-				other_user = member
-				break
+# 	if chat_room.is_private:
+# 		if request.user not in chat_room.members.all():
+# 			raise Http404()
+# 		for member in chat_room.members.all():
+# 			if member != request.user:
+# 				other_user = member
+# 				break
 	
-	if chat_room.groupchat_name:
-		if request.user not in chat_room.members.all():
-			chat_room.members.add(request.user)
+# 	if chat_room.groupchat_name:
+# 		if request.user not in chat_room.members.all():
+# 			chat_room.members.add(request.user)
 
-	if request.htmx:
-		form = ChatMessageCreateForm(request.POST)
-		if form.is_valid():
-			new_message = form.save(commit=False)
-			new_message.room = chat_room
-			new_message.author = request.user
-			new_message.save()
+# 	if request.htmx:
+# 		form = ChatMessageCreateForm(request.POST)
+# 		if form.is_valid():
+# 			new_message = form.save(commit=False)
+# 			new_message.room = chat_room
+# 			new_message.author = request.user
+# 			new_message.save()
 
-			# return redirect('a_chat:chat')
-			context = {
-				'message': new_message,
-				'user': request.user,
-			}
-			return render(request, 'a_chat/partials/chat_message_p.html', context)
+# 			# return redirect('a_chat:chat')
+# 			context = {
+# 				'message': new_message,
+# 				'user': request.user,
+# 			}
+# 			return render(request, 'a_chat/partials/chat_message_p.html', context)
 
-	context = {
-		'chat_room': chat_room,
-		'chat_messages': chat_messages,
-		'form': form,
-		'other_user': other_user,
-	}
+# 	context = {
+# 		'chat_room': chat_room,
+# 		'chat_messages': chat_messages,
+# 		'form': form,
+# 		'other_user': other_user,
+# 	}
 
-	return render(request, 'a_chat/chat.html', context)
+# 	return render(request, 'a_chat/chat.html', context)
 
 
 @api_view(['GET'])
@@ -95,84 +93,80 @@ def api_get_or_create_chatroom(request, username):
 	return Response({'room_name': private_room.room_name}, status=status.HTTP_200_OK);
 
 
-@login_required
-def create_groupchat(request):
-	form = NewGroupChatForm()
+# def create_groupchat(request):
+# 	form = NewGroupChatForm()
 
-	if request.method == 'POST':
-		form = NewGroupChatForm(request.POST)
-		if form.is_valid():
-			new_groupchat = form.save(commit=False)
-			new_groupchat.admin = request.user
-			new_groupchat.save()
-			new_groupchat.members.add(request.user)
-			return redirect('a_chat:chat-room', new_groupchat.room_name)
+# 	if request.method == 'POST':
+# 		form = NewGroupChatForm(request.POST)
+# 		if form.is_valid():
+# 			new_groupchat = form.save(commit=False)
+# 			new_groupchat.admin = request.user
+# 			new_groupchat.save()
+# 			new_groupchat.members.add(request.user)
+# 			return redirect('a_chat:chat-room', new_groupchat.room_name)
 
-	context = {
-		'form': form,
-	}
-	return render(request, 'a_chat/create_groupchat.html', context)
+# 	context = {
+# 		'form': form,
+# 	}
+# 	return render(request, 'a_chat/create_groupchat.html', context)
 
 
-@login_required
-def chatroom_edit_view(request, room_name):
-	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
-	if request.user != chat_room.admin:
-		raise Http404()
+# def chatroom_edit_view(request, room_name):
+# 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
+# 	if request.user != chat_room.admin:
+# 		raise Http404()
 
-	form = ChatRoomEditForm(instance=chat_room)
+# 	form = ChatRoomEditForm(instance=chat_room)
 
-	if request.method == 'POST':
-		form = ChatRoomEditForm(request.POST, instance=chat_room)
-		if form.is_valid():
-			form.save()
+# 	if request.method == 'POST':
+# 		form = ChatRoomEditForm(request.POST, instance=chat_room)
+# 		if form.is_valid():
+# 			form.save()
 			
-			remove_members = request.POST.getlist('remove_members')
-			for member_id in remove_members:
-				member = Account.objects.get(id=member_id)
-				chat_room.members.remove(member)
+# 			remove_members = request.POST.getlist('remove_members')
+# 			for member_id in remove_members:
+# 				member = Account.objects.get(id=member_id)
+# 				chat_room.members.remove(member)
 
-			return redirect('a_chat:chat-room', room_name=room_name)
+# 			return redirect('a_chat:chat-room', room_name=room_name)
 
-	context = {
-		'form': form,
-		'chat_room': chat_room,
-	}
-	return render(request, 'a_chat/chatroom_edit.html', context)
-
-
-@login_required
-def chatroom_delete_view(request, room_name):
-	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
-	if request.user != chat_room.admin:
-		raise Http404()
-
-	if request.method == 'POST':
-		chat_room.delete()
-		messages.success(request, 'Group chat deleted successfully.')
-		return redirect('home')
-
-	context = {
-		'chat_room': chat_room,
-	}
-	return render(request, 'a_chat/chatroom_delete.html', context)
+# 	context = {
+# 		'form': form,
+# 		'chat_room': chat_room,
+# 	}
+# 	return render(request, 'a_chat/chatroom_edit.html', context)
 
 
-@login_required
-def chatroom_leave_view(request, room_name):
-	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
-	if request.user not in chat_room.members.all():
-		raise Http404()
+# def chatroom_delete_view(request, room_name):
+# 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
+# 	if request.user != chat_room.admin:
+# 		raise Http404()
 
-	if request.method == 'POST':
-		chat_room.members.remove(request.user)
-		messages.success(request, 'You have left the group chat.')
-		return redirect('home')
+# 	if request.method == 'POST':
+# 		chat_room.delete()
+# 		messages.success(request, 'Group chat deleted successfully.')
+# 		return redirect('home')
 
-	context = {
-		'chat_room': chat_room,
-	}
-	return render(request, 'a_chat/chatroom_leave.html', context)
+# 	context = {
+# 		'chat_room': chat_room,
+# 	}
+# 	return render(request, 'a_chat/chatroom_delete.html', context)
+
+
+# def chatroom_leave_view(request, room_name):
+# 	chat_room = get_object_or_404(ChatRoom, room_name=room_name)
+# 	if request.user not in chat_room.members.all():
+# 		raise Http404()
+
+# 	if request.method == 'POST':
+# 		chat_room.members.remove(request.user)
+# 		messages.success(request, 'You have left the group chat.')
+# 		return redirect('home')
+
+# 	context = {
+# 		'chat_room': chat_room,
+# 	}
+# 	return render(request, 'a_chat/chatroom_leave.html', context)
 
 
 @api_view(['GET'])
@@ -182,6 +176,7 @@ def api_get_user_chatrooms(request):
 	blocked_by_users = BlockedUser.objects.filter(blocked_user=request.user).values_list('user', flat=True)
 
 	# chatrooms = request.user.chat_rooms.all()
+	# Take out the chatrooms where the other user has blocked the current user: 
 	chatrooms = request.user.chat_rooms.exclude(admin__in=blocked_by_users)
 	chatrooms_data = []
 
@@ -195,8 +190,6 @@ def api_get_user_chatrooms(request):
 		}
 		chatrooms_data.append(chatroom_data)
 	
-	# Take out the chatrooms where the other user has blocked the current user.
-
 	return Response(chatrooms_data, status=status.HTTP_200_OK)
 
 
