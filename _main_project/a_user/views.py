@@ -127,7 +127,7 @@ def api_profile_view(request, *args, **kwargs):
 		context['hide_email'] = account_data['hide_email']
 		context['online'] = account_data['online']
 
-		if not account.hide_email:
+		if not account.hide_email or request.user == account:
 			context['email'] = account_data['email']
 
 		# determine the relationship status between the logged-in user and the user whose profile is being viewed
