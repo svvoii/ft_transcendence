@@ -91,7 +91,7 @@ class Tournament(models.Model):
 		return 200
 
 
-	def create_round_2_matches(self):
+	def create_round_2_match(self):
 		tournament_name = self.tournament_name
 		if not self.round_2:
 			round_2 = Round_2.objects.create(tournament=self)

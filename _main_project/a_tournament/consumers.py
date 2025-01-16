@@ -87,8 +87,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 				}
 			)
 		elif (message_type == 'game_finished'):
-			# print('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
-			# print('game_index is : ', text_data_json.get('game_index'))
 			async_to_sync(self.channel_layer.group_send)(
 				self.room_group_name,
 				{

@@ -76,7 +76,11 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 
 	async function check_if_part_of_tournament(game_id) {
 		try {
-			const is_part_of_tournament = await fetch(`/tournament/is_part_of_tournament/${game_id}/`);
+			const is_part_of_tournament = await fetch(`/tournament/is_part_of_tournament/${game_id}/`, {
+				headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+				}
+			  });
 			if (!is_part_of_tournament.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}			

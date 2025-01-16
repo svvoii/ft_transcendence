@@ -10,6 +10,7 @@ export default class extends AbstractView {
     this.name = "TournamentLobby";
     this.round_1_game_1_finished = 0;
     this.round_1_game_2_finished = 0;
+    this.round_2_started = 0;
   }
 
   // async function start_tournament(tournamentID) {
@@ -99,12 +100,9 @@ export default class extends AbstractView {
       lobbyLink.textContent = tournamentID;
 
 
-      try {
+    try {
 
       //Entering new player to the database
-      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-      // const tournamentDataText = await tournament.text();
-
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
         headers: {
@@ -113,6 +111,8 @@ export default class extends AbstractView {
       });
       //printing the tournament data
       const tournamentDataText = await tournament.text();
+
+      console.log('Tournament data: ', tournamentDataText);
 
       //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -170,25 +170,24 @@ export default class extends AbstractView {
           else if (data.game_index == 'round_1_game_2') {
             document.getElementById('round1rightWinner').textContent = data.winner;
             this.round_1_game_2_finished = 1;
+
           }
           else if (data.game_index == 'round_2_game') {
             document.getElementById('winnerName').textContent = data.winner;
           }
 
-          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1) 
+          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
           {
-            console.log('Starting round 2');
-            this.round_1_game_1_finished = 0;
-            this.round_1_game_2_finished = 0;
+            this.round_2_started = 1;
             this.start_round_2(tournamentID);
           }
+        }
+      });
 
-          }
-        });
-      }
-      catch(error) {
-        console.error('Error:', error);
-      }
+    }
+    catch(error) {
+      console.error('Error:', error);
+    }
 
       // Copy the lobby link to the clipboard
       document.getElementById('copyButton').addEventListener('click', async () => {
@@ -200,13 +199,20 @@ export default class extends AbstractView {
         console.log('Starting the tournament');
         this.showTournamentBracket();
         this.startCountdown();
-        // document.getElementById('view-content').innerHTML = '';
-        // document.getElementById('view-content').appendChild(this.getDomElements());
       });
 
       document.getElementById('modalButton').addEventListener('click', async () => {
         gameBoard.joinExistingGame('game-id');
         gameModal.style.display = 'flex';
+
+        // while (this.round_1_game_1_finished == 0 || this.round_1_game_2_finished == 0) {
+        //   await this.sleep(2000);
+        // }
+        // console.log('Starting round 2');
+        // // this.round_2_started = 1;
+        // this.start_round_2(tournamentID);
+
+
       });
       
     } catch (error) {
@@ -215,11 +221,16 @@ export default class extends AbstractView {
 
   async start_round_1(tournamentID) {
 
-    const matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`);
+    const matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+      headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
 
     const matchMakingData = await matchMaking.json();
 
     if (matchMakingData.status == 'error') {
+      console.log('nb_players', matchMakingData.nb_players);
       throw new Error(matchMakingData.message);
     }
 
@@ -235,29 +246,63 @@ export default class extends AbstractView {
   async start_round_2(tournamentID) {
 
     //UPDATING ROUND 1 WINNERS
-    const updateVar = await fetch(`/tournament/update_round_1_winners/${tournamentID}/`);
-    const updateVarData = await updateVar.json();
-    if (updateVarData.status == 'error') {
-      throw new Error('Waiting for the other player to finish the round.');
-    }
-    else if (updateVarData.is_part_of_round_2 == 'true') {
-      
-      //CREATING ROUND 2
-      const round_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`);
-      const round2Data = await round_2.json();
-        
-      if (round2Data.status == 'error') {
-        throw new Error(round2Data.message);
-      }
-      
-      //GETTING GAME ID FOR ROUND 2
-      const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`);
-      const matchMakingData = await matchMaking.json();
 
-      if (matchMakingData.status == 'error') {
-        throw new Error(matchMakingData.message);
+    let round1WinnersData;
+    do {
+      const round1Winners = await fetch(`/tournament/update_round_1_winners/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      round1WinnersData = await round1Winners.json();
+
+      if (round1WinnersData.status == 'winners_error') {
+        await this.sleep(2000);
+        console.log('Error in updating round 1 winners');
       }
+    }
+    while (round1WinnersData.status == 'winners_error');
+
+    if (round1WinnersData.status == 'error') {
+      throw new Error(round1WinnersData.message);
+    }
+
+    console.log('Creating round 2');
+    console.log('Round 1 DATA: ', round1WinnersData);
+
+    //IF PLAYER_1 : CREATE ROUND 2
+    if (round1WinnersData.is_part_of_round_2 == 'true') {
       
+      if (round1WinnersData.role == 'player_1') {
+        const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
+          headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        const creatingRound2Data = await creatingRound_2.json();
+          
+
+        if (creatingRound2Data.status == 'error') {
+          throw new Error(creatingRound2Data.message);
+        }
+      }
+
+      let matchMakingData;
+      do {
+        const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`, {
+          headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        matchMakingData = await matchMaking.json();
+  
+        if (matchMakingData.status == 'not_yet_error') {
+          console.log(matchMakingData.message);
+        }
+        
+      }
+      while (matchMakingData.status == 'error');
+
       let game_id = matchMakingData.user_game_id;
       
       await this.startCountdown(game_id);
