@@ -8,6 +8,9 @@ export default class extends AbstractView {
     super(params);
     this.setTitle("Tounament Lobby");
     this.name = "TournamentLobby";
+    this.round_1_game_1_finished = 0;
+    this.round_1_game_2_finished = 0;
+    this.round_2_started = 0;
   }
 
   // async function start_tournament(tournamentID) {
@@ -95,16 +98,11 @@ export default class extends AbstractView {
       currentUrl = currentUrl.slice(0, -1);
       const tournamentID = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
       lobbyLink.textContent = tournamentID;
-      
-      let matchMaking;
 
-      try {
 
+    try {
 
       //Entering new player to the database
-      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
-      // const tournamentDataText = await tournament.text();
-
       // Getting the tournament object
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
         headers: {
@@ -114,9 +112,7 @@ export default class extends AbstractView {
       //printing the tournament data
       const tournamentDataText = await tournament.text();
 
-      console.log('Data after entering the lobby :', tournamentDataText);
-
-      console.log('Data before websocket connection :', tournamentDataText);
+      console.log('Tournament data: ', tournamentDataText);
 
       //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -125,7 +121,8 @@ export default class extends AbstractView {
         console.log('WebSocket connection is established.');
         user.setIsInTournament(true, tournamentID);
         const message = {
-          'message': 'New player entering the lobby.'
+          'message': 'New player entering the lobby.',
+          'type': 'new_player',
         };
         socket.send(JSON.stringify(message));
 
@@ -136,59 +133,61 @@ export default class extends AbstractView {
         user.setIsInTournament(false, '');
       };
 
-        socket.addEventListener('message', async (event) => {
-          const data = JSON.parse(event.data);
-          console.log('Data received from the websocket :', data);
-          if (data.type == 'new_player') {
-            listOfPlayers.innerHTML = '';
-            data.player_names.forEach( player => {
-                const li = document.createElement('li');
-                li.innerText = player;
-                listOfPlayers.appendChild(li);
-              });
-            }
-          else if (data.type == 'player_leaving_tournament') {
-            listOfPlayers.innerHTML = '';
-            data.player_names.forEach( player => {
-                const li = document.createElement('li');
-                li.innerText = player;
-                listOfPlayers.appendChild(li);
-                fullLobbyDiv.textContent = 'Waiting for more players to join...';
-              });
-            }
+      
 
-        if (data.max_nb_players_reached == true) {
+      socket.addEventListener('message', async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type == 'new_player') 
+        {
+          listOfPlayers.innerHTML = '';
+          data.player_names.forEach( player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+            });
+        }
+        else if (data.type == 'player_leaving_tournament') 
+        {
+          listOfPlayers.innerHTML = '';
+          data.player_names.forEach( player => {
+              const li = document.createElement('li');
+              li.innerText = player;
+              listOfPlayers.appendChild(li);
+              fullLobbyDiv.textContent = 'Waiting for more players to join...';
+            });
+        }
+        else if (data.type == 'start_round_1')
+        {
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
+          this.start_round_1(tournamentID);
+        } 
+        else if (data.type == 'game_finished')
+        {
+          if (data.game_index == 'round_1_game_1') {
+            document.getElementById('round1leftWinner').textContent = data.winner;
+            this.round_1_game_1_finished = 1;
+          }
+          else if (data.game_index == 'round_1_game_2') {
+            document.getElementById('round1rightWinner').textContent = data.winner;
+            this.round_1_game_2_finished = 1;
 
-          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
+          }
+          else if (data.game_index == 'round_2_game') {
+            document.getElementById('winnerName').textContent = data.winner;
+          }
 
-        const matchMakingData = await matchMaking.json();
-        let game_id = matchMakingData.user_game_id;
-
-        console.log('Match Making Data :', matchMakingData);
-        console.log('Game ID :', game_id);
-        // const gameModal = document.getElementById('gameModal');
-
-        // gameBoard.joinExistingGame(game_id);
-        // gameModal.style.display = 'flex';
-
-        this.showTournamentBracket();
-        this.bracketNameFill(matchMakingData);
-        this.startCountdown(game_id);
+          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
+          {
+            this.round_2_started = 1;
+            this.start_round_2(tournamentID);
+          }
         }
       });
 
-
-        /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
-
-      }
-      catch(error) {
-        console.error('Error:', error);
-      }
+    }
+    catch(error) {
+      console.error('Error:', error);
+    }
 
       // Copy the lobby link to the clipboard
       document.getElementById('copyButton').addEventListener('click', async () => {
@@ -200,18 +199,117 @@ export default class extends AbstractView {
         console.log('Starting the tournament');
         this.showTournamentBracket();
         this.startCountdown();
-        // document.getElementById('view-content').innerHTML = '';
-        // document.getElementById('view-content').appendChild(this.getDomElements());
       });
 
       document.getElementById('modalButton').addEventListener('click', async () => {
         gameBoard.joinExistingGame('game-id');
         gameModal.style.display = 'flex';
+
+        // while (this.round_1_game_1_finished == 0 || this.round_1_game_2_finished == 0) {
+        //   await this.sleep(2000);
+        // }
+        // console.log('Starting round 2');
+        // // this.round_2_started = 1;
+        // this.start_round_2(tournamentID);
+
+
       });
       
     } catch (error) {
     }
   };
+
+  async start_round_1(tournamentID) {
+
+    const matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+      headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    const matchMakingData = await matchMaking.json();
+
+    if (matchMakingData.status == 'error') {
+      console.log('nb_players', matchMakingData.nb_players);
+      throw new Error(matchMakingData.message);
+    }
+
+    let game_id = matchMakingData.user_game_id;
+
+    this.showTournamentBracket();
+    this.bracketNameFill(matchMakingData);
+    await this.startCountdown(game_id);
+    await this.startRound(game_id);
+
+  }
+
+  async start_round_2(tournamentID) {
+
+    //UPDATING ROUND 1 WINNERS
+
+    let round1WinnersData;
+    do {
+      const round1Winners = await fetch(`/tournament/update_round_1_winners/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      round1WinnersData = await round1Winners.json();
+
+      if (round1WinnersData.status == 'winners_error') {
+        await this.sleep(2000);
+        console.log('Error in updating round 1 winners');
+      }
+    }
+    while (round1WinnersData.status == 'winners_error');
+
+    if (round1WinnersData.status == 'error') {
+      throw new Error(round1WinnersData.message);
+    }
+
+    console.log('Creating round 2');
+    console.log('Round 1 DATA: ', round1WinnersData);
+
+    //IF PLAYER_1 : CREATE ROUND 2
+    if (round1WinnersData.is_part_of_round_2 == 'true') {
+      
+      if (round1WinnersData.role == 'player_1') {
+        const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
+          headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        const creatingRound2Data = await creatingRound_2.json();
+          
+
+        if (creatingRound2Data.status == 'error') {
+          throw new Error(creatingRound2Data.message);
+        }
+      }
+
+      let matchMakingData;
+      do {
+        const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`, {
+          headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        matchMakingData = await matchMaking.json();
+  
+        if (matchMakingData.status == 'not_yet_error') {
+          console.log(matchMakingData.message);
+        }
+        
+      }
+      while (matchMakingData.status == 'error');
+
+      let game_id = matchMakingData.user_game_id;
+      
+      await this.startCountdown(game_id);
+      await this.startRound(game_id);
+    
+    }
+  }
 
   showTournamentBracket() {
     const tournamentBracket = document.createElement('div');
@@ -314,7 +412,7 @@ export default class extends AbstractView {
 
   }
   
-  startCountdown(game_id) {
+  async startCountdown() {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
 
@@ -333,14 +431,11 @@ export default class extends AbstractView {
         countdownElement.style.display = 'none';
       }
     }, 1000);
-
-    this.startRound(game_id);
+    await this.sleep(10000);
   }
   
   async startRound(game_id) {
-    await this.sleep(10000);
-    chat.closeChat();
-    console.log('Starting the round');
+    // console.log('Starting the round');
 
     // call function to start the round here
 

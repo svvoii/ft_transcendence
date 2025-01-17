@@ -10,4 +10,7 @@ urlpatterns = [
 	path("quit_game/", views.quit_game_session, name="quit_game"),
 	path("create_game_with_2_players/", views.create_game_with_2_players, name="create_game_with_2_players"),
 	# path("invite_to_game/", views.invite_to_game, name="invite_to_game"),
+
+	#Checking if the game_id is part of a tournament
+	# path("check_if_part_of_tournament/<str:game_id>/", views.check_if_part_of_tournament, name="check_if_part_of_tournament"),
 ]
