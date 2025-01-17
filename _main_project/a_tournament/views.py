@@ -54,7 +54,6 @@ def create_tournament(request):
 	tournament = Tournament.objects.create()
 	tournament_url = tournament.tournament_name
 	tournament.players.add(request.user)
-	tournament.updateNbPlayers()
 	round_1 = Round_1.objects.create(tournament_name = tournament)
 	round_2 = Round_2.objects.create(tournament_name = tournament)
 	tournament.round_1 = round_1
@@ -74,26 +73,25 @@ def get_tournament(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-		# print('Does this function get called by the 4rth player ?')
-
 		if not tournament.players.filter(username=request.user.username).exists():
-			# print('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
-			print('[ADDING PLAYER]', request.user.username)
-			print('[NB PLAYERS]', len(tournament.players.all()))
 			tournament.players.add(request.user)
-			tournament.updateNbPlayers()
-		else:
-			print('[DEBUG] The user is already in the tournament')
-		tournament_nb_players = tournament.nb_players
+		# else:
+			# print('[DEBUG] The user is already in the tournament')
+		
 		players = [player.username for player in tournament.players.all()]
-		nb_players = f'{tournament_nb_players}'
+		nb_players = f'{len(players)}'
 		max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
+
+		player = tournament.players.get(username=request.user.username)
+		list_of_tournaments = [tournament.tournament_name for tournament in player.tournaments.all()]
 
 		if (max_nb_players_reached and request.user.username == players[-1]):
 			tournament.create_round_1_matches()
+			
 		return Response({'status': 'success', 
 			'players': players,
 			'nb_players': nb_players,
+			'list of tournaments': list_of_tournaments,
 			'max_nb_players_reached': max_nb_players_reached}, 
 			status=status.HTTP_200_OK)
 	else:
@@ -109,7 +107,7 @@ def get_tournament(request, tournament_name):
 def tournament_check_in(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-		nb_players = tournament.nb_players
+		nb_players = tournament.players.count()
 		if not tournament.players.filter(username=request.user.username).exists() and nb_players == REQUIRED_NB_PLAYERS:
 				return Response({'status': 'error', 
 					'nb_players': nb_players, 
@@ -140,8 +138,7 @@ def remove_player_from_tournament(request, tournament_name):
 		if tournament.players.filter(username=request.user.username).exists():
 			player = get_object_or_404(tournament.players, username=request.user.username)
 			tournament.players.remove(player)
-			tournament.updateNbPlayers()
-			tournament_nb_players = tournament.nb_players
+			tournament_nb_players = tournament.players.count()
 
 			if tournament_nb_players == 0:
 				tournament.delete()
@@ -150,7 +147,7 @@ def remove_player_from_tournament(request, tournament_name):
 					status=status.HTTP_200_OK)
 
 			players = [player.username for player in tournament.players.all()]
-			nb_players = f'{tournament_nb_players}'
+			nb_players = f'{len(players)}'
 			max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
 			return Response({'status': 'success', 
 				'players': players,
@@ -192,10 +189,13 @@ def get_game_id_round_1(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-		player_names = [player.username for player in tournament.round_1.players.all()]
-
+		player_names = [player.username for player in tournament.players.all()]
 
 		user_game_id = None
+
+		if not (tournament.round_1.game_session_1 or tournament.round_1.game_session_2):
+			print('[DEBUG] Round_1 NOT CREATED')
+
 		if (len(player_names) == 4):
 			if request.user.username in [player_names[0], player_names[1]]:
 				user_game_id = tournament.round_1.game_session_1.game_id
@@ -313,6 +313,32 @@ def update_round_1_winners(request, tournament_name):
 			'message': 'Tournament does not exist.'}, 
 			status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def update_round_2_players(request, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		round_2 = tournament.round_2
+		round_2.players.add(request.user)
+		# round_2.players.add(tournament.round_2.game_session_2.winner)
+		round_2.save()
+		tournament.save()
+
+		player_names = [player.username for player in round_2.players.all()]
+
+		return Response({'status': 'success',
+			'message': 'Player added successfully to round_2.',
+			'players': player_names},
+			status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'error', 
+			'message': 'Tournament does not exist.'}, 
+			status=status.HTTP_400_BAD_REQUEST)
+
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_game_id_round_2(request, tournament_name):
@@ -320,11 +346,17 @@ def get_game_id_round_2(request, tournament_name):
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
 		if not (tournament.round_2.game_session):
-			return Response({'status': 'not_yet_error', 
+			return Response({'status': 'error', 
 				'message': 'Round 2 has not been created yet.'}, 
 				status=status.HTTP_200_OK)
+		
 
 		player_names = [player.username for player in tournament.round_2.players.all()]
+
+		if (len(player_names) != 2):
+			return Response({'status': 'error', 
+				'message': 'Not enough players to start round 2.'}, 
+				status=status.HTTP_200_OK)
 
 		user_game_id = tournament.round_2.game_session.game_id
 
@@ -338,6 +370,7 @@ def get_game_id_round_2(request, tournament_name):
 		return Response({'status': 'error', 
 			'message': 'Tournament does not exist.'}, 
 			status=status.HTTP_400_BAD_REQUEST)
+
 
 #For GameLogic.js, when closing the game, checking if the game is part of a tournament
 #If so, send a Websocket that informs that the game has ended

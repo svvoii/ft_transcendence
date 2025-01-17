@@ -102,17 +102,32 @@ export default class extends AbstractView {
 
     try {
 
-      //Entering new player to the database
-      // Getting the tournament object
+
+      // ENTERING NEW PLAYER TO THE DATABASE
+      // GETTING THE TOURNAMENT OBJECT AND CREATING ROUND 1 
+
       const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
         headers: {
         'X-Requested-With': 'XMLHttpRequest'
         }
       });
-      //printing the tournament data
       const tournamentDataText = await tournament.text();
 
-      console.log('Tournament data: ', tournamentDataText);
+      // console.log('[WEIRD ISSUE DEBUG] tournamentDataText', tournamentDataText);
+
+      //CREATING ROUND 2
+      const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      const creatingRound2Data = await creatingRound_2.json();
+        
+      if (creatingRound2Data.status == 'error') {
+        throw new Error(creatingRound2Data.message);
+      }
+
+
 
       //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
@@ -158,6 +173,7 @@ export default class extends AbstractView {
         }
         else if (data.type == 'start_round_1')
         {
+          // console.log('[WEIRD ISSUE DEBUG] start_round_1 websocket data', data.player_names);
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
           this.start_round_1(tournamentID);
         } 
@@ -176,9 +192,8 @@ export default class extends AbstractView {
             document.getElementById('winnerName').textContent = data.winner;
           }
 
-          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
+          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1)
           {
-            this.round_2_started = 1;
             this.start_round_2(tournamentID);
           }
         }
@@ -258,36 +273,50 @@ export default class extends AbstractView {
 
       if (round1WinnersData.status == 'winners_error') {
         await this.sleep(2000);
-        console.log('Error in updating round 1 winners');
+        console.log(round1WinnersData.message);
       }
     }
     while (round1WinnersData.status == 'winners_error');
 
-    if (round1WinnersData.status == 'error') {
-      throw new Error(round1WinnersData.message);
-    }
+    console.log('[STEP 1] Round_1 Winners updated');
+    console.log('round1WinnersData', round1WinnersData);
 
-    console.log('Creating round 2');
-    console.log('Round 1 DATA: ', round1WinnersData);
-
-    //IF PLAYER_1 : CREATE ROUND 2
+    // UPDATING ROUND 2 PLAYERS
+    
+    
+    //CREATING AND STARTING ROUND 2
     if (round1WinnersData.is_part_of_round_2 == 'true') {
       
-      if (round1WinnersData.role == 'player_1') {
-        const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
-          headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-          }
-        });
-        const creatingRound2Data = await creatingRound_2.json();
+      //IF PLAYER_1 : CREATE ROUND 2
+      // if (round1WinnersData.role == 'player_1') {
+        //   const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
+      //     headers: {
+      //     'X-Requested-With': 'XMLHttpRequest'
+      //     }
+      //   });
+      //   const creatingRound2Data = await creatingRound_2.json();
           
-
-        if (creatingRound2Data.status == 'error') {
-          throw new Error(creatingRound2Data.message);
+      
+      //   if (creatingRound2Data.status == 'error') {
+        //     throw new Error(creatingRound2Data.message);
+        //   }
+        // }
+        
+  
+      const round2Players = await fetch(`/tournament/update_round_2_players/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
         }
-      }
+      });
+      const round2PlayersData = await round2Players.json();    
+
+      console.log('[STEP 2] Round_2 Players updated');
+      console.log('round2PlayersData', round2PlayersData);
 
       let matchMakingData;
+
+      console.log('Waiting for both players to be updated to fetch the game_id');
+
       do {
         const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`, {
           headers: {
@@ -296,12 +325,28 @@ export default class extends AbstractView {
         });
         matchMakingData = await matchMaking.json();
   
-        if (matchMakingData.status == 'not_yet_error') {
+        if (matchMakingData.status == 'error') {
+          await this.sleep(2000);
           console.log(matchMakingData.message);
         }
         
       }
       while (matchMakingData.status == 'error');
+
+
+
+
+      // const matchMaking = await fetch(`/tournament/get_game_id_round_2/${tournamentID}/`, {
+      //   headers: {
+      //   'X-Requested-With': 'XMLHttpRequest'
+      //   }
+      // });
+      // matchMakingData = await matchMaking.json();
+
+      // if (matchMakingData.status == 'error') {
+      //   throw new Error(matchMakingData.message);
+      // }
+
 
       let game_id = matchMakingData.user_game_id;
       

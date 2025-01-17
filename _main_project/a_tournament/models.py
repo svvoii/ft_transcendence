@@ -17,7 +17,7 @@ from django.shortcuts import get_object_or_404
 
 import json
 
-from a_game.views import GameSession, create_game_with_2_players_internal
+from a_game.views import GameSession, create_game_with_2_players_internal, create_game_round2_internal
 
 
 REQUIRED_NB_PLAYERS = 4
@@ -26,7 +26,6 @@ REQUIRED_NB_PLAYERS = 4
 class Tournament(models.Model):
 	tournament_name = models.CharField(max_length=128, unique=True, default=shortuuid.uuid)
 	players = models.ManyToManyField(Account, related_name='tournaments', blank=True)
-	nb_players = models.IntegerField(default=0, editable=True, validators=[MaxValueValidator(REQUIRED_NB_PLAYERS)])
 	winner = models.ForeignKey(Account, related_name='tournaments_won', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
 	round_1 = models.ForeignKey('Round_1', related_name='tournament_round_1', blank=True, null=True, on_delete=models.SET_NULL)
@@ -34,15 +33,6 @@ class Tournament(models.Model):
 
 	def __str__(self):
 		return self.tournament_name
-
-	def updateNbPlayers(self, *args, **kwargs):
-		super().save(*args, **kwargs)
-		self.nb_players = self.players.count()
-		super().save(*args, **kwargs)
-
-		# if (self.nb_players == REQUIRED_NB_PLAYERS):
-		# 	print('[MAX NB PLAYERS REACHED] creating round 1 matches')
-		# 	self.create_round_1_matches()
 
 
 	def clean(self):
@@ -91,6 +81,30 @@ class Tournament(models.Model):
 		return 200
 
 
+	# def create_round_2_match(self):
+	# 	tournament_name = self.tournament_name
+	# 	if not self.round_2:
+	# 		round_2 = Round_2.objects.create(tournament=self)
+	# 		self.round_2 = round_2
+	# 		self.save()
+
+	# 	for player in self.round_1.winners.all():
+	# 		self.round_2.players.add(player)
+
+	# 	player_names = [player.username for player in self.round_2.players.all()]
+
+	# 	if (len(player_names) != 2):
+	# 		raise ValueError("Not enough players for round 2")
+
+	# 	game_session, status = create_game_with_2_players_internal(player_names[0], player_names[1])
+
+	# 	self.round_2.game_session = game_session
+	# 	self.round_2.save()
+	# 	self.save()
+
+	# 	return 200
+
+
 	def create_round_2_match(self):
 		tournament_name = self.tournament_name
 		if not self.round_2:
@@ -98,21 +112,23 @@ class Tournament(models.Model):
 			self.round_2 = round_2
 			self.save()
 
-		for player in self.round_1.winners.all():
-			self.round_2.players.add(player)
+		# for player in self.round_1.winners.all():
+		# 	self.round_2.players.add(player)
 
-		player_names = [player.username for player in self.round_2.players.all()]
+		# player_names = [player.username for player in self.round_2.players.all()]
 
-		if (len(player_names) != 2):
-			raise ValueError("Not enough players for round 2")
+		# if (len(player_names) != 2):
+		# 	raise ValueError("Not enough players for round 2")
 
-		game_session, status = create_game_with_2_players_internal(player_names[0], player_names[1])
+		game_session, status = create_game_round2_internal()
 
 		self.round_2.game_session = game_session
 		self.round_2.save()
 		self.save()
 
 		return 200
+
+
 
 class Match(models.Model):
 	tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)

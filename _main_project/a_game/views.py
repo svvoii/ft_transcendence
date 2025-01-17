@@ -445,3 +445,37 @@ def create_game_with_2_players_internal(username1, username2):
 
 	return new_game_session, 201
 
+
+
+# This is another version of the above functions for round_2 of the tournament, with no players yet
+# as the winners in round_1 are not yet determined
+
+def create_game_round2_internal():
+	context = {}
+
+	new_game_session = GameSession.objects.create(
+		mode=2
+	)
+	new_game_session.save()
+
+	context['game_id'] = new_game_session.game_id
+	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Tournament Game session created with ID {new_game_session.game_id}')
+
+	# Create a new game state object for the new game session
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# Setting game_mode in the GameState object
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
+	game_state.game_mode = 'Multi_2'
+	game_state.num_players = 2
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
+
+	return new_game_session, 201
