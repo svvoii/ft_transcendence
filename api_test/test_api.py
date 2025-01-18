@@ -4,7 +4,7 @@ import requests
 BASE_URL = 'http://127.0.0.1:8000/'
 
 # Function to test the `api_register_view` endpoint
-def test_register_user(email, username, password1, password2):
+def register_user(email, username, password1, password2):
 	api_endpoint = f'{BASE_URL}/register/'
 	headers = {
 		'X-Requested-With': 'XMLHttpRequest'
@@ -25,7 +25,7 @@ def test_register_user(email, username, password1, password2):
 		print('`register` Response is not JSON format:', response.text)
 
 # Function to test the `api_login_view` endpoint
-def test_login_user(email, password):
+def login_user(email, password):
 	api_endpoint = f'{BASE_URL}/login/'
 	headers = {
 		'X-Requested-With': 'XMLHttpRequest'
@@ -49,7 +49,7 @@ def test_login_user(email, password):
 
 
 # Function to test the `create_game_session` endpoint
-def test_create_game_session(session, csrf_token, mode):
+def create_game_session(session, csrf_token, mode):
 	api_endpoint = f'{BASE_URL}/game/create_game/'
 	headers = {
 		'X-CSRFToken': csrf_token,
@@ -71,7 +71,7 @@ def test_create_game_session(session, csrf_token, mode):
 
 
 # Function to test the `join_game_session` endpoint
-def test_join_game_session(session, csrf_token, game_id):
+def join_game_session(session, csrf_token, game_id):
 	api_endpoint = f'{BASE_URL}/game/join_game/{game_id}/'
 	headers = {
 		'X-CSRFToken': csrf_token,
@@ -90,7 +90,7 @@ def test_join_game_session(session, csrf_token, game_id):
 
 
 # Function to test the get_game_state endpoint
-def test_get_game_state(session, game_id):
+def get_game_state(session, game_id):
 	api_endpoint = f'{BASE_URL}/game/game_state/{game_id}/'
 	headers = {
 		'X-Requested-With': 'XMLHttpRequest'
@@ -101,11 +101,12 @@ def test_get_game_state(session, game_id):
 	try:
 		response_json = response.json()
 		print(f'Response: { response_json }\n')
+		# return response_json
 	except:
 		print('`game_state` Response is not JSON format:', response.text)
 
 # Function to test the move_paddle endpoint
-def test_move_paddle(session, csrf_token, game_id, paddle, direction):
+def move_paddle(session, csrf_token, game_id, paddle, direction):
 	api_endpoint = f'{BASE_URL}/game/move_paddle/{game_id}/'
 	headers = {
 		'X-CSRFToken': csrf_token,
@@ -126,7 +127,7 @@ def test_move_paddle(session, csrf_token, game_id, paddle, direction):
 
 
 # Function to test the `end_game_session` endpoint
-def test_end_game_session(session, csrf_token, game_id):
+def end_game_session(session, csrf_token, game_id):
 	api_endpoint = f'{BASE_URL}/game/end_game/{game_id}/'
 	headers = {
 		'X-CSRFToken': csrf_token,
@@ -142,7 +143,7 @@ def test_end_game_session(session, csrf_token, game_id):
 		print('`end_game` Response is not JSON format:', response.text)
 
 # Function to test the `quit_game_session` endpoint
-def test_quit_game_session(session, csrf_token):
+def quit_game_session(session, csrf_token):
 	api_endpoint = f'{BASE_URL}/game/quit_game/'
 	headers = {
 		'X-CSRFToken': csrf_token,
@@ -170,24 +171,24 @@ if __name__ == '__main__':
 	role = 'is obtained from the join_game_session response'
 
 	print('Testing `register_user` endpoint...')
-	test_register_user(email, username, password1, password2)
+	register_user(email, username, password1, password2)
 	
 	print('Testing `login_user` endpoint...')
-	session, csrf_token = test_login_user(email, password1)
+	session, csrf_token = login_user(email, password1)
 	# print('CSRF Token:', csrf_token)
 	# print(f'Session: { session }\n')
 
 	print('Testing `create_game_session` endpoint...')
 	mode = 'Single'
-	game_id = test_create_game_session(session, csrf_token, mode)
+	game_id = create_game_session(session, csrf_token, mode)
 	# print(f'Game ID: { game_id }\n')
 
 	print('Testing `join_game_session` endpoint...')
-	role = test_join_game_session(session, csrf_token, game_id)
+	role = join_game_session(session, csrf_token, game_id)
 	# print(f'Role: { role }\n')
 
 	print(f'Testing `get_game_state` endpoint...')
-	test_get_game_state(session, game_id)
+	get_game_state(session, game_id)
 
 	# Testing the move_paddle function
 	print('Testing `move_paddle` endpoint...')
@@ -195,8 +196,8 @@ if __name__ == '__main__':
 	# print(f'Paddle: { paddle }\n')
 	direction = -1 # ..for 'up'
 	# direction = 1 # ..for 'down'
-	test_move_paddle(session, csrf_token, game_id, paddle, direction)
+	move_paddle(session, csrf_token, game_id, paddle, direction)
 
 	# Testing the end_game_session function
 	# print('Testing `end_game_session` endpoint...')
-	# test_end_game_session(session, csrf_token, game_id)
+	# end_game_session(session, csrf_token, game_id)
