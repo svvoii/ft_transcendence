@@ -61,7 +61,9 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 
 	function resetGameBoard() {
 
-		check_if_part_of_tournament(game_id);
+		if (role === 'player1' && mode === 'Multi_2') {
+			check_if_part_of_tournament(game_id);
+		}
 
 		if (socket) socket.close();
 		gameBoardInstance.resetGameBoard();
