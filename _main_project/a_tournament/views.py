@@ -83,7 +83,9 @@ def get_tournament(request, tournament_name):
 		max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
 
 		player = tournament.players.get(username=request.user.username)
-		list_of_tournaments = [tournament.tournament_name for tournament in player.tournaments.all()]
+		list_of_tournaments = [tournament.tournament_name for tournament in Tournament.objects.all()]
+
+		nb_players_in_each = [tournament.players.count() for tournament in Tournament.objects.all()]
 
 		# if (max_nb_players_reached):
 		# 	print('DEBUUUUUUUUUUUUG]', request.user.username)
@@ -93,6 +95,7 @@ def get_tournament(request, tournament_name):
 			'players': players,
 			'nb_players': nb_players,
 			'list of tournaments': list_of_tournaments,
+			'nb_players_in_each': nb_players_in_each,
 			'max_nb_players_reached': max_nb_players_reached}, 
 			status=status.HTTP_200_OK)
 	else:
@@ -148,6 +151,8 @@ def remove_player_from_tournament(request, tournament_name):
 					'message': 'Tournament deleted as there are no players left.'}, 
 					status=status.HTTP_200_OK)
 
+			# tournament.delete()
+
 			players = [player.username for player in tournament.players.all()]
 			nb_players = f'{len(players)}'
 			max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
@@ -155,6 +160,10 @@ def remove_player_from_tournament(request, tournament_name):
 				'players': players,
 				'nb_players': nb_players,
 				'max_nb_players_reached': max_nb_players_reached}, 
+				status=status.HTTP_200_OK)
+		
+			return Response({'status': 'success',
+				'message': 'Tournament cancelled : a player left.'},
 				status=status.HTTP_200_OK)
 
 		else:

@@ -65,9 +65,22 @@ export const router = async () => {
     const tournamentURL = user.getTournamentURL();
     const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`, {
 		headers: {
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
 		}
-	})
+	  })
+    
+    // const responseData = await response.json();
+    // if (responseData.status === 'success') {
+
+    //   socket = user.getTournamentSocket();
+			
+		// 	const message = {
+		// 		'message': 'Tournament cancelled.',
+		// 		'type': 'tournament_cancelled',
+		// 	  };
+		// 	socket.send(JSON.stringify(message));
+    // }
+    
   
 
     const responseText = await response.text();

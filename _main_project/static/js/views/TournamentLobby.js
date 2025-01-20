@@ -113,6 +113,7 @@ export default class extends AbstractView {
       });
       const tournamentDataText = await tournament.text();
 
+      console.log(tournamentDataText);
 
       //CREATING ROUND 2
       const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
@@ -195,6 +196,10 @@ export default class extends AbstractView {
             this.start_round_2(tournamentID);
           }
         }
+        // else if (data.type == 'tournament_cancelled')
+        // {
+        //   fullLobbyDiv.textContent = 'The tournament was cancelled.';
+        // }
       });
 
     }
