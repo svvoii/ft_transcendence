@@ -67,10 +67,6 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		gameBoardInstance.resetGameBoard();
 		const gameModal = document.getElementById('gameModal');
 		gameModal.style.display = 'none';
-		
-
-
-		//CHECKING IF THE GAME IS PART OF A TOURNAMENT
 
 	}
 

@@ -113,7 +113,6 @@ export default class extends AbstractView {
       });
       const tournamentDataText = await tournament.text();
 
-      // console.log('[WEIRD ISSUE DEBUG] tournamentDataText', tournamentDataText);
 
       //CREATING ROUND 2
       const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
@@ -126,7 +125,6 @@ export default class extends AbstractView {
       if (creatingRound2Data.status == 'error') {
         throw new Error(creatingRound2Data.message);
       }
-
 
 
       //Establishing the websocket connection
@@ -149,7 +147,6 @@ export default class extends AbstractView {
       };
 
       
-
       socket.addEventListener('message', async (event) => {
         const data = JSON.parse(event.data);
         if (data.type == 'new_player') 
@@ -173,7 +170,6 @@ export default class extends AbstractView {
         }
         else if (data.type == 'start_round_1')
         {
-          // console.log('[WEIRD ISSUE DEBUG] start_round_1 websocket data', data.player_names);
           fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
           this.start_round_1(tournamentID);
         } 
@@ -190,10 +186,12 @@ export default class extends AbstractView {
           }
           else if (data.game_index == 'round_2_game') {
             document.getElementById('winnerName').textContent = data.winner;
+
           }
 
-          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1)
+          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
           {
+            this.round_2_started = 1;
             this.start_round_2(tournamentID);
           }
         }

@@ -17,7 +17,7 @@ from django.shortcuts import get_object_or_404
 
 import json
 
-from a_game.views import GameSession, create_game_with_2_players_internal, create_game_round2_internal
+from a_game.views import GameSession, create_game_round_1_internal, create_game_round_2_internal
 
 
 REQUIRED_NB_PLAYERS = 4
@@ -60,18 +60,14 @@ class Tournament(models.Model):
 			self.round_1 = round_1
 			self.save()
 
-		for player in self.players.all():
-			self.round_1.players.add(player)
+		# for player in self.players.all():
+		# 	self.round_1.players.add(player)
 
-		player_names = [player.username for player in self.round_1.players.all()]
+		# player_names = [player.username for player in self.round_1.players.all()]
 
-		game_session_1, status_1 = create_game_with_2_players_internal(player_names[0], player_names[1])
-		game_session_2, status_2 = create_game_with_2_players_internal(player_names[2], player_names[3])
+		game_session_1, status_1 = create_game_round_1_internal()
+		game_session_2, status_2 = create_game_round_1_internal()
 
-		if not isinstance(game_session_1, GameSession):
-			raise ValueError("game_session_1 must be a GameSession instance")
-		if not isinstance(game_session_2, GameSession):
-			raise ValueError("game_session_2 must be a GameSession instance")
 
 		self.round_1.game_session_1 = game_session_1
 		self.round_1.game_session_2 = game_session_2
@@ -120,7 +116,7 @@ class Tournament(models.Model):
 		# if (len(player_names) != 2):
 		# 	raise ValueError("Not enough players for round 2")
 
-		game_session, status = create_game_round2_internal()
+		game_session, status = create_game_round_2_internal()
 
 		self.round_2.game_session = game_session
 		self.round_2.save()
