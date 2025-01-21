@@ -7,3 +7,4 @@ __pycache__
 .vscode/
 .nfs*
 _main_project/media_cdn/*
+**/*cli_pong.log
