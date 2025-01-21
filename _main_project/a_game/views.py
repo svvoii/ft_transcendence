@@ -42,7 +42,7 @@ def create_game_session(request):
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
 		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
-	).first()
+	).filter(is_part_of_tournament=False).first()
 
 	if active_session:
 		context['game_id'] = active_session.game_id
@@ -107,6 +107,10 @@ def join_game_session(request, game_id):
 		context['message'] = 'Game session is not active.'
 		return Response(context, status=400)
 
+	if game_session.is_part_of_tournament:
+		context['message'] = 'Game session is not available for online play.'
+		return Response(context, status=400)
+
 	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
 	if user in players:
 		context['message'] = 'User is already in the game session.'
@@ -138,6 +142,58 @@ def join_game_session(request, game_id):
 	print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
 
 	return Response(context, status=200)
+
+
+@api_view(["POST"])
+@login_required
+def join_tournament_game_session(request, game_id):
+	print('Join game session called.. request.data:', request.data)
+	context = {}
+	user = request.user
+
+	try:
+		game_session = GameSession.objects.get(game_id=game_id)
+	except GameSession.DoesNotExist:
+		context['game_id'] = game_id
+		context['message'] = f'Game session with ID : { game_id } does not exist.'
+		return Response(context, status=400)
+
+	if not game_session.is_active:
+		context['message'] = 'Game session is not active.'
+		return Response(context, status=400)
+
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	if user in players:
+		context['message'] = 'User is already in the game session.'
+		context['role'] = game_session.get_role(user)
+		# DEBUG #
+		print(f'User {user} is already in an active game session with ID {game_id}')
+		# # # # #
+		return Response(context, status=200)
+
+	num_players = game_session.mode
+	for i in range(num_players):
+		if not players[i]:
+			players[i] = user
+			break
+	else: # If the loop completes without breaking (apparantly it is a valid syntax in Python !)
+		context['message'] = 'Game session is full.'
+		# DEBUG #
+		print(f'Game session with ID {game_id} is full.')
+		print(f'Players: {players}')
+		# # # # #
+		return Response(context, status=400)
+	
+	game_session.player1, game_session.player2, game_session.player3, game_session.player4 = players
+
+	game_session.save()
+	# context['game_id'] = game_session.game_id
+	context['role'] = game_session.get_role(user)
+	# DEBUG #
+	print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
+
+	return Response(context, status=200)
+
 
 
 # This function is called when the game is loaded to get the initial game state
@@ -462,7 +518,8 @@ def create_game_round_1_internal():
 	# 	return context, 400
 	
 	new_game_session = GameSession.objects.create(
-		mode=2
+		mode=2,
+		is_part_of_tournament=True
 	)
 	new_game_session.save()
 
@@ -497,7 +554,8 @@ def create_game_round_2_internal():
 	context = {}
 
 	new_game_session = GameSession.objects.create(
-		mode=2
+		mode=2,
+		is_part_of_tournament=True
 	)
 	new_game_session.save()
 

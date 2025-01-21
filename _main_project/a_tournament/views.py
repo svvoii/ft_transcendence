@@ -58,6 +58,7 @@ def create_tournament(request):
 	tournament.round_1 = round_1
 	tournament.round_2 = round_2
 	tournament.create_round_1_matches()
+
 	tournament.save()
 	# Tournament.tournament_ids.add(tournament_url)
 	# print(Tournament)

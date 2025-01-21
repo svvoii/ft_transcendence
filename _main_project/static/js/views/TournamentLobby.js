@@ -1,6 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { user, gameBoard, chat } from "../index.js";
-import { joinGame } from '../game/GameAPI.js';
+// import { joinTournamentGame } from '../game/GameAPI.js';
 
 
 export default class extends AbstractView {
@@ -479,7 +479,10 @@ export default class extends AbstractView {
         countdownElement.style.display = 'none';
       }
     }, 1000);
-    await this.sleep(10000);
+    await this.sleep(5000);
+    chat.closeChat();
+    await this.sleep(5000);
+
   }
   
   async startRound(game_id) {
@@ -487,7 +490,7 @@ export default class extends AbstractView {
 
     // call function to start the round here
 
-    gameBoard.joinExistingGame(game_id);
+    gameBoard.joinExistingTournamentGame(game_id);
     gameModal.style.display = 'flex';
     
   }
