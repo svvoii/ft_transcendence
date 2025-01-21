@@ -140,7 +140,7 @@ def tournament_check_in(request, tournament_name):
 def remove_player_from_tournament(request, tournament_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-		if tournament.players.filter(username=request.user.username).exists():
+		if tournament.players.filter(username=request.user.username).exists() and tournament.players.count() < REQUIRED_NB_PLAYERS:
 			player = get_object_or_404(tournament.players, username=request.user.username)
 			tournament.players.remove(player)
 			tournament_nb_players = tournament.players.count()
@@ -163,8 +163,14 @@ def remove_player_from_tournament(request, tournament_name):
 				'max_nb_players_reached': max_nb_players_reached}, 
 				status=status.HTTP_200_OK)
 		
-			return Response({'status': 'success',
-				'message': 'Tournament cancelled : a player left.'},
+			# return Response({'status': 'success',
+			# 	'message': 'Tournament cancelled : a player left.'},
+			# 	status=status.HTTP_200_OK)
+		
+		elif tournament.players.count() == REQUIRED_NB_PLAYERS:
+			return Response({'status': 'error', 
+				'message': 'Tournament has already started.',
+				'request.user.username': request.user.username,}, 
 				status=status.HTTP_200_OK)
 
 		else:
@@ -204,14 +210,17 @@ def get_game_id_round_1(request, tournament_name):
 		player_names = [player.username for player in tournament.players.all()]
 
 		user_game_id = None
+		has_started = False
 
 		if not (tournament.round_1.game_session_1 or tournament.round_1.game_session_2):
 			print('[DEBUG] Round_1 NOT CREATED')
 
 		if (len(player_names) == 4):
 			if request.user.username in [player_names[0], player_names[1]]:
+				has_started = tournament.round_1.game_session_1.has_started
 				user_game_id = tournament.round_1.game_session_1.game_id
 			elif request.user.username in [player_names[2], player_names[3]]:
+				has_started = tournament.round_1.game_session_2.has_started
 				user_game_id = tournament.round_1.game_session_2.game_id
 
 		else:
@@ -231,6 +240,7 @@ def get_game_id_round_1(request, tournament_name):
 			'user1round2': '',
 			'user2round2': '',
 			'userWinner': '',
+			'has_started': has_started,
 			'message': 'Round 1 started successfully.'},
 			status=status.HTTP_200_OK)
 	else:

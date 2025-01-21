@@ -166,6 +166,9 @@ def join_tournament_game_session(request, game_id):
 	if user in players:
 		context['message'] = 'User is already in the game session.'
 		context['role'] = game_session.get_role(user)
+		if not game_session.has_started:
+			game_session.has_started = True
+			game_session.save()
 		# DEBUG #
 		print(f'User {user} is already in an active game session with ID {game_id}')
 		# # # # #
@@ -185,6 +188,8 @@ def join_tournament_game_session(request, game_id):
 		return Response(context, status=400)
 	
 	game_session.player1, game_session.player2, game_session.player3, game_session.player4 = players
+	if not game_session.has_started:
+		game_session.has_started = True
 
 	game_session.save()
 	# context['game_id'] = game_session.game_id

@@ -256,7 +256,9 @@ export default class extends AbstractView {
 
     this.showTournamentBracket();
     this.bracketNameFill(matchMakingData);
-    await this.startCountdown(game_id);
+    if (!matchMakingData.has_started) {
+      await this.startCountdown(game_id);
+    }
     await this.startRound(game_id);
 
   }
@@ -447,7 +449,7 @@ export default class extends AbstractView {
     // countdown
     const countdown = document.createElement('p');
     countdown.id = 'countdown';
-    countdown.textContent = '10';
+    countdown.textContent = 'Waiting for other players to finish their games...';
 
     // append all the elements to the tournament bracket
     tournamentBracket.appendChild(title);
@@ -465,7 +467,7 @@ export default class extends AbstractView {
     let countdown = 9;
 
     chat.openChat();
-    chat.addChatMessage('system', 'The tournament will start in 10 seconds');
+    chat.addChatMessage('system', 'The next tournament round will start in 10 seconds');
     chat.addChatMessage('system', 'Good luck!!!');
     
     countdownElement.style.display = 'block';
@@ -481,6 +483,7 @@ export default class extends AbstractView {
     }, 1000);
     await this.sleep(5000);
     chat.closeChat();
+    chat.clearChat();
     await this.sleep(5000);
 
   }
