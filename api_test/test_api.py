@@ -117,13 +117,14 @@ def move_paddle(session, csrf_token, game_id, paddle, direction):
         'direction': direction
     }
 	response = session.post(api_endpoint, headers=headers, json=data)
-	print(f'POST /game/move_paddle/{game_id}/')
-	print('Status Code:', response.status_code)
+	# print(f'POST /game/move_paddle/{game_id}/')
+	# print('Status Code:', response.status_code)
 	try:
 		response_json = response.json()
-		print(f'Response: { response_json }\n')
+		# print(f'Response: { response_json }\n')
 	except:
-		print('`move_paddle` Response is not JSON format:', response.text)
+		# print('`move_paddle` Response is not JSON format:', response.text)
+		pass
 
 
 # Function to test the `end_game_session` endpoint

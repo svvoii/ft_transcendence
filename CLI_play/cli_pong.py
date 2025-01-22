@@ -67,34 +67,51 @@ def get_credentials():
 def handle_login(email, username, password):
 	print("Handle login...")
 
-	register_user(email, username, password, password)
+	try:
+		register_user(email, username, password, password)
+	except requests.RequestException as e:
+		logging.error("Registration failed: %s", e)
+		return None, None
 
-	session, csrf_token = login_user(email, password)
-	if not session and not csrf_token:
-		print("Login failed. Please check your credentials.")
+	try:
+		session, csrf_token = login_user(email, password)
+		if not session and not csrf_token:
+			return None, None
+	except requests.RequestException as e:
+		logging.error("Login failed: %s", e)
+		return None, None
+	except ValueError as e:
+		logging.error("Login failed: %s", e)
 		return None, None
 	
 	return session, csrf_token
 
 
 def start_game_session(session, csrf_token):
-
 	game_id = os.getenv('GAME_ID', None)
 	game_mode = GAME_MODE
 
 	# Create the game session if game_id is not provided
 	logging.debug("Game ID: %s", game_id)
 	if not game_id:
-		game_id = create_game_session(session, csrf_token, game_mode)
-		logging.debug("Created Game ID: %s", game_id)
-		print(f"Server returned created Game ID: {game_id}")
-	
-	# Join the game session
-	role = join_game_session(session, csrf_token, game_id)
-	paddle = int(role[-1])
-	print(f"Joined as: {role}")
-	logging.debug("Joined as: %s", role)
-	# get_game_state(session, game_id)
+		try:
+			game_id = create_game_session(session, csrf_token, game_mode)
+			logging.debug("Created Game ID: %s", game_id)
+			print(f"Server returned created Game ID: {game_id}")
+		except requests.RequestException as e:
+			logging.error("Failed to create game session: %s", e)
+			return None, None
+
+	try:
+		# Join the game session
+		role = join_game_session(session, csrf_token, game_id)
+		paddle = int(role[-1])
+		print(f"Joined as: {role}")
+		logging.debug("Joined as: %s", role)
+		# get_game_state(session, game_id)
+	except requests.RequestException as e:
+		logging.error("Failed to join game session: %s", e)
+		return None, None
 
 	return game_id, paddle
 
