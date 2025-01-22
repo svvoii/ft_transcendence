@@ -294,46 +294,46 @@ def create_round_2(request, tournament_name):
 			status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def update_round_1_winners(request, tournament_name):
-	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def update_round_1_winners(request, tournament_name):
+# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-		if not tournament.round_1.game_session_1.winner or not tournament.round_1.game_session_2.winner:
-			return Response({'status': 'winners_error', 
-				'message': 'Round 1 winners have not been determined yet.'}, 
-				status=status.HTTP_400_BAD_REQUEST)
+# 		if not tournament.round_1.game_session_1.winner or not tournament.round_1.game_session_2.winner:
+# 			return Response({'status': 'winners_error', 
+# 				'message': 'Round 1 winners have not been determined yet.'}, 
+# 				status=status.HTTP_400_BAD_REQUEST)
 		
-		round_1 = tournament.round_1
-		round_1.winners.add(tournament.round_1.game_session_1.winner)
-		round_1.winners.add(tournament.round_1.game_session_2.winner)
-		round_1.save()
-		tournament.save()
+# 		round_1 = tournament.round_1
+# 		round_1.winners.add(tournament.round_1.game_session_1.winner)
+# 		round_1.winners.add(tournament.round_1.game_session_2.winner)
+# 		round_1.save()
+# 		tournament.save()
 
-		player_names = [player.username for player in round_1.winners.all()]
+# 		player_names = [player.username for player in round_1.winners.all()]
 
-		if (request.user.username == player_names[0]):
-			return Response({'status': 'success',
-				'message': 'Round 1 winners updated successfully.',
-				'role': 'player_1',
-				'is_part_of_round_2': 'true'},
-				status=status.HTTP_200_OK)
-		elif (request.user.username == player_names[1]):
-			return Response({'status': 'success', 
-				'message': 'Round 1 winners updated successfully.',
-				'role': 'player_2',
-				'is_part_of_round_2': 'true'}, 
-				status=status.HTTP_200_OK)
-		else:
-			return Response({'status': 'error', 
-				'message': 'Player is not a winner of round 1.',
-				'is_part_of_round_2': 'false'}, 
-				status=status.HTTP_200_OK)
-	else:
-		return Response({'status': 'error', 
-			'message': 'Tournament does not exist.'}, 
-			status=status.HTTP_400_BAD_REQUEST)
+# 		if (request.user.username == player_names[0]):
+# 			return Response({'status': 'success',
+# 				'message': 'Round 1 winners updated successfully.',
+# 				'role': 'player_1',
+# 				'is_part_of_round_2': 'true'},
+# 				status=status.HTTP_200_OK)
+# 		elif (request.user.username == player_names[1]):
+# 			return Response({'status': 'success', 
+# 				'message': 'Round 1 winners updated successfully.',
+# 				'role': 'player_2',
+# 				'is_part_of_round_2': 'true'}, 
+# 				status=status.HTTP_200_OK)
+# 		else:
+# 			return Response({'status': 'error', 
+# 				'message': 'Player is not a winner of round 1.',
+# 				'is_part_of_round_2': 'false'}, 
+# 				status=status.HTTP_200_OK)
+# 	else:
+# 		return Response({'status': 'error', 
+# 			'message': 'Tournament does not exist.'}, 
+# 			status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

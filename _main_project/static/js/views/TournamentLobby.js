@@ -137,6 +137,7 @@ export default class extends AbstractView {
         const message = {
           'message': 'New player entering the lobby.',
           'type': 'new_player',
+          'player_name': user.getUserName()
         };
         socket.send(JSON.stringify(message));
 
@@ -190,11 +191,11 @@ export default class extends AbstractView {
 
           }
 
-          if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
-          {
-            this.round_2_started = 1;
-            this.start_round_2(tournamentID);
-          }
+          // if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
+          // {
+          //   this.round_2_started = 1;
+          //   this.start_round_2(tournamentID);
+          // }
         }
         // else if (data.type == 'tournament_cancelled')
         // {
@@ -492,9 +493,8 @@ export default class extends AbstractView {
     // console.log('Starting the round');
 
     // call function to start the round here
-
-    gameBoard.joinExistingTournamentGame(game_id);
-    gameModal.style.display = 'flex';
+      gameBoard.joinExistingTournamentGame(game_id);
+      gameModal.style.display = 'flex';
     
   }
   

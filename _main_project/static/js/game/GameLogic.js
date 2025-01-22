@@ -141,8 +141,9 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			// console.log('..update_state, paddle1: ', paddle1, ' paddle2: ', paddle2);
 		} else if (data.type === 'game_over') {
 			winner = data.winner;
-			alert(`Game Over! ${winner} wins!`);
 			resetGameBoard();
+			console.log('Game over!');
+			// alert(`Game Over! ${winner} wins!`);
 		} else if (data.type === 'game_quit') {
 			console.log('..game_quit, message: ', data.message);
 			if (data.quitting_player !== role) {
