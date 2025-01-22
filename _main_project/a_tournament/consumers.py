@@ -79,25 +79,26 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 				}
 			)
 		elif (message_type == 'new_player' and len(player_names) == REQUIRED_NB_PLAYERS):
-			if not sync_to_async(player_is_already_in_tournament)(self.tournament_name, text_data_json.get('player_name')):
-				print("sending a message to everyone that it's time to start round 1")
-				async_to_sync(self.channel_layer.group_send)(
-					self.room_group_name,
-					{
-						'type': 'start_round_1',
-						'message': 'Round 1 has started',
-						'player_names': player_names,
-					}
-				)
-			else: #making sure the player comes back to the game if they refresh the page
-				print("just sending a message to the person who refreshed the page")
-				self.send(
-					text_data=json.dumps({
-						'type': 'start_round_1',
-						'message': 'Round 1 has started',
-						'player_names': player_names,
-					})
-				)
+			if Tournament.objects.filter(tournament_name=self.tournament_name).exists():
+				tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
+				if tournament.tournament_is_full == False:
+					async_to_sync(self.channel_layer.group_send)(
+						self.room_group_name,
+						{
+							'type': 'start_round_1',
+							'message': 'Round 1 has started',
+							'player_names': player_names,
+						}
+					)
+					tournament.tournament_is_full = True
+				else:
+					self.send(
+						text_data=json.dumps({
+							'type': 'start_round_1',
+							'message': 'Round 1 has started',
+							'player_names': player_names,
+						})
+					)
 
 		elif (message_type == 'game_finished'):
 			async_to_sync(self.channel_layer.group_send)(

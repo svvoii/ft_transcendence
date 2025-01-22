@@ -493,8 +493,13 @@ export default class extends AbstractView {
     // console.log('Starting the round');
 
     // call function to start the round here
-      gameBoard.joinExistingTournamentGame(game_id);
+    try {
+      await gameBoard.joinExistingTournamentGame(game_id);
+      console.log("showing the modal");
       gameModal.style.display = 'flex';
+    } catch (error) {
+      // console.error('Error starting the game: ', error);
+    }
     
   }
   

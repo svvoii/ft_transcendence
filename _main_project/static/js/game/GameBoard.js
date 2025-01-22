@@ -120,6 +120,7 @@ export default class GameBoard {
 			this.connectWebSocket(role, game_id);
 
 		} catch (error) {
+			throw new Error('Error joining the game');
 			// alert('Error joining the game: ' + error.message);
 		}
 	}

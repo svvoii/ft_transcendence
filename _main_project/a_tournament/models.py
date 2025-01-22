@@ -30,6 +30,7 @@ class Tournament(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	round_1 = models.ForeignKey('Round_1', related_name='tournament_round_1', blank=True, null=True, on_delete=models.SET_NULL)
 	round_2 = models.ForeignKey('Round_2', related_name='tournament_round_2', blank=True, null=True, on_delete=models.SET_NULL)
+	tournament_is_full = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.tournament_name
