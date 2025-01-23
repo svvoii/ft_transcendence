@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import { user, gameBoard, chat } from "../index.js";
+import TournamentSocket from "./TournamentSocket.js"
 // import { joinTournamentGame } from '../game/GameAPI.js';
 
 
@@ -80,7 +81,6 @@ export default class extends AbstractView {
     // DEBUG BUTTON //
     container.appendChild(debugButton);
     container.appendChild(modalButton);
-
     
     return container;
   }
@@ -116,9 +116,15 @@ export default class extends AbstractView {
       console.log(tournamentDataText);
 
 
+      const ts = new TournamentSocket(tournamentID);
+
+      ts.new_player();
+      ts.player_leaving_tournament();
+      ts.start_round_1();
+      ts.game_finished();
+
       //Establishing the websocket connection
-      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-      user.setTournamentSocket(socket);
+      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`); user.setTournamentSocket(socket);
       socket.onopen = function() {
         console.log('WebSocket connection is established.');
         user.setIsInTournament(true, tournamentID);
