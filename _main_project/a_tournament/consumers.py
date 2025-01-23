@@ -62,10 +62,9 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		player_names = [player.username for player in players]
 		last_player_name = player_names[-1] if player_names else None
 
-		# if len(player_names) == REQUIRED_NB_PLAYERS:
-		# 	create_round_1_matches(self.tournament_name)
-		# print('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-		# print(f"Received message: {text_data_json}")
+	
+		#if message_type == 'get_tournament'
+
 
 		if (message_type == 'new_player' and len(player_names) < REQUIRED_NB_PLAYERS):
 			async_to_sync(self.channel_layer.group_send) (
@@ -185,9 +184,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 	# 	}))
 
 
-	# def list_clients(self):
-	# 	return TournamentLobbyConsumer.clients.get(self.room_group_name, [])
-
 	def player_leaving_tournament(self, event):
 		message = event['message']
 		player_names = event['player_names']
@@ -201,7 +197,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'last_player_name': last_player_name,
 		}))
 
-
 def update_round_1_winners(tournament_name, winner_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
@@ -211,7 +206,6 @@ def update_round_1_winners(tournament_name, winner_name):
 			round_1 = tournament.round_1
 			round_1.winners.add(winner)
 			round_1.save()
-			# tournament.save()
 
 def player_is_already_in_tournament(tournament_name, player_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():

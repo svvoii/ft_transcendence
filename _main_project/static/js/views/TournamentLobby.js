@@ -115,18 +115,6 @@ export default class extends AbstractView {
 
       console.log(tournamentDataText);
 
-      //CREATING ROUND 2
-      const creatingRound_2 = await fetch(`/tournament/create_round_2/${tournamentID}/`, {
-        headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-        }
-      });
-      const creatingRound2Data = await creatingRound_2.json();
-        
-      if (creatingRound2Data.status == 'error') {
-        throw new Error(creatingRound2Data.message);
-      }
-
 
       //Establishing the websocket connection
       const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);

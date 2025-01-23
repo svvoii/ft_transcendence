@@ -43,28 +43,13 @@ class Tournament(models.Model):
 	class Meta:
 		ordering = ['-created']
 
-	def create_matches(self):
-		players = list(self.players.all())
-		matches = []
-		for i in range(0, len(players), 2):
-			if i+1 < len(players):
-				match = Match.objects.create(tournament=self, player1=player[i], player2=players[i+1])
-				matches.append(match)
-		return matches
 
-
-	#create the first round of the tournament
 	def create_round_1_matches(self):
 		tournament_name = self.tournament_name
 		if not self.round_1:
 			round_1 = Round_1.objects.create(tournament=self)
 			self.round_1 = round_1
 			self.save()
-
-		# for player in self.players.all():
-		# 	self.round_1.players.add(player)
-
-		# player_names = [player.username for player in self.round_1.players.all()]
 
 		game_session_1, status_1 = create_game_round_1_internal()
 		game_session_2, status_2 = create_game_round_1_internal()
@@ -78,44 +63,12 @@ class Tournament(models.Model):
 		return 200
 
 
-	# def create_round_2_match(self):
-	# 	tournament_name = self.tournament_name
-	# 	if not self.round_2:
-	# 		round_2 = Round_2.objects.create(tournament=self)
-	# 		self.round_2 = round_2
-	# 		self.save()
-
-	# 	for player in self.round_1.winners.all():
-	# 		self.round_2.players.add(player)
-
-	# 	player_names = [player.username for player in self.round_2.players.all()]
-
-	# 	if (len(player_names) != 2):
-	# 		raise ValueError("Not enough players for round 2")
-
-	# 	game_session, status = create_game_with_2_players_internal(player_names[0], player_names[1])
-
-	# 	self.round_2.game_session = game_session
-	# 	self.round_2.save()
-	# 	self.save()
-
-	# 	return 200
-
-
 	def create_round_2_match(self):
 		tournament_name = self.tournament_name
 		if not self.round_2:
 			round_2 = Round_2.objects.create(tournament=self)
 			self.round_2 = round_2
 			self.save()
-
-		# for player in self.round_1.winners.all():
-		# 	self.round_2.players.add(player)
-
-		# player_names = [player.username for player in self.round_2.players.all()]
-
-		# if (len(player_names) != 2):
-		# 	raise ValueError("Not enough players for round 2")
 
 		game_session, status = create_game_round_2_internal()
 
@@ -124,32 +77,6 @@ class Tournament(models.Model):
 		self.save()
 
 		return 200
-
-
-
-class Match(models.Model):
-	tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
-	players = models.ManyToManyField(Account, related_name='Match_as_players', blank=True)
-	winner = models.ForeignKey(Account, related_name='matches_won', blank=True, null=True, on_delete=models.SET_NULL)
-	created = models.DateTimeField(auto_now_add=True)
-
-	def __str__(self):
-		return f'{self.player1.username} vs {self.player2.username}'
-
-	class Meta:
-		ordering = ['-created']
-
-
-# class TournamentMessage(models.Model):
-# 	tournament_room = models.ForeignKey(Tournament, related_name='tournament_messages', on_delete=models.CASCADE,)
-# 	msg_content = models.CharField(max_length=512)
-# 	created = models.DateTimeField(auto_now_add=True)
-
-# 	def __str__(self):
-# 		return f'{self.msg_content}'
-	
-# 	class Meta:
-# 		ordering = ['-created']
 
 
 class Round_1(models.Model):

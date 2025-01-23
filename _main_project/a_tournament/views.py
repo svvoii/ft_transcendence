@@ -17,29 +17,6 @@ from rest_framework import status
 
 from a_game.models import GameSession
 
-
-# Create your views here.
-
-@permission_classes([IsAuthenticated])
-def tournament_view(request):
-	tournament_room = get_object_or_404(Tournament, tournament_name=tournament_name)
-	tournament_messages = tournament.tournament_messages.all()[:20]
-	
-	other_user = None
-	
-	if tournament_room.tournament_name:
-		if request.user not in tournament_room.players.all():
-			tournament_room.members.add(request.user)
-
-
-	context = {
-		'tournament_room': tournament_room,
-		'tournament_messages': tournament_messages,
-	}
-
-	return render(request, 'a_tournament/tournament.html', context)
-
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -58,6 +35,7 @@ def create_tournament(request):
 	tournament.round_1 = round_1
 	tournament.round_2 = round_2
 	tournament.create_round_1_matches()
+	tournament.create_round_2_match();
 
 	tournament.save()
 	# Tournament.tournament_ids.add(tournament_url)
@@ -66,45 +44,6 @@ def create_tournament(request):
 		'message': 'Tournament created successfully.', 
 		'url': f'{tournament_url}' }, 
 		status=status.HTTP_201_CREATED)
-
-#GET TOURNAMENT
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_tournament(request, tournament_name):
-	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-
-		if not tournament.players.filter(username=request.user.username).exists():
-			tournament.players.add(request.user)
-		# else:
-			# print('[DEBUG] The user is already in the tournament')
-		
-		players = [player.username for player in tournament.players.all()]
-		nb_players = f'{len(players)}'
-		max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
-
-		player = tournament.players.get(username=request.user.username)
-		list_of_tournaments = [tournament.tournament_name for tournament in Tournament.objects.all()]
-
-		nb_players_in_each = [tournament.players.count() for tournament in Tournament.objects.all()]
-
-		# if (max_nb_players_reached):
-		# 	print('DEBUUUUUUUUUUUUG]', request.user.username)
-		update_round_1_players(request, tournament_name)
-
-		return Response({'status': 'success', 
-			'players': players,
-			'nb_players': nb_players,
-			'list of tournaments': list_of_tournaments,
-			'nb_players_in_each': nb_players_in_each,
-			'max_nb_players_reached': max_nb_players_reached}, 
-			status=status.HTTP_200_OK)
-	else:
-		return Response({'status': 'error', 
-			'message': 'Tournament does not exist.'}, 
-			status=status.HTTP_400_BAD_REQUEST)
-
-
 
 #GET TOURNAMENT
 @api_view(['GET'])
@@ -135,6 +74,39 @@ def tournament_check_in(request, tournament_name):
 				status=status.HTTP_400_BAD_REQUEST)
 
 
+#GET TOURNAMENT
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_tournament(request, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		if not tournament.players.filter(username=request.user.username).exists():
+			tournament.players.add(request.user)
+
+		players = [player.username for player in tournament.players.all()]
+		nb_players = f'{len(players)}'
+		max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
+
+		player = tournament.players.get(username=request.user.username)
+		list_of_tournaments = [tournament.tournament_name for tournament in Tournament.objects.all()]
+
+		nb_players_in_each = [tournament.players.count() for tournament in Tournament.objects.all()]
+
+		update_round_1_players(request, tournament_name)
+
+		return Response({'status': 'success', 
+			'players': players,
+			'nb_players': nb_players,
+			'list of tournaments': list_of_tournaments,
+			'nb_players_in_each': nb_players_in_each,
+			'max_nb_players_reached': max_nb_players_reached}, 
+			status=status.HTTP_200_OK)
+	else:
+		return Response({'status': 'error', 
+			'message': 'Tournament does not exist.'}, 
+			status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def remove_player_from_tournament(request, tournament_name):
@@ -152,8 +124,6 @@ def remove_player_from_tournament(request, tournament_name):
 					'message': 'Tournament deleted as there are no players left.'}, 
 					status=status.HTTP_200_OK)
 
-			# tournament.delete()
-
 			players = [player.username for player in tournament.players.all()]
 			nb_players = f'{len(players)}'
 			max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
@@ -162,10 +132,6 @@ def remove_player_from_tournament(request, tournament_name):
 				'nb_players': nb_players,
 				'max_nb_players_reached': max_nb_players_reached}, 
 				status=status.HTTP_200_OK)
-		
-			# return Response({'status': 'success',
-			# 	'message': 'Tournament cancelled : a player left.'},
-			# 	status=status.HTTP_200_OK)
 		
 		elif tournament.players.count() == REQUIRED_NB_PLAYERS:
 			return Response({'status': 'error', 
@@ -178,26 +144,11 @@ def remove_player_from_tournament(request, tournament_name):
 				'message': 'Player does not exist in the tournament.',
 				'request.user.username': request.user.username,}, 
 				status=status.HTTP_400_BAD_REQUEST)
-	
 
 	else:
 		return Response({'status': 'error', 
 			'message': 'Tournament does not exist.'}, 
 			status=status.HTTP_400_BAD_REQUEST)
-
-
-# #DELETE TOURNAMENT
-# @api_view(['DELETE'])
-# @permission_classes([IsAuthenticated])
-# def delete_tournament(request, tournament_name):
-# 	data = request.data
-# 	tournamentName = data.get('name')
-# 	if Tournament.objects.filter(tournament_name=tournamentName).exists():
-# 		tournament = get_object_or_404(Tournament, tournament_name=tournamentName)
-# 		tournament.delete()
-# 		return Response({'status': 'success', 'tournament_name': f'{tournamentName}', 'message': 'Tournament deleted successfully.'}, status=status.HTTP_200_OK)
-# 	else:
-# 		return Response({'status': 'error', 'message': 'Tournament does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 #START TOURNAMENT
@@ -247,94 +198,6 @@ def get_game_id_round_1(request, tournament_name):
 		return Response({'status': 'error', 
 			'message': 'Tournament does not exist.'}, 
 			status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def create_round_2(request, tournament_name):
-# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-
-# 		tournament.create_round_2_match();
-
-# 		player_names = [player.username for player in tournament.round_2.players.all()]
-
-# 		user_game_id = tournament.round_2.game_session.game_id
-
-# 		return Response({'status': 'success',
-# 			'user_game_id': user_game_id,
-# 			'user1round2': player_names[0],
-# 			'user2round2': player_names[1],
-# 			'userWinner': '',
-# 			'message': 'Round 2 started successfully.'},
-# 			status=status.HTTP_200_OK)
-# 	else:
-# 		return Response({'status': 'error', 
-# 			'message': 'Tournament does not exist.'}, 
-# 			status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def create_round_2(request, tournament_name):
-	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-
-		tournament.create_round_2_match();
-
-		# player_names = [player.username for player in tournament.round_2.players.all()]
-
-		# user_game_id = tournament.round_2.game_session.game_id
-
-		return Response({'status': 'success',
-			# 'user_game_id': user_game_id,
-			'message': 'Round 2 created successfully.'},
-			status=status.HTTP_200_OK)
-	else:
-		return Response({'status': 'error',
-			'message': 'Tournament does not exist.'}, 
-			status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def update_round_1_winners(request, tournament_name):
-# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
-
-# 		if not tournament.round_1.game_session_1.winner or not tournament.round_1.game_session_2.winner:
-# 			return Response({'status': 'winners_error', 
-# 				'message': 'Round 1 winners have not been determined yet.'}, 
-# 				status=status.HTTP_400_BAD_REQUEST)
-		
-# 		round_1 = tournament.round_1
-# 		round_1.winners.add(tournament.round_1.game_session_1.winner)
-# 		round_1.winners.add(tournament.round_1.game_session_2.winner)
-# 		round_1.save()
-# 		tournament.save()
-
-# 		player_names = [player.username for player in round_1.winners.all()]
-
-# 		if (request.user.username == player_names[0]):
-# 			return Response({'status': 'success',
-# 				'message': 'Round 1 winners updated successfully.',
-# 				'role': 'player_1',
-# 				'is_part_of_round_2': 'true'},
-# 				status=status.HTTP_200_OK)
-# 		elif (request.user.username == player_names[1]):
-# 			return Response({'status': 'success', 
-# 				'message': 'Round 1 winners updated successfully.',
-# 				'role': 'player_2',
-# 				'is_part_of_round_2': 'true'}, 
-# 				status=status.HTTP_200_OK)
-# 		else:
-# 			return Response({'status': 'error', 
-# 				'message': 'Player is not a winner of round 1.',
-# 				'is_part_of_round_2': 'false'}, 
-# 				status=status.HTTP_200_OK)
-# 	else:
-# 		return Response({'status': 'error', 
-# 			'message': 'Tournament does not exist.'}, 
-# 			status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
