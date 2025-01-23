@@ -188,12 +188,29 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		}))
 
 	def start_round_1(self, event):
+		
+		
+		tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
+		player_names = [player.username for player in tournament.players.all()]
+
+		
+		game_id = None
+
+		if self.user.username in [player_names[0], player_names[1]]:
+			game_id = tournament.round_1.game_session_1.game_id
+		elif self.user.username in [player_names[2], player_names[3]]:
+			game_id = tournament.round_1.game_session_2.game_id
+
+		
 		message = event['message']
 		player_names = event['player_names']
+
+
 		self.send(text_data=json.dumps({
 			'type': 'start_round_1',
 			'message': message,
 			'player_names': player_names,
+			'game_id': game_id,
 		}))
 
 	def game_finished(self, event):

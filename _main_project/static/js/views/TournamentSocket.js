@@ -85,8 +85,9 @@ export default class {
   
   recv_start_round_1(data) {
     console.log('TournamentSocket -> start_round_1');
+    console.log(data);
     // fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
-    // this.start_round_1(tournamentID);
+    // this.start_round_1(this.tournamentID);
   }
 
   recv_game_finished(data) {
