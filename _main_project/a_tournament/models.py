@@ -43,6 +43,22 @@ class Tournament(models.Model):
 	class Meta:
 		ordering = ['-created']
 
+	def assign_players_to_round_1(self):
+		if self.players.count() == REQUIRED_NB_PLAYERS:
+			round_1 = self.round_1
+			round_1.players.set(self.players.all())
+			players = self.players.all()
+
+			round_1.game_session_1.player1 = players[0]
+			round_1.game_session_1.player2 = players[1]
+			round_1.game_session_2.player1 = players[2]
+			round_1.game_session_2.player2 = players[3]
+			
+			round_1.save()
+			self.round_1 = round_1
+			self.save()
+			# self.tournament_is_full = True
+
 
 	def create_round_1_matches(self):
 		tournament_name = self.tournament_name
@@ -61,7 +77,6 @@ class Tournament(models.Model):
 		self.save()
 
 		return 200
-
 
 	def create_round_2_match(self):
 		tournament_name = self.tournament_name

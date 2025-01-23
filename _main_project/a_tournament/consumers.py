@@ -16,7 +16,8 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		self.tournament_name = self.scope['url_route']['kwargs']['tournament_name']
 		self.room = get_object_or_404(Tournament, tournament_name=self.tournament_name)
 		self.room_group_name = f"tournament_{self.tournament_name}"
-		
+		self.user = get_object_or_404(Account, username=self.scope['user'].username)
+
 		async_to_sync(self.channel_layer.group_add)(
 			self.room_group_name,
 			self.channel_name
@@ -57,16 +58,25 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 
 	def receive(self, text_data):
 		text_data_json = json.loads(text_data)
+		message = text_data_json.get('message')
 		message_type = text_data_json.get('type')
+		tournamentID = text_data_json.get('tournamentID')
+
 		players = self.room.players.all()
 		player_names = [player.username for player in players]
 		last_player_name = player_names[-1] if player_names else None
 
-	
-		#if message_type == 'get_tournament'
-
-
-		if (message_type == 'new_player' and len(player_names) < REQUIRED_NB_PLAYERS):
+		if (message_type == 'add_player_to_tournament'):
+			add_player_to_tournament(self.user, tournamentID)
+			async_to_sync(self.channel_layer.group_send) (
+				self.room_group_name,
+				{
+					'message': 'Add player to tournament.',
+					'type': message_type,
+					'tournamentID': tournamentID
+				}
+			)
+		elif (message_type == 'new_player' and len(player_names) < REQUIRED_NB_PLAYERS):
 			async_to_sync(self.channel_layer.group_send) (
 				self.room_group_name,
 				{
@@ -77,27 +87,38 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 					'last_player_name': last_player_name,
 				}
 			)
+
 		elif (message_type == 'new_player' and len(player_names) == REQUIRED_NB_PLAYERS):
-			if Tournament.objects.filter(tournament_name=self.tournament_name).exists():
-				tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
-				if tournament.tournament_is_full == False:
-					async_to_sync(self.channel_layer.group_send)(
-						self.room_group_name,
-						{
-							'type': 'start_round_1',
-							'message': 'Round 1 has started',
-							'player_names': player_names,
-						}
-					)
-					tournament.tournament_is_full = True
-				else:
-					self.send(
-						text_data=json.dumps({
-							'type': 'start_round_1',
-							'message': 'Round 1 has started',
-							'player_names': player_names,
-						})
-					)
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'start_round_1',
+					'message': 'Round 1 has started',
+					'player_names': player_names,
+				}
+			)
+
+		# elif (message_type == 'new_player' and len(player_names) == REQUIRED_NB_PLAYERS):
+		# 	if Tournament.objects.filter(tournament_name=self.tournament_name).exists():
+		# 		tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
+		# 		if tournament.tournament_is_full == False:
+		# 			async_to_sync(self.channel_layer.group_send)(
+		# 				self.room_group_name,
+		# 				{
+		# 					'type': 'start_round_1',
+		# 					'message': 'Round 1 has started',
+		# 					'player_names': player_names,
+		# 				}
+		# 			)
+		# 			tournament.tournament_is_full = True
+		# 		else:
+		# 			self.send(
+		# 				text_data=json.dumps({
+		# 					'type': 'start_round_1',
+		# 					'message': 'Round 1 has started',
+		# 					'player_names': player_names,
+		# 				})
+		# 			)
 
 		elif (message_type == 'game_finished'):
 			async_to_sync(self.channel_layer.group_send)(
@@ -142,6 +163,16 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		# 			'player_names': player_names,
 		# 		}
 		# 	)
+
+
+	def add_player_to_tournament(self, event):
+		message = event['message']
+		tournamentID = event['tournamentID']
+		self.send(text_data=json.dumps({
+			'type': event['type'],
+			'message': 'Add player to tournament.',
+			'tournamentID': tournamentID
+		}))
 
 	def new_player(self, event):
 		message = event['message']
@@ -196,6 +227,72 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 			'max_nb_players_reached': max_nb_players_reached,
 			'last_player_name': last_player_name,
 		}))
+
+def add_player_to_tournament(user, tournament_name):
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+		if not tournament.players.filter(username=user.username).exists():
+			tournament.players.add(user)
+
+		players = [player.username for player in tournament.players.all()]
+		nb_players = f'{len(players)}'
+		max_nb_players_reached = int(nb_players) == REQUIRED_NB_PLAYERS
+
+		if max_nb_players_reached: # and user.username == players[-1]:
+			# tournament.tournament_is_full = True
+			tournament.assign_players_to_round_1()
+
+		return True
+	return False
+	
+
+# def update_round_1_players(request, tournament_name):
+# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+# 		round_1 = tournament.round_1
+# 		round_1.players.add(request.user)
+
+# 		if (not round_1.game_session_1 or not round_1.game_session_2):
+# 			return Response({'status': 'error',
+# 				'message': 'Game sessions not created.'},
+# 				status=status.HTTP_200_OK)
+		
+# 		game_session_1 = round_1.game_session_1
+# 		game_session_2 = round_1.game_session_2
+
+# 		players = [player.username for player in round_1.players.all()]
+# 		try:
+# 			user_index = players.index(request.user.username)
+# 		except ValueError:
+# 			user_index = -1
+
+		
+# 		if user_index == 0:
+# 			game_session_1.player1 = request.user
+# 		elif user_index == 1:
+# 			game_session_1.player2 = request.user
+# 		elif user_index == 2:
+# 			game_session_2.player1 = request.user
+# 		elif user_index == 3:
+# 			game_session_2.player2 = request.user
+# 		else:
+# 			return Response({'status': 'error',
+# 				'message': '[Updating round_1 players] This user is not supposed to be in round_1'},
+# 				status=status.HTTP_400_BAD_REQUEST)
+			
+# 		round_1.game_session_1.save()
+# 		round_1.game_session_2.save()
+# 		round_1.save()
+
+# 		player_names = [player.username for player in round_1.players.all()]
+
+# 		return True
+# 	return False
+
+
+
 
 def update_round_1_winners(tournament_name, winner_name):
 	if Tournament.objects.filter(tournament_name=tournament_name).exists():

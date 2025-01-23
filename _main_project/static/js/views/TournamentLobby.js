@@ -106,96 +106,94 @@ export default class extends AbstractView {
       // ENTERING NEW PLAYER TO THE DATABASE
       // GETTING THE TOURNAMENT OBJECT AND CREATING ROUND 1 
 
-      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
-        headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-        }
-      });
-      const tournamentDataText = await tournament.text();
+      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
+      //   headers: {
+      //   'X-Requested-With': 'XMLHttpRequest'
+      //   }
+      // });
+      // const tournamentDataText = await tournament.text();
 
-      console.log(tournamentDataText);
+      // console.log(tournamentDataText);
 
 
       const ts = new TournamentSocket(tournamentID);
+      await ts.connect_websocket();
 
-      ts.new_player();
-      ts.player_leaving_tournament();
-      ts.start_round_1();
-      ts.game_finished();
+      await ts.send_add_player_to_tournament();
 
       //Establishing the websocket connection
-      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`); user.setTournamentSocket(socket);
-      socket.onopen = function() {
-        console.log('WebSocket connection is established.');
-        user.setIsInTournament(true, tournamentID);
-        const message = {
-          'message': 'New player entering the lobby.',
-          'type': 'new_player',
-          'player_name': user.getUserName()
-        };
-        socket.send(JSON.stringify(message));
+      // const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`); user.setTournamentSocket(socket);
+      // socket.onopen = function() {
+      //   console.log('WebSocket connection is established.');
+      //   user.setIsInTournament(true, tournamentID);
+      //   const message = {
+      //     'message': 'New player entering the lobby.',
+      //     'type': 'new_player',
+      //     'player_name': user.getUserName()
+      //   };
+      //   socket.send(JSON.stringify(message));
 
-      };
+      // };
 
-      socket.onclose = function() {
-        console.log('WebSocket connection is closed.');
-        user.setIsInTournament(false, '');
-      };
+      // socket.onclose = function() {
+      //   console.log('WebSocket connection is closed.');
+      //   user.setIsInTournament(false, '');
+      // };
 
       
-      socket.addEventListener('message', async (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type == 'new_player') 
-        {
-          listOfPlayers.innerHTML = '';
-          data.player_names.forEach( player => {
-              const li = document.createElement('li');
-              li.innerText = player;
-              listOfPlayers.appendChild(li);
-            });
-        }
-        else if (data.type == 'player_leaving_tournament') 
-        {
-          listOfPlayers.innerHTML = '';
-          data.player_names.forEach( player => {
-              const li = document.createElement('li');
-              li.innerText = player;
-              listOfPlayers.appendChild(li);
-              fullLobbyDiv.textContent = 'Waiting for more players to join...';
-            });
-        }
-        else if (data.type == 'start_round_1')
-        {
-          fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
-          this.start_round_1(tournamentID);
-        } 
-        else if (data.type == 'game_finished')
-        {
-          if (data.game_index == 'round_1_game_1') {
-            document.getElementById('round1leftWinner').textContent = data.winner;
-            this.round_1_game_1_finished = 1;
-          }
-          else if (data.game_index == 'round_1_game_2') {
-            document.getElementById('round1rightWinner').textContent = data.winner;
-            this.round_1_game_2_finished = 1;
+      // socket.addEventListener('message', async (event) => {
+      //   const data = JSON.parse(event.data);
+      //   if (data.type == 'new_player') 
+      //   {
+      //     listOfPlayers.innerHTML = '';
+      //     data.player_names.forEach( player => {
+      //         const li = document.createElement('li');
+      //         li.innerText = player;
+      //         listOfPlayers.appendChild(li);
+      //       });
+      //   }
+      //   else if (data.type == 'player_leaving_tournament') 
+      //   {
+      //     listOfPlayers.innerHTML = '';
+      //     data.player_names.forEach( player => {
+      //         const li = document.createElement('li');
+      //         li.innerText = player;
+      //         listOfPlayers.appendChild(li);
+      //         fullLobbyDiv.textContent = 'Waiting for more players to join...';
+      //       });
+      //   }
+      //   else if (data.type == 'start_round_1')
+      //   {
+      //     fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
+      //     this.start_round_1(tournamentID);
+      //   } 
+      //   else if (data.type == 'game_finished')
+      //   {
+      //     if (data.game_index == 'round_1_game_1') {
+      //       document.getElementById('round1leftWinner').textContent = data.winner;
+      //       this.round_1_game_1_finished = 1;
+      //     }
+      //     else if (data.game_index == 'round_1_game_2') {
+      //       document.getElementById('round1rightWinner').textContent = data.winner;
+      //       this.round_1_game_2_finished = 1;
 
-          }
-          else if (data.game_index == 'round_2_game') {
-            document.getElementById('winnerName').textContent = data.winner;
+      //     }
+      //     else if (data.game_index == 'round_2_game') {
+      //       document.getElementById('winnerName').textContent = data.winner;
 
-          }
+      //     }
 
-          // if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
-          // {
-          //   this.round_2_started = 1;
-          //   this.start_round_2(tournamentID);
-          // }
-        }
-        // else if (data.type == 'tournament_cancelled')
-        // {
-        //   fullLobbyDiv.textContent = 'The tournament was cancelled.';
-        // }
-      });
+      //     // if (this.round_1_game_1_finished == 1 && this.round_1_game_2_finished == 1 && this.round_2_started == 0)
+      //     // {
+      //     //   this.round_2_started = 1;
+      //     //   this.start_round_2(tournamentID);
+      //     // }
+      //   }
+      //   // else if (data.type == 'tournament_cancelled')
+      //   // {
+      //   //   fullLobbyDiv.textContent = 'The tournament was cancelled.';
+      //   // }
+      // });
 
     }
     catch(error) {
