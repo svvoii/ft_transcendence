@@ -93,6 +93,29 @@ class Tournament(models.Model):
 
 		return 200
 
+	def get_standings(self):
+		r1_player_names = [player.username for player in self.round_1.players.all()]
+
+		r2_player_names = ['', '']
+		if (self.round_2.player1 and self.round_2.player2):
+			r2_player_names = [self.round_2.player1.username, self.round_2.player2.username]
+
+		if self.winner:
+			winner = self.winner.username
+		else:
+			winner = ''
+
+		standings = {
+			'user1round1': r1_player_names[0],
+			'user2round1': r1_player_names[1],
+			'user3round1': r1_player_names[2],
+			'user4round1': r1_player_names[3],
+			'user1round2': r2_player_names[0],
+			'user2round2': r2_player_names[1],
+			'userWinner': winner,
+		}
+		return standings
+
 
 class Round_1(models.Model):
 	tournament_name = models.ForeignKey(Tournament, related_name='round_1_as_tournament', on_delete=models.CASCADE)
@@ -101,6 +124,7 @@ class Round_1(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	game_session_1 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_1', blank=True, null=True, on_delete=models.SET_NULL)
 	game_session_2 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_2', blank=True, null=True, on_delete=models.SET_NULL)
+	countdowns_finished = models.ManyToManyField(Account, related_name='countdowns_finished', blank=True)
 
 	def __str__(self):
 		return f'round_1 {self.tournament.tournament_name}'
@@ -108,12 +132,13 @@ class Round_1(models.Model):
 
 class Round_2(models.Model):
 	tournament_name = models.ForeignKey(Tournament, related_name='round_2_as_tournament', on_delete=models.CASCADE)
-	players = models.ManyToManyField(Account, related_name='round_2_as_players', blank=True)
+	# players = models.ManyToManyField(Account, related_name='round_2_as_players', blank=True)
+	player1 = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="round_2_player1", null=True, blank=True)
+	player2 = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="round_2_player2", null=True, blank=True)
+
 	winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
 	game_session = models.ForeignKey(GameSession, related_name='round_2_as_game_session', blank=True, null=True, on_delete=models.SET_NULL)
 
 	def __str__(self):
 		return f'round_2 {self.tournament.tournament_name}'
-
-

@@ -64,12 +64,11 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 		if (role === 'player1' && mode === 'Multi_2') {
 			check_if_part_of_tournament(game_id);
 		}
-
+		
 		if (socket) socket.close();
 		gameBoardInstance.resetGameBoard();
 		const gameModal = document.getElementById('gameModal');
 		gameModal.style.display = 'none';
-
 	}
 
 	async function check_if_part_of_tournament(game_id) {
