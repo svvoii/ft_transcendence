@@ -115,6 +115,7 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 					'winner': text_data_json.get('winner'),
 				}
 			)
+			print(f"game_finsihed: r2_p1: {self.tournament.round_2.player1} : r2_p2: {self.tournament.round_2.player2}")
 			# if (self.tournament.round_2.player1 and self.tournament.round_2.player2):
 				# if self.user.username in [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username]:
 				# 	if not self.user_finished_countdown_round_2:
@@ -197,12 +198,11 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		winner_name = event['winner']
 		player_names = event['player_names']
 		winner = get_object_or_404(Account, username=winner_name)
-		tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
+		self.tournament = get_object_or_404(Tournament, tournament_name=self.tournament_name)
 
-		round_1 = tournament.round_1
-		round_2 = tournament.round_2
+		round_1 = self.tournament.round_1
+		round_2 = self.tournament.round_2
 
-		
 
 		if game_index == 'round_1_game_1' and not round_1.winners.filter(username=winner_name).exists():
 			round_1.winners.add(winner)
@@ -217,11 +217,12 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		round_1.save()
 		round_2.save()
 
+
 		self.send(text_data=json.dumps({
 			'type': 'game_finished',
 			'game_index': game_index,
 			'winner': winner_name,
-			'standings' : tournament.get_standings(),			
+			'standings' : self.tournament.get_standings(),			
 		}))
 
 	def start_round_2(self, event):
