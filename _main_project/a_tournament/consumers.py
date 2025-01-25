@@ -115,20 +115,22 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 					'winner': text_data_json.get('winner'),
 				}
 			)
-			print(f"game_finsihed: r2_p1: {self.tournament.round_2.player1} : r2_p2: {self.tournament.round_2.player2}")
-			# if (self.tournament.round_2.player1 and self.tournament.round_2.player2):
-				# if self.user.username in [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username]:
-				# 	if not self.user_finished_countdown_round_2:
-				# 		self.user_finished_countdown_round_2 = True
-			async_to_sync(self.channel_layer.group_send)(
-				self.room_group_name,
-				{
-					'type': 'start_round_2',
-					'message': 'Round 2 has started',
-					'player_names': player_names,
-				}
-			)
-		
+			
+		elif (message_type == 'start_round_2'):
+			if not self.user_finished_countdown_round_2:
+				self.user_finished_countdown_round_2 = True
+			user_game_id = get_game_id_round_2(self.user, self.tournament_name)
+			countdown_finished = self.tournament.round_2.countdowns_finished.filter(username=self.user.username).exists()
+
+			self.send(text_data=json.dumps({
+				'type': 'start_round_2',
+				'message': 'Round_2 has started',
+				'player_names': [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username],
+				'game_id': user_game_id,
+				'countdown_finished': countdown_finished,
+			}))
+
+
 		elif (message_type == 'round_1_countdown_finished'):
 			self.round_1_countdown_finished(self.tournament_name);
 		
@@ -203,13 +205,14 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		round_1 = self.tournament.round_1
 		round_2 = self.tournament.round_2
 
-
 		if game_index == 'round_1_game_1' and not round_1.winners.filter(username=winner_name).exists():
 			round_1.winners.add(winner)
 			round_2.player1 = winner
+			round_2.game_session.player1 = winner
 		elif game_index == 'round_1_game_2' and not round_1.winners.filter(username=winner_name).exists():
 			round_1.winners.add(winner)
 			round_2.player2 = winner
+			round_2.game_session.player2 = winner
 		elif game_index == 'round_2_game':
 			if not round_2.winner:
 				round_2.winner = winner
@@ -217,22 +220,16 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		round_1.save()
 		round_2.save()
 
+		ready_for_round_2 = round_1.winners.count() == 2
 
 		self.send(text_data=json.dumps({
 			'type': 'game_finished',
 			'game_index': game_index,
 			'winner': winner_name,
-			'standings' : self.tournament.get_standings(),			
+			'standings' : self.tournament.get_standings(),
+			'ready_for_round_2': ready_for_round_2,	
 		}))
 
-	def start_round_2(self, event):
-		message = event['message']
-		player_names = event['player_names']
-		self.send(text_data=json.dumps({
-			'type': 'start_round_2',
-			'message': message,
-			'player_names': player_names,
-		}))
 
 
 	def player_leaving_tournament(self, event):
@@ -289,25 +286,17 @@ def get_game_id_round_1(user, tournament_name):
 	return user_game_id
 
 
-# def get_game_id_round_2(user, tournament_name):
-# 	user_game_id = None
+def get_game_id_round_2(user, tournament_name):
+	user_game_id = None
 
-# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-# 		if (tournament.round_2.player1 and tournament.round_2.player2):
-# 			user_game_id = tournament.round_2.game_session.game_id
+		if (tournament.round_2.player1 and tournament.round_2.player2):
+			user_game_id = tournament.round_2.game_session.game_id
 
-# 		return Response({'status': 'success',
-# 			'user_game_id': user_game_id,
-# 			'user1round2': f'{player_names[0]}',
-# 			'user2round2': f'{player_names[1]}',
-# 			'message': 'Round 2 started successfully.'},
-# 			status=status.HTTP_200_OK)
-# 	else:
-# 		return Response({'status': 'error', 
-# 			'message': 'Tournament does not exist.'}, 
-# 			status=status.HTTP_400_BAD_REQUEST)
+	return user_game_id
+
 
 
 # def update_round_1_winners(tournament_name, winner_name):
@@ -330,3 +319,8 @@ def player_is_already_in_tournament(tournament_name, player_name):
 				return True
 		print("player is not in the tournament")
 	return False
+
+import datetime
+
+def printwt(message):
+    print(f"{datetime.datetime.now()}: {message}")

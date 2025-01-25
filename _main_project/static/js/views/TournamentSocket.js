@@ -119,18 +119,33 @@ export default class {
     // await this.send_game_finished(data.game_index, data.game_id, winnerName);
   }
 
-  recv_game_finished(data) {
+  async recv_game_finished(data) {
     console.log('TournamentSocket -> game_finished');
     console.log(data);
     this.bracketNameFill(data);
 
-    
-
+    if (data.ready_for_round_2 === true) {
+      await this.send_start_round_2();
+    }
   }
 
   async recv_start_round_2(data) {
     console.log('TournamentSocket -> start_round_2');
     console.log(data);
+
+    if (user.getUserName() == data.player_names[0] || user.getUserName() == data.player_names[1]) {
+      if (data.countdown_finished == false) {
+        await this.startCountdown();
+        await this.send_countdown_round_2_finished();
+      }
+      // this.startRound(data.game_id);
+    } else {
+      console.log('user not in this round');
+      const countdownMessage = document.getElementById('countdown');
+      countdownMessage.textContent = 'You did not move to round 2. Waiting for other players to finish their games...';
+      countdownMessage.style.display = 'block';
+      countdownMessage.style.fontSize = '1rem';
+    }
 
   }
 
@@ -163,6 +178,19 @@ export default class {
     await this.send_to_backend(message);
   }
 
+  async send_start_round_2() {
+    const message = {
+      'message': 'Start round 2.',
+      'type': 'start_round_2',
+    }
+    await this.send_to_backend(message);
+  }
+
+  async send_to_backend(message) {
+    await this.socketOpenPromise;
+    this.socket.send(JSON.stringify(message));
+  }
+  
   // async send_game_finished(game_index, game_id, winnerName) {
   //   const message = {
   //     'message': 'Game finished.',
@@ -175,13 +203,9 @@ export default class {
   //   await this.send_to_backend(message);
   // }
 
-  async send_to_backend(message) {
-    await this.socketOpenPromise;
-    this.socket.send(JSON.stringify(message));
-  }
 
 
-
+  ///// TOURNAMENT BRACKET /////
 
   showTournamentBracket() {
     const tournamentBracket = document.createElement('div');
@@ -272,6 +296,7 @@ export default class {
     const countdown = document.createElement('p');
     countdown.id = 'countdown';
     countdown.textContent = 'Waiting for other players to finish their games...';
+    countdown.style.fontSize = '1rem';
   
     // append all the elements to the tournament bracket
     tournamentBracket.appendChild(title);
@@ -311,6 +336,7 @@ export default class {
     chat.addChatMessage('system', 'Good luck!!!');
     
     countdownElement.style.display = 'block';
+    countdownElement.style.fontSize = '2rem';
     
     const interval = setInterval(() => {
       if (countdown >= 1) {

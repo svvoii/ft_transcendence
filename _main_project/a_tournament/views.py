@@ -338,7 +338,7 @@ def is_part_of_tournament(request, game_id):
 	print('Game Session:', gameSession.game_id)
 	if not(gameSession.player1):
 		print('NO PLAYER 1')
-	elif not (gameSession.player2):
+	if not (gameSession.player2):
 		print('NO PLAYER 2')
 
 	is_round_1_game_1 = Round_1.objects.filter(
@@ -352,9 +352,16 @@ def is_part_of_tournament(request, game_id):
 	is_round_2_game = Round_2.objects.filter(
 		models.Q(game_session=gameSession)
 	).exists()
-	
-	player1_name = gameSession.player1.username
-	player2_name = gameSession.player2.username
+
+	if gameSession.player1:
+		player1_name = gameSession.player1.username
+	else:
+		player1_name = ''
+		
+	if gameSession.player2:
+		player2_name = gameSession.player2.username
+	else:
+		player2_name = ''
 
 	if is_round_1_game_1:
 		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'game_index': 'round_1_game_1'}, status=status.HTTP_200_OK)
