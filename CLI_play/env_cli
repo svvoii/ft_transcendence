@@ -15,12 +15,8 @@ CLI_PASSWORD=qetwry135246
 
 # GAME SETTINGS:
 # = = = = = = = 
-CANVAS_WIDTH=600
-CANVAS_HEIGHT=600
-PADDLE_HEIGHT=60
-BALL_RADIUS=4
 
-# Example Game modes: 
+# Example Game modes (default is set to Single in the script):
 # GAME_MODE=Single
 # GAME_MODE=Multi_2
 # GAME_MODE=Multi_3

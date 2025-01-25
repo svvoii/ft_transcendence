@@ -10,47 +10,35 @@ import json
 import curses
 import sys
 import os
-from dotenv import load_dotenv
 import logging
+from dotenv import load_dotenv
+
+import logging_config
+from api_requests import register_user, login_user, create_game_session, join_game_session, get_game_state, move_paddle, end_game_session, quit_game_session
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 settings_file = os.path.join(script_dir, 'env_cli')
-logfile_path = os.path.join(script_dir, 'cli_pong.log')
-
 load_dotenv(settings_file)
-
-# Remove the existing log file
-if os.path.exists(logfile_path):
-	os.remove(logfile_path)
-
-logging.basicConfig(filename=logfile_path, level=logging.DEBUG, format='%(levelname)s - %(message)s')
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../api_test')))
-
-from test_api import register_user, login_user, create_game_session, join_game_session, get_game_state, move_paddle, end_game_session, quit_game_session
 
 
 API_URL = os.getenv('HOST', 'http://localhost:8000')
 USE_HTTPS = os.getenv('USE_HTTPS', 'false')
 GAME_MODE = os.getenv('GAME_MODE', 'Single')
-CANVAS_WIDTH = int(os.getenv('CANVAS_WIDTH'))
-CANVAS_HEIGHT = int(os.getenv('CANVAS_HEIGHT'))
-PADDLE_HEIGHT = int(os.getenv('PADDLE_HEIGHT'))
-BALL_RADIUS = int(os.getenv('BALL_RADIUS'))
+
+# The following variables must match the values in the Django project !!!
+CANVAS_WIDTH = 600
+CANVAS_HEIGHT = 600
+PADDLE_HEIGHT = 60
 
 # DEBUG #
 logging.debug("API_URL: %s", API_URL)
 logging.debug("USE_HTTPS: %s", os.getenv("USE_HTTPS", "false"))
 logging.debug("GAME_MODE: %s", GAME_MODE)
-logging.debug("CANVAS_WIDTH: %s", CANVAS_WIDTH)
-logging.debug("CANVAS_HEIGHT: %s", CANVAS_HEIGHT)
-logging.debug("PADDLE_HEIGHT: %s", PADDLE_HEIGHT)
-logging.debug("BALL_RADIUS: %s", BALL_RADIUS)
 # # # # #
 
 def get_credentials():
-	print("Getting credentials...")
+	logging.debug("Getting user credentials...")
 
 	email = os.getenv('CLI_EMAIL', 'test@test.test')
 	username = os.getenv('CLI_USERNAME', 'test')
@@ -65,25 +53,15 @@ def get_credentials():
 
 
 def handle_login(email, username, password):
-	print("Handle login...")
-
 	try:
 		register_user(email, username, password, password)
-	except requests.RequestException as e:
-		logging.error("Registration failed: %s", e)
-		return None, None
-
-	try:
 		session, csrf_token = login_user(email, password)
 		if not session and not csrf_token:
 			return None, None
 	except requests.RequestException as e:
-		logging.error("Login failed: %s", e)
+		logging.error("Registration / Login failed: %s", e)
 		return None, None
-	except ValueError as e:
-		logging.error("Login failed: %s", e)
-		return None, None
-	
+
 	return session, csrf_token
 
 
@@ -189,6 +167,7 @@ def draw_game_state(stdscr, game_state):
 				stdscr.addstr(int((CANVAS_HEIGHT - 2) * scale_y), paddle4, '=')
 
 	# Draw ball
+	ball = '[X]'
 	ball_y = int(game_state['ball_y'] * scale_y)
 	ball_x = int(game_state['ball_x'] * scale_x)
 	if ball_y + 3 >= term_height:
@@ -196,7 +175,7 @@ def draw_game_state(stdscr, game_state):
 	if ball_x + 3 >= term_width:
 		ball_x = term_width - 3
 	
-	stdscr.addstr(ball_y, ball_x, '[ ]')
+	stdscr.addstr(ball_y, ball_x, ball)
 
 	# Draw scores
 	player1_score = f"P1 score: {game_state['score1']}"
@@ -262,10 +241,12 @@ def main(stdscr):
 	if not email or not username or not password:
 		return
 
+	logging.debug("Handling registration and login...")
 	session, csrf_token = handle_login(email, username, password)
 	if not session:
 		return
 
+	logging.debug("Requesting game session...")
 	game_id, paddle = start_game_session(session, csrf_token)
 	if not game_id:
 		return	
@@ -284,4 +265,7 @@ def main(stdscr):
 
 if __name__ == "__main__":
 	winner = curses.wrapper(main)
-	print(f"Game Over! Winner: {winner}")
+	if winner:
+		print(f"Game Over! Winner: {winner}")
+	else:
+		print("Something went wrong. Please check the logs...")
