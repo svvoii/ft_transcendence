@@ -45,6 +45,8 @@ export default class {
         this.recv_player_leaving_tournament(data);
       } else if (data.type == 'start_round_1') {
         this.recv_start_round_1(data);
+      } else if (data.type == 'start_round_2') {
+        this.recv_start_round_2(data);
       } else if (data.type == 'game_finished') {
         this.recv_game_finished(data);
       }
@@ -122,6 +124,13 @@ export default class {
     console.log(data);
     this.bracketNameFill(data);
 
+    
+
+  }
+
+  async recv_start_round_2(data) {
+    console.log('TournamentSocket -> start_round_2');
+    console.log(data);
 
   }
 
@@ -131,6 +140,15 @@ export default class {
     const message = {
       'message': 'Round 1 countdown finished.',
       'type': 'round_1_countdown_finished',
+      'tournamentID': this.tournamentID
+    };
+    await this.send_to_backend(message);
+  }
+
+  async send_countdown_round_2_finished() {
+    const message = {
+      'message': 'Round 2 countdown finished.',
+      'type': 'round_2_countdown_finished',
       'tournamentID': this.tournamentID
     };
     await this.send_to_backend(message);

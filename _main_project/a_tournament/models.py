@@ -124,7 +124,7 @@ class Round_1(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	game_session_1 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_1', blank=True, null=True, on_delete=models.SET_NULL)
 	game_session_2 = models.ForeignKey(GameSession, related_name='round_1_as_game_session_2', blank=True, null=True, on_delete=models.SET_NULL)
-	countdowns_finished = models.ManyToManyField(Account, related_name='countdowns_finished', blank=True)
+	countdowns_finished = models.ManyToManyField(Account, related_name='countdowns_1_finished', blank=True)
 
 	def __str__(self):
 		return f'round_1 {self.tournament.tournament_name}'
@@ -139,6 +139,7 @@ class Round_2(models.Model):
 	winner = models.ForeignKey(Account, related_name='round_2_as_winner', blank=True, null=True, on_delete=models.SET_NULL)
 	created = models.DateTimeField(auto_now_add=True)
 	game_session = models.ForeignKey(GameSession, related_name='round_2_as_game_session', blank=True, null=True, on_delete=models.SET_NULL)
+	countdowns_finished = models.ManyToManyField(Account, related_name='countdowns_2_finished', blank=True)
 
 	def __str__(self):
 		return f'round_2 {self.tournament.tournament_name}'

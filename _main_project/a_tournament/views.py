@@ -296,37 +296,37 @@ def update_round_2_players(request, tournament_name):
 # 			status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_game_id_round_2(request, tournament_name):
-	if Tournament.objects.filter(tournament_name=tournament_name).exists():
-		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_game_id_round_2(request, tournament_name):
+# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
 
-		if not (tournament.round_2.game_session):
-			return Response({'status': 'error', 
-				'message': 'Round 2 has not been created yet.'}, 
-				status=status.HTTP_200_OK)
+# 		if not (tournament.round_2.game_session):
+# 			return Response({'status': 'error', 
+# 				'message': 'Round 2 has not been created yet.'}, 
+# 				status=status.HTTP_200_OK)
 		
 
-		player_names = [player.username for player in tournament.round_2.players.all()]
+# 		player_names = [player.username for player in tournament.round_2.players.all()]
 
-		if (len(player_names) != 2):
-			return Response({'status': 'error', 
-				'message': 'Not enough players to start round 2.'}, 
-				status=status.HTTP_200_OK)
+# 		if (len(player_names) != 2):
+# 			return Response({'status': 'error', 
+# 				'message': 'Not enough players to start round 2.'}, 
+# 				status=status.HTTP_200_OK)
 
-		user_game_id = tournament.round_2.game_session.game_id
+# 		user_game_id = tournament.round_2.game_session.game_id
 
-		return Response({'status': 'success',
-			'user_game_id': user_game_id,
-			'user1round2': f'{player_names[0]}',
-			'user2round2': f'{player_names[1]}',
-			'message': 'Round 2 started successfully.'},
-			status=status.HTTP_200_OK)
-	else:
-		return Response({'status': 'error', 
-			'message': 'Tournament does not exist.'}, 
-			status=status.HTTP_400_BAD_REQUEST)
+# 		return Response({'status': 'success',
+# 			'user_game_id': user_game_id,
+# 			'user1round2': f'{player_names[0]}',
+# 			'user2round2': f'{player_names[1]}',
+# 			'message': 'Round 2 started successfully.'},
+# 			status=status.HTTP_200_OK)
+# 	else:
+# 		return Response({'status': 'error', 
+# 			'message': 'Tournament does not exist.'}, 
+# 			status=status.HTTP_400_BAD_REQUEST)
 
 
 #For GameLogic.js, when closing the game, checking if the game is part of a tournament

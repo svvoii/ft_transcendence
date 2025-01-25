@@ -115,29 +115,24 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 					'winner': text_data_json.get('winner'),
 				}
 			)
-			if (self.tournament.round_2.player1 and self.tournament.round_2.player2):
-				async_to_sync(self.channel_layer.group_send)(
-					self.room_group_name,
-					{
-						'type': 'start_round_2',
-						'message': 'Round 2 has started',
-						'player_names': player_names,
-					}
-				)
-			
+			# if (self.tournament.round_2.player1 and self.tournament.round_2.player2):
+				# if self.user.username in [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username]:
+				# 	if not self.user_finished_countdown_round_2:
+				# 		self.user_finished_countdown_round_2 = True
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'start_round_2',
+					'message': 'Round 2 has started',
+					'player_names': player_names,
+				}
+			)
+		
 		elif (message_type == 'round_1_countdown_finished'):
 			self.round_1_countdown_finished(self.tournament_name);
-
-			
-		# elif (message_type == 'start_round_2'):
-		# 	async_to_sync(self.channel_layer.group_send)(
-		# 		self.room_group_name,
-		# 		{
-		# 			'type': 'start_round_2',
-		# 			'message': 'Round 2 has started',
-		# 			'player_names': player_names,
-		# 		}
-		# 	)
+		
+		elif (message_type == 'round_2_countdown_finished'):
+			self.round_2_countdown_finished(self.tournament_name);
 
 
 	def add_player_to_tournament(self, event):
@@ -192,6 +187,11 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		self.tournament.round_1.countdowns_finished.add(self.user)
 		self.tournament.save()
 
+	def round_2_countdown_finished(self, tournament_name):
+		# tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+		self.tournament.round_2.countdowns_finished.add(self.user)
+		self.tournament.save()
+
 	def game_finished(self, event):
 		game_index = event['game_index']
 		winner_name = event['winner']
@@ -207,15 +207,12 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		if game_index == 'round_1_game_1' and not round_1.winners.filter(username=winner_name).exists():
 			round_1.winners.add(winner)
 			round_2.player1 = winner
-			# print('round_1_game_1')
 		elif game_index == 'round_1_game_2' and not round_1.winners.filter(username=winner_name).exists():
 			round_1.winners.add(winner)
 			round_2.player2 = winner
-			# print('round_1_game_2')
 		elif game_index == 'round_2_game':
 			if not round_2.winner:
 				round_2.winner = winner
-			# print('round_2_game')
 
 		round_1.save()
 		round_2.save()
@@ -290,6 +287,26 @@ def get_game_id_round_1(user, tournament_name):
 
 	return user_game_id
 
+
+# def get_game_id_round_2(user, tournament_name):
+# 	user_game_id = None
+
+# 	if Tournament.objects.filter(tournament_name=tournament_name).exists():
+# 		tournament = get_object_or_404(Tournament, tournament_name=tournament_name)
+
+# 		if (tournament.round_2.player1 and tournament.round_2.player2):
+# 			user_game_id = tournament.round_2.game_session.game_id
+
+# 		return Response({'status': 'success',
+# 			'user_game_id': user_game_id,
+# 			'user1round2': f'{player_names[0]}',
+# 			'user2round2': f'{player_names[1]}',
+# 			'message': 'Round 2 started successfully.'},
+# 			status=status.HTTP_200_OK)
+# 	else:
+# 		return Response({'status': 'error', 
+# 			'message': 'Tournament does not exist.'}, 
+# 			status=status.HTTP_400_BAD_REQUEST)
 
 
 # def update_round_1_winners(tournament_name, winner_name):
