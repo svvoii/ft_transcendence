@@ -127,6 +127,14 @@ export default class {
     if (data.ready_for_round_2 === true) {
       await this.send_start_round_2();
     }
+
+    // console.log("data.standings.userWinner: ", data.standings.userWinner);
+    if (data.standings.userWinner != 'TBD') {
+      const countdownMessage = document.getElementById('countdown');
+      countdownMessage.textContent = 'The tournament has ended. The winner is ' + data.winner;
+      countdownMessage.style.display = 'block';
+      countdownMessage.style.fontSize = '1rem';
+    }
   }
 
   async recv_start_round_2(data) {
@@ -138,7 +146,7 @@ export default class {
         await this.startCountdown();
         await this.send_countdown_round_2_finished();
       }
-      // this.startRound(data.game_id);
+      this.startRound(data.game_id);
     } else {
       console.log('user not in this round');
       const countdownMessage = document.getElementById('countdown');
@@ -336,21 +344,26 @@ export default class {
     chat.addChatMessage('system', 'Good luck!!!');
     
     countdownElement.style.display = 'block';
-    countdownElement.style.fontSize = '2rem';
     
     const interval = setInterval(() => {
       if (countdown >= 1) {
         countdownElement.textContent = countdown;
+        if (countdown == 9) {
+          countdownElement.style.fontSize = '2rem';
+        }
         countdown--;
       } else {
         clearInterval(interval);
-        countdownElement.style.display = 'none';
+        // countdownElement.style.display = 'none';
       }
     }, 1000);
     await this.sleep(5000);
     chat.closeChat();
     chat.clearChat();
     await this.sleep(5000);
+
+    countdownElement.textContent = 'Waiting for other players to finish their games...';
+    countdownElement.style.fontSize = '1rem';
   }
   
   async startRound(game_id) {

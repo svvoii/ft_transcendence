@@ -216,19 +216,30 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 		elif game_index == 'round_2_game':
 			if not round_2.winner:
 				round_2.winner = winner
+				self.tournament.winner = winner
 
 		round_1.save()
 		round_2.save()
+		self.tournament.save()
 
 		ready_for_round_2 = round_1.winners.count() == 2
 
-		self.send(text_data=json.dumps({
-			'type': 'game_finished',
-			'game_index': game_index,
-			'winner': winner_name,
-			'standings' : self.tournament.get_standings(),
-			'ready_for_round_2': ready_for_round_2,	
-		}))
+		if not self.tournament.round_2.winner:
+			self.send(text_data=json.dumps({
+				'type': 'game_finished',
+				'game_index': game_index,
+				'winner': winner_name,
+				'standings' : self.tournament.get_standings(),
+				'ready_for_round_2': ready_for_round_2,	
+			}))
+		elif self.tournament.round_2.winner:
+			self.send(text_data=json.dumps({
+				'type': 'game_finished',
+				'game_index': game_index,
+				'winner': winner_name,
+				'standings' : self.tournament.get_standings(),
+				'ready_for_round_2': False,
+			}))
 
 
 
