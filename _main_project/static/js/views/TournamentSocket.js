@@ -372,6 +372,9 @@ export default class {
   }
   
   async startRound(game_id) {
+    const quitGameBtn = document.getElementById('quitGameBtn');
+    quitGameBtn.style.display = 'none';
+
     try {
       const ret = await gameBoard.joinExistingTournamentGame(game_id);
       if (!ret) {
