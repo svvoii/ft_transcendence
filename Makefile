@@ -21,7 +21,7 @@ get-cert:
 
 up:
 	@echo -e "${GREEN}Starting the project...${NC}"
-	docker-compose up
+	docker-compose up -d
 
 down:
 	@echo -e "${RED}Stopping the project...${NC}"
@@ -35,6 +35,10 @@ rm:
 rmvol64:
 	@echo -e "${RED}Removing the volumes with the name length of 64...${NC}"
 	docker volume ls -q | awk 'length($0) == 64' | xargs -r docker volume rm 2>/dev/null || true
+
+rmvol-pong:
+	@echo -e "${RED}Removing some volumes except the certbot...${NC}"
+	docker volume rm pong_web-app pong_static-files pong_postgres_data pong_media-files 2>/dev/null || true
 
 # rmvol: rm
 # 	@echo -e "${RED}Removing the volumes...${NC}"
@@ -52,7 +56,7 @@ clean-migrations:
 	@echo -e "${RED}Cleaning migration files...${NC}"
 	find . -path "*/migrations/*.py" ! -name "__init__.py" -delete
 
-clean: down rm rmvol64 clean-migrations
+clean: down rm rmvol64 rmvol-pong clean-migrations
 	@echo -e "${RED}Cleaning all...${NC}"
 
 re: clean up
