@@ -104,6 +104,16 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 						'game_id': user_game_id,
 					}
 				)
+			# # some check for if were in round 2
+			# 	async_to_sync(self.channel_layer.group_send)(
+			# 		self.room_group_name,
+			# 		{
+			# 			'type': 'start_round_2',
+			# 			'message': 'Round 1 has started',
+			# 			'player_names': player_names,
+			# 			'game_id': user_game_id,
+			# 		}
+			# 	)
 
 		elif (message_type == 'game_finished'):
 			async_to_sync(self.channel_layer.group_send)(

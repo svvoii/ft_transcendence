@@ -23,11 +23,11 @@ def get_game_state_from_db(game_id):
 	if active_session:
 		game_state = GameState()
 		game_state.game_mode = MODE_TO_STR.get(active_session.mode, 'Single')
-		game_state.num_players = session.mode
-		game_state.score1 = session.score1
-		game_state.score2 = session.score2
-		game_state.score3 = session.score3
-		game_state.score4 = session.score4
+		game_state.num_players = active_session.mode
+		game_state.score1 = active_session.score1
+		game_state.score2 = active_session.score2
+		game_state.score3 = active_session.score3
+		game_state.score4 = active_session.score4
 		return game_state
 	return None
 
