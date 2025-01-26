@@ -23,11 +23,11 @@ def get_game_state_from_db(game_id):
 	if active_session:
 		game_state = GameState()
 		game_state.game_mode = MODE_TO_STR.get(active_session.mode, 'Single')
-		game_state.num_players = session.mode
-		game_state.score1 = session.score1
-		game_state.score2 = session.score2
-		game_state.score3 = session.score3
-		game_state.score4 = session.score4
+		game_state.num_players = active_session.mode
+		game_state.score1 = active_session.score1
+		game_state.score2 = active_session.score2
+		game_state.score3 = active_session.score3
+		game_state.score4 = active_session.score4
 		return game_state
 	return None
 
@@ -60,15 +60,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 		# self.game_state = pickle.loads(cached_game_state)
 
 		# DEBUG #
-		# print(f"Retrieved game state for game_id: {self.game_id}: {self.game_state}")
-		# print(f"Type of game_state: {type(self.game_state)}")
-		# print(f"Attributes of game_state: {self.game_state.__dict__}")
+		print(f"Retrieved game state for game_id: {self.game_id}: {self.game_state}")
+		print(f"Type of game_state: {type(self.game_state)}")
+		print(f"Attributes of game_state: {self.game_state.__dict__}")
 
 		self.mode = self.game_state.game_mode
 		self.num_players = self.game_state.num_players
 
 		# DEBUG #
-		# print(f"...WebSocket, game_id: {self.game_id}, mode: {self.mode}, num_players: {self.num_players}")
+		print(f"...WebSocket, game_id: {self.game_id}, mode: {self.mode}, num_players: {self.num_players}")
 
 		await self.channel_layer.group_add(
             self.game_group_name,

@@ -2,6 +2,7 @@ import pickle
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from .models import GameSession
 from .game_logic import GameState
 from a_user.models import Account, UserGameStats
@@ -12,6 +13,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+# from a_tournament.views import Round_1, Round_2
 
 # This function is called when the user clicks the "Create Game" button
 # On the front-end in the `fetch` call to this endpoint:
@@ -40,7 +42,7 @@ def create_game_session(request):
 
 	active_session = GameSession.objects.filter(is_active=True).filter(
 		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
-	).first()
+	).filter(is_part_of_tournament=False).first()
 
 	if active_session:
 		context['game_id'] = active_session.game_id
@@ -105,6 +107,10 @@ def join_game_session(request, game_id):
 		context['message'] = 'Game session is not active.'
 		return Response(context, status=400)
 
+	if game_session.is_part_of_tournament:
+		context['message'] = 'Game session is not available for online play.'
+		return Response(context, status=400)
+
 	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
 	if user in players:
 		context['message'] = 'User is already in the game session.'
@@ -123,6 +129,7 @@ def join_game_session(request, game_id):
 		context['message'] = 'Game session is full.'
 		# DEBUG #
 		print(f'Game session with ID {game_id} is full.')
+		print(f'Players: {players}')
 		# # # # #
 		return Response(context, status=400)
 	
@@ -135,6 +142,64 @@ def join_game_session(request, game_id):
 	print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
 
 	return Response(context, status=200)
+
+
+@api_view(["POST"])
+@login_required
+def join_tournament_game_session(request, game_id):
+	print('Join game session called.. request.data:', request.data)
+	context = {}
+	user = request.user
+
+	try:
+		game_session = GameSession.objects.get(game_id=game_id)
+	except GameSession.DoesNotExist:
+		context['game_id'] = game_id
+		context['message'] = f'Game session with ID : { game_id } does not exist.'
+		return Response(context, status=400)
+
+	if not game_session.is_active:
+		context['message'] = 'Game session is not active.'
+		context['type'] = 'game_not_active'
+		return Response(context, status=200)
+
+	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
+	if user in players:
+		context['message'] = 'User is already in the game session.'
+		context['role'] = game_session.get_role(user)
+		if not game_session.has_started:
+			game_session.has_started = True
+			game_session.save()
+		# DEBUG #
+		print(f'User {user} is already in an active game session with ID {game_id}')
+		# # # # #
+		return Response(context, status=200)
+
+	num_players = game_session.mode
+	for i in range(num_players):
+		if not players[i]:
+			players[i] = user
+			break
+	else: # If the loop completes without breaking (apparantly it is a valid syntax in Python !)
+		context['message'] = 'Game session is full.'
+		# DEBUG #
+		print(f'Game session with ID {game_id} is full.')
+		print(f'Players: {players}')
+		# # # # #
+		return Response(context, status=400)
+	
+	game_session.player1, game_session.player2, game_session.player3, game_session.player4 = players
+	if not game_session.has_started:
+		game_session.has_started = True
+
+	game_session.save()
+	# context['game_id'] = game_session.game_id
+	context['role'] = game_session.get_role(user)
+	# DEBUG #
+	print(f'User {user} joined the game session with ID {game_id} as {context["role"]}')
+
+	return Response(context, status=200)
+
 
 
 # This function is called when the game is loaded to get the initial game state
@@ -397,27 +462,70 @@ def create_game_with_2_players(request):
 
 
 
+# # This is an internal version of the above function for use in the tournament logic
+# def create_game_with_2_players_internal(username1, username2):
+# 	context = {}
+
+# 	if not username1 or not username2:
+# 		context['message'] = 'Both players are required.'
+# 		return context, 400
+
+# 	player1 = Account.objects.filter(username=username1).first()
+# 	player2 = Account.objects.filter(username=username2).first()
+
+# 	if not player1 or not player2:
+# 		context['message'] = f'User {username1} or {username2} does not exist.'
+# 		return context, 400
+	
+# 	new_game_session = GameSession.objects.create(
+# 		player1=player1,
+# 		player2=player2,
+# 		mode=2
+# 	)
+# 	new_game_session.save()
+
+# 	context['game_id'] = new_game_session.game_id
+# 	context['message'] = 'Game session created successfully.'
+
+# 	# DEBUG #
+# 	print(f'NEW Tournament Game session created with ID {new_game_session.game_id}')
+
+# 	# Create a new game state object for the new game session
+# 	game_state = GameState()
+# 	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+# 	# Setting game_mode in the GameState object
+# 	game_state = pickle.loads(cache.get(new_game_session.game_id))
+# 	game_state.game_mode = 'Multi_2'
+# 	game_state.num_players = 2
+
+# 	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+# 	# DEBUG #
+# 	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
+
+# 	return new_game_session, 201
+
 
 
 # This is an internal version of the above function for use in the tournament logic
-def create_game_with_2_players_internal(username1, username2):
+def create_game_round_1_internal():
 	context = {}
 
-	if not username1 or not username2:
-		context['message'] = 'Both players are required.'
-		return context, 400
+	# if not username1 or not username2:
+	# 	context['message'] = 'Both players are required.'
+	# 	return context, 400
 
-	player1 = Account.objects.filter(username=username1).first()
-	player2 = Account.objects.filter(username=username2).first()
+	# player1 = Account.objects.filter(username=username1).first()
+	# player2 = Account.objects.filter(username=username2).first()
 
-	if not player1 or not player2:
-		context['message'] = f'User {username1} or {username2} does not exist.'
-		return context, 400
+	# if not player1 or not player2:
+	# 	context['message'] = f'User {username1} or {username2} does not exist.'
+	# 	return context, 400
 	
 	new_game_session = GameSession.objects.create(
-		player1=player1,
-		player2=player2,
-		mode=2
+		mode=2,
+		is_part_of_tournament=True
 	)
 	new_game_session.save()
 
@@ -443,3 +551,38 @@ def create_game_with_2_players_internal(username1, username2):
 
 	return new_game_session, 201
 
+
+
+# This is another version of the above functions for round_2 of the tournament, with no players yet
+# as the winners in round_1 are not yet determined
+
+def create_game_round_2_internal():
+	context = {}
+
+	new_game_session = GameSession.objects.create(
+		mode=2,
+		is_part_of_tournament=True
+	)
+	new_game_session.save()
+
+	context['game_id'] = new_game_session.game_id
+	context['message'] = 'Game session created successfully.'
+
+	# DEBUG #
+	print(f'NEW Tournament Game session created with ID {new_game_session.game_id}')
+
+	# Create a new game state object for the new game session
+	game_state = GameState()
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# Setting game_mode in the GameState object
+	game_state = pickle.loads(cache.get(new_game_session.game_id))
+	game_state.game_mode = 'Multi_2'
+	game_state.num_players = 2
+
+	cache.set(new_game_session.game_id, pickle.dumps(game_state))
+
+	# DEBUG #
+	print(f'Cached: Game mode: {game_state.game_mode}, Number of players: {game_state.num_players}')
+
+	return new_game_session, 201

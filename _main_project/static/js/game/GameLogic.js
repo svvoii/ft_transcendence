@@ -1,4 +1,5 @@
 import { fetchGameState, movePaddle, endGame } from './GameAPI.js';
+import { user } from '../index.js';
 
 // This will initialize the game logic
 // It will draw the paddles and ball on the canvas
@@ -59,10 +60,62 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 	}
 
 	function resetGameBoard() {
+
+		if (role === 'player1' && mode === 'Multi_2') {
+			check_if_part_of_tournament(game_id);
+		}
+		
 		if (socket) socket.close();
 		gameBoardInstance.resetGameBoard();
 		const gameModal = document.getElementById('gameModal');
 		gameModal.style.display = 'none';
+	}
+
+	async function check_if_part_of_tournament(game_id) {
+		try {
+			const is_part_of_tournament = await fetch(`/tournament/is_part_of_tournament/${game_id}/`, {
+				headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+				}
+			  });
+			if (!is_part_of_tournament.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}			
+			
+			const text = await is_part_of_tournament.text();
+			const data = JSON.parse(text);
+
+			if (data.status === 'Error') {
+				return false;
+			}
+
+			let winnerName = '';
+			if (winner == 'player1') {
+				winnerName = data.player1;
+			}
+			else if (winner == 'player2') {
+				winnerName = data.player2;	
+			}
+
+			socket = user.getTournamentSocket();
+			
+			const message = {
+				'message': 'Game finished.',
+				'type': 'game_finished',
+				'game_index': data.game_index,
+				'game_id': game_id,
+				'winner': winnerName,
+			  };
+			socket.send(JSON.stringify(message));
+
+			if (data.status === 'success') {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (error) {
+			console.log('Error in checking if part of tournament : ', error);
+		}
 	}
 
     socket.onmessage = function(event) {
@@ -87,8 +140,9 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 			// console.log('..update_state, paddle1: ', paddle1, ' paddle2: ', paddle2);
 		} else if (data.type === 'game_over') {
 			winner = data.winner;
-			alert(`Game Over! ${winner} wins!`);
 			resetGameBoard();
+			console.log('Game over!');
+			// alert(`Game Over! ${winner} wins!`);
 		} else if (data.type === 'game_quit') {
 			console.log('..game_quit, message: ', data.message);
 			if (data.quitting_player !== role) {
