@@ -40,8 +40,15 @@ def create_game_session(request):
 	game_modes = {'AI': 0, 'Single': 1, 'Multi_2': 2, 'Multi_3': 3, 'Multi_4': 4}
 	number_of_players = game_modes.get(game_mode_string)
 
+	# active_session = GameSession.objects.filter(is_active=True).filter(
+	# 	models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
+	# ).filter(is_part_of_tournament=False).first()
+
 	active_session = GameSession.objects.filter(is_active=True).filter(
-		models.Q(player1=user) | models.Q(player2=user) | models.Q(player3=user) | models.Q(player4=user)
+		(models.Q(player1=user) & models.Q(player2=None) & models.Q(player3=None) & models.Q(player4=None)) |
+		(models.Q(player2=user) & models.Q(player1=None) & models.Q(player3=None) & models.Q(player4=None)) |
+		(models.Q(player3=user) & models.Q(player1=None) & models.Q(player2=None) & models.Q(player4=None)) |
+		(models.Q(player4=user) & models.Q(player1=None) & models.Q(player2=None) & models.Q(player3=None))
 	).filter(is_part_of_tournament=False).first()
 
 	if active_session:
