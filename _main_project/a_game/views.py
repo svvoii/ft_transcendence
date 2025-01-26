@@ -160,7 +160,8 @@ def join_tournament_game_session(request, game_id):
 
 	if not game_session.is_active:
 		context['message'] = 'Game session is not active.'
-		return Response(context, status=400)
+		context['type'] = 'game_not_active'
+		return Response(context, status=200)
 
 	players = [game_session.player1, game_session.player2, game_session.player3, game_session.player4]
 	if user in players:

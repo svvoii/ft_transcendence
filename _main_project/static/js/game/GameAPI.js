@@ -86,6 +86,10 @@ export async function joinTournamentGame(game_id) {
 		throw new Error(data.message || 'Error joining the game');
 	}
 
+	if (data.type && data.type === 'game_not_active') { 
+		return null;
+	}
+
 	return data.role;
 }
 

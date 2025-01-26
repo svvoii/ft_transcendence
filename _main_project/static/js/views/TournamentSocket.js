@@ -368,7 +368,10 @@ export default class {
   
   async startRound(game_id) {
     try {
-      await gameBoard.joinExistingTournamentGame(game_id);
+      const ret = await gameBoard.joinExistingTournamentGame(game_id);
+      if (!ret) {
+        return;
+      }
       console.log("showing the modal");
       gameModal.style.display = 'flex';
     } catch (error) {

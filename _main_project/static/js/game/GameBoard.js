@@ -114,6 +114,9 @@ export default class GameBoard {
 
 		try {
 			const role = await joinTournamentGame(game_id);
+			if (!role)
+				return null;
+
 			this.paragraph.textContent = `Game ID: ${game_id}`;
 			gameModal.style.display = 'flex';
 
