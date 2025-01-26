@@ -87,7 +87,7 @@ export default class extends AbstractModalView {
         // Generate and render the list of friend requests
         this.friendsListButton(leftContainer);
         this.getFriendRequests(leftContainer, userData);
-        this.matchHistoryButton(leftContainer);
+        this.matchHistoryButton(leftContainer, userData);
       } else {
         // Create the send a message button
         this.sendAMessageButton(leftContainer, userData);
@@ -110,25 +110,21 @@ export default class extends AbstractModalView {
         leftContainer.appendChild(friendButtonDiv);
         // Create the block or unblock button
         this.blockUnblockButtons(leftContainer, userData);
-        this.matchHistoryButton(leftContainer);
+        this.matchHistoryButton(leftContainer, userData);
       }
 
       ///// rightContainer /////
 
-      const userStatsTitle = document.createElement('h2');
-      userStatsTitle.textContent = 'User Stats';
-
-      rightContainer.appendChild(userStatsTitle);
-
       const userStats = await getUserGameStats(userData.username);
-      console.log(userStats);
+      // console.log(userStats);
+
+      const userStatsTitle = document.createElement('h3');
+      userStatsTitle.textContent =`${userStats.stats_str}` ;
+      userStatsTitle.style.color = 'var(--primary-color)';
+      rightContainer.appendChild(userStatsTitle);
 
       const statsList = document.createElement('ul');
       statsList.classList.add('user-stats-list');
-
-      const statStr = document.createElement('li');
-      statStr.textContent = `${userStats.stats_str}`;
-      statsList.appendChild(statStr);
 
       const statTGP = document.createElement('li');
       statTGP.textContent = `${userStats.total_games_played} games played`;
@@ -170,13 +166,13 @@ export default class extends AbstractModalView {
     container.appendChild(friendsListBtn);
   }
 
-  async matchHistoryButton(container) {
+  async matchHistoryButton(container, userData) {
     const matchHistoryButton = document.createElement('button');
     matchHistoryButton.id = 'matchHistoryButton';
     matchHistoryButton.classList.add('select-button');
     matchHistoryButton.textContent = 'Match History';
     matchHistoryButton.addEventListener('click', async() => {
-      this.modal.showForm('matchHistoryForm');
+      this.modal.showForm('matchHistoryForm', userData.username);
     });
     container.appendChild(matchHistoryButton);
   }

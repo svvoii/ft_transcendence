@@ -1,6 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import { user, gameBoard } from "../index.js";
-
+import { user, gameBoard, chat } from "../index.js";
 import { joinGame } from '../game/GameAPI.js';
 
 
@@ -101,23 +100,41 @@ export default class extends AbstractView {
 
       try {
 
-        // console.log('Entering the lobby');
 
-        const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-        user.setTournamentSocket(socket);
-        socket.onopen = function() {
-          console.log('WebSocket connection is established.');
-          user.setIsInTournament(true, tournamentID);
-          const message = {
-            'message': 'New player entering the lobby.'
-          };
-          socket.send(JSON.stringify(message));
-        };
+      //Entering new player to the database
+      // const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`);
+      // const tournamentDataText = await tournament.text();
 
-        socket.onclose = function() {
-          console.log('WebSocket connection is closed.');
-          user.setIsInTournament(false, '');
+      // Getting the tournament object
+      const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
+        headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      //printing the tournament data
+      const tournamentDataText = await tournament.text();
+
+      console.log('Data after entering the lobby :', tournamentDataText);
+
+      console.log('Data before websocket connection :', tournamentDataText);
+
+      //Establishing the websocket connection
+      const socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
+      user.setTournamentSocket(socket);
+      socket.onopen = function() {
+        console.log('WebSocket connection is established.');
+        user.setIsInTournament(true, tournamentID);
+        const message = {
+          'message': 'New player entering the lobby.'
         };
+        socket.send(JSON.stringify(message));
+
+      };
+
+      socket.onclose = function() {
+        console.log('WebSocket connection is closed.');
+        user.setIsInTournament(false, '');
+      };
 
         socket.addEventListener('message', async (event) => {
           const data = JSON.parse(event.data);
@@ -140,48 +157,31 @@ export default class extends AbstractView {
               });
             }
 
-          if (data.max_nb_players_reached == true)
-          {
-            console.log('check', data.message);
-            fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
-            
+        if (data.max_nb_players_reached == true) {
+          fullLobbyDiv.textContent = 'The lobby is full. The tournament will start soon.';
 
+          matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
 
-            matchMaking = await fetch(`/tournament/get_game_id_round_1/${tournamentID}/`, {
-				headers: {
-					'X-Requested-With': 'XMLHttpRequest'
-				}
-			});
+        const matchMakingData = await matchMaking.json();
+        let game_id = matchMakingData.user_game_id;
 
-            const matchMakingData = await matchMaking.text();
-            console.log('Match Making Data :', matchMakingData);
+        console.log('Match Making Data :', matchMakingData);
+        console.log('Game ID :', game_id);
+        // const gameModal = document.getElementById('gameModal');
 
-            // let game_id = matchMakingData.user_game_id;
+        // gameBoard.joinExistingGame(game_id);
+        // gameModal.style.display = 'flex';
 
+        this.showTournamentBracket();
+        this.bracketNameFill(matchMakingData);
+        this.startCountdown(game_id);
+        }
+      });
 
-
-                // const gameModal = document.getElementById('gameModal');
-                // console.log('Joining existing game, game_id: ', game_id);
-            
-                //   const role = await joinGame(game_id);
-                //   this.paragraph.textContent = `Game ID: ${game_id}`;
-                //   gameModal.style.display = 'flex';
-            
-                //   this.connectWebSocket(role, game_id);
-          }
-        });
-
-        // Getting the tournament object
-        const tournament = await fetch(`/tournament/get_tournament/${tournamentID}/`, {
-		  headers: {
-			'X-Requested-With': 'XMLHttpRequest'
-		  }
-		});
-
-
-        //printing the tournament data
-        const tournamentDataText = await tournament.text();
-        console.log('Data after entering the lobby :', tournamentDataText);
 
         /*********************** CHECKING IF PLAYERS ARE READY TO START *************************/
 
@@ -312,26 +312,18 @@ export default class extends AbstractView {
     document.getElementById('view-content').innerHTML = '';
     document.getElementById('view-content').appendChild(tournamentBracket);
 
-    // should use data from the server to fill in the bracket
-    const sampleDataForBracket = {
-      user1round1: 'User1',
-      user2round1: 'User2',
-      user3round1: 'User3',
-      user4round1: 'User4',
-      user1round2: '',
-      user2round2: '',
-      userWinner: ''
-    }
-
-    this.bracketNameFill(sampleDataForBracket);
   }
-
-  startCountdown() {
+  
+  startCountdown(game_id) {
     const countdownElement = document.getElementById('countdown');
     let countdown = 9;
 
+    chat.openChat();
+    chat.addChatMessage('system', 'The tournament will start in 10 seconds');
+    chat.addChatMessage('system', 'Good luck!!!');
+    
     countdownElement.style.display = 'block';
-
+    
     const interval = setInterval(() => {
       if (countdown >= 1) {
         countdownElement.textContent = countdown;
@@ -342,26 +334,40 @@ export default class extends AbstractView {
       }
     }, 1000);
 
-    this.startRound();
+    this.startRound(game_id);
   }
-
-  async startRound() {
+  
+  async startRound(game_id) {
     await this.sleep(10000);
+    chat.closeChat();
     console.log('Starting the round');
 
-    // Reshowing the lobby but wont do this in the final version
-    // document.getElementById('view-content').innerHTML = '';
-    // document.getElementById('view-content').appendChild(this.getDomElements());
-    // this.afterRender();
-
     // call function to start the round here
-  }
 
+    gameBoard.joinExistingGame(game_id);
+    gameModal.style.display = 'flex';
+    
+  }
+  
   sleep(ms) { 
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
+  
   bracketNameFill(data) {
+    // should use data from the server to fill in the bracket
+    // const sampleDataForBracket = {
+    //   user1round1: 'User1',
+    //   user2round1: 'User2',
+    //   user3round1: 'User3',
+    //   user4round1: 'User4',
+    //   user1round2: '',
+    //   user2round2: '',
+    //   userWinner: ''
+    // }
+  
+    // this.bracketNameFill(sampleDataForBracket);
+
+    
     for (const key in data) {
       if (data[key] === '') {
         data[key] = 'TBD';

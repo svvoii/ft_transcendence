@@ -5,7 +5,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.db.models import Q
 
+from a_game.models import GameSession
 from a_user.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
 from a_user.models import Account, BlockedUser, UserGameStats
 from a_friends.models import FriendList, FriendRequest
@@ -349,7 +351,7 @@ def api_get_match_history_view(request, username):
 	for session in game_sessions:
 		match_history.append({
 			'game_id': session.game_id,
-			'mode': session.get_mode_string(),
+			# 'mode': session.get_mode_string(),
 			'players': {
 				'player1': session.player1.username if session.player1 else None,
 				'player2': session.player2.username if session.player2 else None,
