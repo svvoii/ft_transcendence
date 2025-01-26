@@ -93,7 +93,32 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 
 		elif (message_type == 'new_player' and len(player_names) == REQUIRED_NB_PLAYERS):
 			user_game_id = get_game_id_round_1(self.user, self.tournament_name)
-			if not self.user_finished_countdown_round_1:
+
+			# if for tourn finished
+			if self.tournament.round_2.winner:
+				self.send(text_data=json.dumps({
+					'type': 'game_finished',
+					'winner': self.tournament.round_2.winner.username,
+					'standings' : self.tournament.get_standings(),
+					'ready_for_round_2': False,
+				}))
+
+			# # some check for if were in round 2
+			elif self.tournament.round_1.winners.count() == 2:
+				if not self.user_finished_countdown_round_2:
+					self.user_finished_countdown_round_2 = True
+				user_game_id = get_game_id_round_2(self.user, self.tournament_name)
+				countdown_finished = self.tournament.round_2.countdowns_finished.filter(username=self.user.username).exists()
+
+				self.send(text_data=json.dumps({
+					'type': 'start_round_2',
+					'message': 'Round_2 has started',
+					'player_names': [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username],
+					'game_id': user_game_id,
+					'standings' : self.tournament.get_standings(),
+					'countdown_finished': countdown_finished,
+				}))
+			elif not self.user_finished_countdown_round_1:
 				self.user_finished_countdown_round_1 = True
 				async_to_sync(self.channel_layer.group_send)(
 					self.room_group_name,
@@ -104,16 +129,6 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 						'game_id': user_game_id,
 					}
 				)
-			# # some check for if were in round 2
-			# 	async_to_sync(self.channel_layer.group_send)(
-			# 		self.room_group_name,
-			# 		{
-			# 			'type': 'start_round_2',
-			# 			'message': 'Round 1 has started',
-			# 			'player_names': player_names,
-			# 			'game_id': user_game_id,
-			# 		}
-			# 	)
 
 		elif (message_type == 'game_finished'):
 			async_to_sync(self.channel_layer.group_send)(
@@ -137,6 +152,7 @@ class TournamentLobbyConsumer(WebsocketConsumer):
 				'message': 'Round_2 has started',
 				'player_names': [self.tournament.round_2.player1.username, self.tournament.round_2.player2.username],
 				'game_id': user_game_id,
+				'standings' : self.tournament.get_standings(),
 				'countdown_finished': countdown_finished,
 			}))
 

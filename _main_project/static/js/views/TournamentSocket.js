@@ -122,6 +122,8 @@ export default class {
   async recv_game_finished(data) {
     console.log('TournamentSocket -> game_finished');
     console.log(data);
+
+    this.showTournamentBracket();
     this.bracketNameFill(data);
 
     if (data.ready_for_round_2 === true) {
@@ -140,6 +142,9 @@ export default class {
   async recv_start_round_2(data) {
     console.log('TournamentSocket -> start_round_2');
     console.log(data);
+
+    this.showTournamentBracket();
+    this.bracketNameFill(data);
 
     if (user.getUserName() == data.player_names[0] || user.getUserName() == data.player_names[1]) {
       if (data.countdown_finished == false) {
