@@ -66,6 +66,33 @@ export async function joinGame(game_id) {
 	return data.role;
 }
 
+export async function joinTournamentGame(game_id) {
+
+	const response = await fetch(`/game/join_tournament_game/${game_id}/`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': getCookie('csrftoken'),
+			'X-Requested-With': 'XMLHttpRequest',
+		},
+		body: JSON.stringify({}),
+	});
+
+	const data = await response.json();
+
+	console.log('..join game, data: ', data);
+
+	if (!response.ok) {
+		throw new Error(data.message || 'Error joining the game');
+	}
+
+	if (data.type && data.type === 'game_not_active') { 
+		return null;
+	}
+
+	return data.role;
+}
+
 
 // This will request the server to fetch the current game state
 // Game state includes the position of paddles, ball, and scores

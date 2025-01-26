@@ -1,4 +1,4 @@
-import { getGameSession, joinGame, createGameWith2Players, quitGame } from './GameAPI.js';
+import { getGameSession, joinGame, createGameWith2Players, quitGame, joinTournamentGame } from './GameAPI.js';
 import { initializeGame } from './GameLogic.js';
 
 export default class GameBoard {
@@ -105,6 +105,26 @@ export default class GameBoard {
 
 		} catch (error) {
 			alert('Error joining the game: ' + error.message);
+		}
+	}
+
+	async joinExistingTournamentGame(game_id) {
+		const gameModal = document.getElementById('gameModal');
+		console.log('Joining existing game, game_id: ', game_id);
+
+		try {
+			const role = await joinTournamentGame(game_id);
+			if (!role)
+				return null;
+
+			this.paragraph.textContent = `Game ID: ${game_id}`;
+			gameModal.style.display = 'flex';
+
+			this.connectWebSocket(role, game_id);
+
+		} catch (error) {
+			throw new Error('Error joining the game');
+			// alert('Error joining the game: ' + error.message);
 		}
 	}
 

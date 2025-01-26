@@ -58,22 +58,18 @@ export const router = async () => {
   const view = new match.route.view(getParams(match));
 
   if (user.getIsInTournament() === true && view.name !== "TournamentLobby") {
-    
-    // const leavingTournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${tournamentID}/`);
-
     // // Remove the player from the tournament
     const tournamentURL = user.getTournamentURL();
     const response = await fetch(`/tournament/remove_player_from_tournament/${tournamentURL}/`, {
 		headers: {
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
 		}
-	})
-  
+	  })
 
     const responseText = await response.text();
     const data = JSON.parse(responseText);
     
-    console.log('Data after leaving the tournament :', data);
+    // console.log('Data after leaving the tournament :', data);
 
     if (data.status === 'error') {
       console.error('Error while leaving tournament:', data.message);
@@ -82,7 +78,7 @@ export const router = async () => {
     user.setIsInTournament(false, '');
     user.getTournamentSocket().close();
     user.setTournamentSocket(null);
-
+    document.getElementById('quitGameBtn').removeAttribute('style');
   }
   
   // Render the view

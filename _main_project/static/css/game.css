@@ -18,7 +18,7 @@
 	left: 1rem;
 	bottom: var(--footer-height);
 	color: var(--success-color);
-	font-size: 2rem;
+	font-size: 1rem;
 }
 
 .bracket-container {

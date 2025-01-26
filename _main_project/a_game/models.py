@@ -18,6 +18,8 @@ class GameSession(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_active = models.BooleanField(default=True)
 	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="winner", null=True, blank=True)
+	is_part_of_tournament = models.BooleanField(default=False)
+	has_started = models.BooleanField(default=False)
  
 	def __str__(self):
 		return self.game_id
