@@ -6,8 +6,8 @@ services:
     container_name: web-app
     command: /bin/bash "/app/entrypoint.sh"
     env_file: .env
-    ports:
-     - "8000:8000"
+    # ports:
+    #  - "8000:8000"
     volumes:
       - .:/app
     depends_on:
@@ -25,15 +25,15 @@ services:
     image: redis:latest
     container_name: redis-app
 
-  # nginx:
-  #   build:
-  #     context: ./nginx
-  #   container_name: nginx-proxy
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   depends_on:
-  #     - web
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx-proxy
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
