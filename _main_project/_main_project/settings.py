@@ -39,7 +39,7 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # CSRF_TRUSTED_ORIGINS include the hostnames that are allowed to send POST requests without a CSRF token
-CSRF_TRUSTED_ORIGINS = ['https://localhost']
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8443']
 
 # Secure proxy SSL header and secure cookies
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -238,6 +238,7 @@ SOCIALACCOUNT_PROVIDERS = {
 		'SECRET': env('42_SECRET'),
 		'METHOD': 'oauth2',
 		'VERIFIED_EMAIL': True,
+        'REDIRECT_URI': BASE_URL + '/accounts/42/login/callback',
 	},
 }
 
