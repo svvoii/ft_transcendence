@@ -9,8 +9,8 @@ services:
     # ports:
     #  - "8000:8000"
     volumes:
-      # - app_data:/app
-      - .:/app
+      - app_data:/app
+      # - .:/app
     depends_on:
       - db
       - redis
@@ -31,11 +31,11 @@ services:
       context: ./nginx
     container_name: nginx-proxy
     ports:
-      - "8080:80"
-      - "8443:443"
+      # - "8080:80"
+      - "8000:443"
     depends_on:
       - web
 
 volumes:
   postgres_data:
-  # app_data:
+  app_data:
