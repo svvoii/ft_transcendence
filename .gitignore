@@ -8,3 +8,4 @@ Pipfile.lock
 .nfs*
 _main_project/media_cdn/*
 **/*.log
+CLI_play/env_cli
