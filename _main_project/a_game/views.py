@@ -366,6 +366,7 @@ def quit_game_session(request):
 
 	player_role = active_session.get_role(user)
 
+	# Seting the score of the quitting player to 0
 	if active_session.player1 == user:
 		active_session.score1 = 0
 	elif active_session.player2 == user:
@@ -374,6 +375,13 @@ def quit_game_session(request):
 		active_session.score3 = 0
 	elif active_session.player4 == user:
 		active_session.score4 = 0
+
+	# Setting the opponent as the winner
+	if active_session.mode == 2:
+		if active_session.player1 == user:
+			active_session.winner = active_session.player2
+		elif active_session.player2 == user:
+			active_session.winner = active_session.player1
 
 	if active_session.is_active:
 		active_session.is_active = False
@@ -392,9 +400,10 @@ def quit_game_session(request):
 	cache.delete(game_id)
 
 	active_session.save()
-	context['message'] = 'Player {player_role} has quit the game.'
+	context['message'] = f'Player {player_role} has quit the game. Winner: {active_session.winner}'
 
 	print(f'{player_role} has quit the game.')
+	print(f'Winner: {active_session.winner}')
 	print(f'is_active: {active_session.is_active}')
 
 	return Response(context, status=200)

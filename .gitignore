@@ -1,9 +1,10 @@
 **/*.env*
 Pipfile
 Pipfile.lock
-__pycache__
+**/__pycache__/
 **/migrations/*
 !**/migrations/__init__.py
 .vscode/
 .nfs*
 _main_project/media_cdn/*
+**/*.log
