@@ -219,8 +219,8 @@ export default class Chat {
       }
       const room_name = data.room_name;
 
-      const wsUrl = `ws://localhost:8000/ws/chatroom/${room_name}/`;
-      this.socket = new WebSocket(wsUrl);
+      const ws_protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+			this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/chatroom/${room_name}/`);
 
       // Get the chatroom history
       await this.getMessageHistory(room_name);

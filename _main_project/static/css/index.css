@@ -373,7 +373,7 @@ input:focus {
 }
 
 .board {
-  width: calc(var(--app-height) - 100px);
+  width: calc(var(--app-height) - 125px);
   max-width: 600px;
   height: auto;
   max-height: 600px;

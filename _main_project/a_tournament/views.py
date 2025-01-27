@@ -332,6 +332,7 @@ def update_round_2_players(request, tournament_name):
 #For GameLogic.js, when closing the game, checking if the game is part of a tournament
 #If so, send a Websocket that informs that the game has ended
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def is_part_of_tournament(request, game_id):
 	gameSession = get_object_or_404(GameSession, game_id=game_id)
 
@@ -370,4 +371,4 @@ def is_part_of_tournament(request, game_id):
 	elif is_round_2_game:
 		return Response({'status': 'Success', 'player1': player1_name, 'player2': player2_name, 'game_index': 'round_2_game'}, status=status.HTTP_200_OK)
 	else:
-		return Response({'status': 'Error'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'status': 'Error'}, status=status.HTTP_200_OK)
