@@ -21,7 +21,7 @@ class UnauthorizedAccessMiddleware:
 			return
 		# # # # #
 
-		frontend_routes = ["js_home_home", "js_settings", "js_game_menu", "js_tournament_lobby", "js_tournament_select", "js_multiplayer_select", "js_local_match_select", "js_tournament_setup_create", "js_tournament_lobby_name", "js_terms_of_service", "js_privacy_policy", "js_about_us"]
+		frontend_routes = ["js_home_home", "js_settings", "js_game_menu", "js_tournament_lobby", "js_tournament_select", "js_multiplayer_select", "js_local_match_select", "js_tournament_setup_create", "js_tournament_lobby_name", "js_terms_of_service", "js_privacy_policy", "js_about_us", "42_login"]
 
 		if resolver_match.url_name in frontend_routes:
 			# print(f'..Allowing frontend route: {resolver_match.url_name}')
