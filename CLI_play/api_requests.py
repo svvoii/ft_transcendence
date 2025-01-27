@@ -37,8 +37,10 @@ def register_user(email, username, password1, password2):
 			'password2': password2
 		}
 		response = requests.post(api_endpoint, headers=headers, json=data)
-		print(f'POST /register/. Status Code: {response.status_code}\n')
-		logging.debug('Registration response status code: %s', response.status_code)
+		response_json = response.json()
+
+		print(f'POST /register/. Status Code: {response.status_code}. Response: {response_json}\n')
+		logging.debug('Registration response status code: %s. Response: %s', response.status_code, response_json)
 	except requests.exceptions.RequestException as e:
 		logging.error('Registration request failed: %s', e)
 		if isinstance(e, requests.exceptions.ConnectionError):
@@ -58,9 +60,11 @@ def login_user(email, password):
 		}
 		session = requests.Session()
 		response = session.post(api_endpoint, headers=headers, json=data)
-		print(f'POST /login/. Status Code: {response.status_code}\n')
+		response_json = response.json()
+  
+		print(f'POST /login/. Status Code: {response.status_code}. Response: {response_json}\n')
 		csrf_token = response.cookies.get('csrftoken')
-		logging.debug('Login response status code: %s', response.status_code)
+		logging.debug('Login response status code: %s. Response: %s', response.status_code, response_json)
 		return session, csrf_token
 	except requests.exceptions.RequestException as e:
 		logging.error('Login request failed: %s', e)
@@ -76,16 +80,21 @@ def create_game_session(session, csrf_token, mode):
 		api_endpoint = CREATE_GAME_URL
 		headers = {
 			'X-CSRFToken': csrf_token,
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		data = {
 			'mode': mode
 		}
 		response = session.post(api_endpoint, headers=headers, json=data)
-		print(f'POST /game/create_game/. Status Code: {response.status_code}')
-		game_id = response.json().get('game_id')
-		print(f'Game ID: {game_id}\n')
-		logging.debug('Game session created with ID: %s', game_id)
+		responce_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error creating game session: %s', responce_json)
+		# 	return None
+		print(f'POST /game/create_game/. Status Code: {response.status_code}. Response: {responce_json}\n')
+		logging.debug('Game session created. Response: %s', responce_json)
+		game_id = responce_json.get('game_id')
 		return game_id
 	except requests.exceptions.RequestException as e:
 		logging.error('Error requesting / creating game session: %s', e)
@@ -99,13 +108,20 @@ def join_game_session(session, csrf_token, game_id):
 		api_endpoint = f'{JOIN_GAME_URL}{game_id}/'
 		headers = {
 			'X-CSRFToken': csrf_token,
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		response = session.post(api_endpoint, headers=headers)
-		print(f'POST /game/join_game/{game_id}/. Status Code: {response.status_code}')
-		role = response.json().get('role')
-		print(f'Role: {role}\n')
-		logging.debug('Joined game session with ID: %s', game_id)
+		response_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error joining game session: %s', response_json)
+		# 	return None	
+
+		# print(f'POST /game/join_game/{game_id}/. Status Code: {response.status_code}')
+		print(f'POST /game/join_game/{game_id}/. Status Code: {response.status_code}. Response: {response_json}\n')
+		logging.debug('Joined game session successfully. Response: %s', response_json)
+		role = response_json.get('role')
 		return role
 	except requests.exceptions.RequestException as e:
 		logging.error('Error joining game session: %s', e)
@@ -118,11 +134,19 @@ def get_game_state(session, game_id):
 	try:
 		api_endpoint = f'{GAME_STATE_URL}{game_id}/'
 		headers = {
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		response = session.get(api_endpoint, headers=headers)
-		print(f'GET /game/game_state/{game_id}/. Status Code: {response.status_code}\n')
-		logging.debug('Game state response: %s', response.json())
+		response_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error getting game state: %s', response_json)
+		# 	print(f'GET /game/game_state/{game_id}/. Status Code: {response.status_code}. Response: {response_json}\n')
+		# 	return
+
+		print(f'GET /game/game_state/{game_id}/. Response: {response_json}\n')
+		logging.debug('Game state received. Response: %s', response.json())
 	except requests.exceptions.RequestException as e:
 		logging.error('Error getting game state: %s', e)
 		print('`get_game_state` Request failed.\n')
@@ -134,17 +158,23 @@ def move_paddle(session, csrf_token, game_id, paddle, direction):
 		api_endpoint = f'{MOVE_PADDLE_URL}{game_id}/'
 		headers = {
 			'X-CSRFToken': csrf_token,
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		data = {
 			'paddle': paddle,
 			'direction': direction
 		}
 		response = session.post(api_endpoint, headers=headers, json=data)
-		print(f'POST /game/move_paddle/{game_id}/. Status Code: {response.status_code}\n')
-		# response_json = response.json()
-		# print(f'Response: { response_json }\n')
-		logging.debug('Paddle moved successfully. Response status: %s', response.status_code)
+		response_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error moving paddle: %s', response_json)
+		# 	print(f'POST /game/move_paddle/{game_id}/. Status Code: {response.status_code}. Response: {response_json}\n')
+		# 	return
+
+		print(f'POST /game/move_paddle/{game_id}/. Response: {response_json}\n')
+		logging.debug('Paddle moved successfully. Response: %s', response_json)
 	except requests.exceptions.RequestException as e:
 		logging.error('Error moving paddle: %s', e)
 		print('`move_paddle` Request failed.\n')
@@ -156,9 +186,17 @@ def end_game_session(session, csrf_token, game_id):
 		api_endpoint = f'{END_GAME_URL}{game_id}/'
 		headers = {
 			'X-CSRFToken': csrf_token,
-			'X-Requested-With': 'XMLHttpRequest'
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		response = session.post(api_endpoint, headers=headers)
+		response_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error ending game session: %s', response_json)
+		# 	print(f'POST /game/end_game_session/{game_id}/. Status Code: {response.status_code}. Response: {response_json}\n')
+		# 	return
+
 		print(f'POST /game/end_game_session/{game_id}/. Status Code: {response.status_code}\n')
 		logging.debug('Game session ended successfully. Response status: %s', response.status_code)
 	except requests.exceptions.RequestException as e:
@@ -171,11 +209,18 @@ def quit_game_session(session, csrf_token):
 		api_endpoint = QUIT_GAME_URL
 		headers = {
 			'X-CSRFToken': csrf_token,
-			'X-Requested-With': 'XMLHttpRequest' 
+			'X-Requested-With': 'XMLHttpRequest',
+			'Referer': BASE_URL
 		}
 		response = session.post(api_endpoint, headers=headers)
-		print(f'POST /game/quit_game/. Status Code: {response.status_code}\n')
-		logging.debug('Game session ended successfully. Response status: %s', response.status_code)
+		response_json = response.json()
+
+		# if not response.ok:
+		# 	logging.error('Error quitting game session: %s', response_json)
+		# 	return
+
+		print(f'POST /game/quit_game/. Status Code: {response.status_code}. Response: {response_json}\n')
+		logging.debug('Game session ended successfully. Response: %s', response_json)
 	except requests.exceptions.RequestException as e:
 		logging.error('Error quitting game session: %s', e)
 		print('`quit_game` Request failed.\n')

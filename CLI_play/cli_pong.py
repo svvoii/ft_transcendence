@@ -106,7 +106,11 @@ def run_game_loop(stdscr, session, csrf_token, game_id, paddle):
 def get_websocket_url(game_id):
 	ws_protocol = 'wss' if os.getenv('USE_HTTPS', 'false').lower() == 'true' else 'ws'
 	host = os.getenv('HOST', 'localhost:8000')
-	return f'{ws_protocol}://{host}/ws/pong/{game_id}/'
+	if 'http' in host:
+		host = host.split('//')[1]
+	websocket_url = f'{ws_protocol}://{host}/ws/pong/{game_id}/'
+	logging.debug("Connecting via Websocket on URL: %s", websocket_url)
+	return websocket_url
 
 
 # Function to get user input
@@ -193,8 +197,12 @@ def draw_game_state(stdscr, game_state):
 # Function to handle WebSocket messages
 async def handle_websocket(stdscr, session, csrf_token, game_id, paddle):
 	websocket_url = get_websocket_url(game_id)
+	headers = {
+		'Origin': API_URL,
+		'Cookie': f'csrftoken={csrf_token}; sessionid={session.cookies["sessionid"]}',
+	}
 	try:
-		async with websockets.connect(websocket_url) as websocket:
+		async with websockets.connect(websocket_url, additional_headers=headers) as websocket:
 
 			winner = None
 
@@ -223,7 +231,7 @@ async def handle_websocket(stdscr, session, csrf_token, game_id, paddle):
 
 				# Get user input for paddle movement
 				paddle_input, direction = get_user_input(stdscr, paddle)
-				logging.debug("Paddle: %s, Direction: %s", paddle_input, direction)
+				# logging.debug("Paddle: %s, Direction: %s", paddle_input, direction)
 				if direction is not None:
 					move_paddle(session, csrf_token, game_id, paddle_input, direction)
 	except websockets.exceptions.ConnectionClosedOK:
