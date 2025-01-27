@@ -80,3 +80,20 @@
 	border: 2px solid var(--success-color);
 	margin: 0 35%
 }
+
+#leftCtrlBtn {
+	margin: 0.5rem 0;
+}
+
+#rightCtrlBtn {
+	margin: 0.5rem 0;
+}
+
+.game-controls-and-canvas {
+	display: flex;
+}
+
+.game-controls {
+	display: grid;
+	margin-left: 1rem;
+}

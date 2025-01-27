@@ -9,7 +9,10 @@ export default class {
 
 
   async connect_websocket() {
-    this.socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${this.tournamentID}/`); 
+    const ws_protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    this.socket = new WebSocket(`${ws_protocol}://${window.location.host}/ws/tournament_lobby/${this.tournamentID}/`);
+
+    // this.socket = new WebSocket(`ws://${window.location.host}/ws/tournament_lobby/${this.tournamentID}/`); 
     this.socketOpenPromise = new Promise((resolve, reject) => {
       this.socket.addEventListener('open', resolve);
       this.socket.addEventListener('error', reject);

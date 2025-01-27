@@ -77,14 +77,10 @@ export async function initializeGame(socket, role, game_id, gameBoardInstance) {
 				headers: {
 				'X-Requested-With': 'XMLHttpRequest'
 				}
-			  });
-			if (!is_part_of_tournament.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}			
-			
+			});
 			const text = await is_part_of_tournament.text();
 			const data = JSON.parse(text);
-
+			
 			if (data.status === 'Error') {
 				return false;
 			}

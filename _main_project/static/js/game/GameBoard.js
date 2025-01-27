@@ -46,15 +46,48 @@ export default class GameBoard {
 		buttonsDiv.appendChild(readyBtn);
 		buttonsDiv.appendChild(quitGamebtn);
 
+		// game controls and canvas
+
+		const gameControlsAndCanvas = document.createElement('div');
+		gameControlsAndCanvas.classList.add('game-controls-and-canvas');
+
+		// game controls
+
+		const gameControls = document.createElement('div');
+		gameControls.classList.add('game-controls');
+
+		const leftCtrlBtn = document.createElement('button');
+		leftCtrlBtn.id = 'leftCtrlBtn';
+		leftCtrlBtn.classList.add('left-control');
+		leftCtrlBtn.textContent = '↑';
+
+		const rightCtrlBtn = document.createElement('button');
+		rightCtrlBtn.id = 'rightCtrlBtn';
+		rightCtrlBtn.classList.add('right-control');
+		rightCtrlBtn.textContent = '↓';
+
+		gameControls.appendChild(leftCtrlBtn);
+		gameControls.appendChild(rightCtrlBtn);
+
+		// game canvas
+
+		const gameCanvas = document.createElement('div');
+		gameCanvas.id = 'gameCanvas';
+
 		const canvas = document.createElement('canvas');
 		canvas.id = 'pongCanvas';
 		canvas.width = 600;
 		canvas.height = 600;
 		canvas.classList.add('board');
 
+		gameCanvas.appendChild(canvas);
+		
+		gameControlsAndCanvas.appendChild(gameCanvas);
+		gameControlsAndCanvas.appendChild(gameControls);
+
 		container.appendChild(this.paragraph);
 		container.appendChild(buttonsDiv);
-		container.appendChild(canvas);
+		container.appendChild(gameControlsAndCanvas);
 
 		return container;
 	}
@@ -178,6 +211,8 @@ export default class GameBoard {
 
 	async afterRender() {
 
+		const hold_speed = 100;
+
 		const quitGamebtn = document.getElementById('quitGameBtn');
 		quitGamebtn.addEventListener('click', async () => {
 			await this.initQuitGame();
@@ -192,5 +227,59 @@ export default class GameBoard {
 			readyBtn.style.display = 'none';
 
 		});
+
+		const leftCtrlBtn = document.getElementById('leftCtrlBtn');
+		let leftInterval;
+		
+		const startLeftInterval = () => {
+			leftInterval = setInterval(() => {
+				const event = new KeyboardEvent('keydown', {
+					key: 'ArrowUp',
+					code: 'ArrowUp',
+					keyCode: 38,
+					which: 38,
+					bubbles: true
+				});
+				document.dispatchEvent(event);
+			}, hold_speed); // Trigger event 2 times per second (500ms interval)
+		};
+		
+		const clearLeftInterval = () => {
+			clearInterval(leftInterval);
+		};
+		
+		leftCtrlBtn.addEventListener('mousedown', startLeftInterval);
+		leftCtrlBtn.addEventListener('mouseup', clearLeftInterval);
+		leftCtrlBtn.addEventListener('mouseleave', clearLeftInterval);
+		leftCtrlBtn.addEventListener('touchstart', startLeftInterval);
+		leftCtrlBtn.addEventListener('touchend', clearLeftInterval);
+		leftCtrlBtn.addEventListener('touchcancel', clearLeftInterval);
+		
+		const rightCtrlBtn = document.getElementById('rightCtrlBtn');
+		let rightInterval;
+		
+		const startRightInterval = () => {
+			rightInterval = setInterval(() => {
+				const event = new KeyboardEvent('keydown', {
+					key: 'ArrowDown',
+					code: 'ArrowDown',
+					keyCode: 40,
+					which: 40,
+					bubbles: true
+				});
+				document.dispatchEvent(event);
+			}, hold_speed); // Trigger event 2 times per second (500ms interval)
+		};
+		
+		const clearRightInterval = () => {
+			clearInterval(rightInterval);
+		};
+		
+		rightCtrlBtn.addEventListener('mousedown', startRightInterval);
+		rightCtrlBtn.addEventListener('mouseup', clearRightInterval);
+		rightCtrlBtn.addEventListener('mouseleave', clearRightInterval);
+		rightCtrlBtn.addEventListener('touchstart', startRightInterval);
+		rightCtrlBtn.addEventListener('touchend', clearRightInterval);
+		rightCtrlBtn.addEventListener('touchcancel', clearRightInterval);
 	}
 };

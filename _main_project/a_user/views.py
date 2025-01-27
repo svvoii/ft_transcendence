@@ -255,8 +255,8 @@ def api_account_search_view(request, *args, **kwargs):
 	return Response(context, status=status.HTTP_200_OK)
 
 
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_block_user_view(request, user_id):
 	user_to_block = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.get_or_create(user=request.user, blocked_user=user_to_block)
@@ -265,8 +265,8 @@ def api_block_user_view(request, user_id):
 	# return redirect('a_user:profile', user_id=user_id)
 
 
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_unblock_user_view(request, user_id):
 	user_to_unblock = get_object_or_404(Account, id=user_id)
 	BlockedUser.objects.filter(user=request.user, blocked_user=user_to_unblock).delete()
@@ -310,8 +310,8 @@ def api_unblock_user_view(request, user_id):
 
 
 # Endpoint to get the UseGameStats on the profile view page
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_user_game_stats_view(request, stats_username):
 	context = {}
 	# user = request.user
@@ -331,8 +331,8 @@ def api_user_game_stats_view(request, stats_username):
 
 
 # Endpoint to get the Match History of the user
-@login_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def api_get_match_history_view(request, username):
 	context = {}
 	try:
