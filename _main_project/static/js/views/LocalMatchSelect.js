@@ -36,18 +36,11 @@ export default class extends AbstractView {
 		create_local_match_btn.type = 'game-select';
 		create_local_match_btn.textContent = 'Play against a friend with 2 paddles on one keyboard';
 
-		// Button to start multiplayer game against another player
-		const ai_local_match_btn = document.createElement('button');
-		ai_local_match_btn.id = 'aiLocalMatchBtn';
-    ai_local_match_btn.classList.add('game-select-button');
-		ai_local_match_btn.type = 'game-select';
-		ai_local_match_btn.textContent = 'Play Against AI';
-
     // Append the paragraph to the container
     container.appendChild(setTitle);
     container.appendChild(setDescript);
     container.appendChild(create_local_match_btn);
-    container.appendChild(ai_local_match_btn);
+
 
     return container;
   }
