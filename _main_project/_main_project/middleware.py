@@ -29,7 +29,7 @@ class UnauthorizedAccessMiddleware:
 
 		if resolver_match.url_name is None:
 			if 'static' in request.path or 'media' in request.path:
-				print(f'..Allowing static or media files: {request.path}')
+				# print(f'..Allowing static or media files: {request.path}')
 				return
 			# print(f'..404 - Page not found: {resolver_match.url_name}')
 			raise Http404("Page not found")

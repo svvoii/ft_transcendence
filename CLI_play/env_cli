@@ -9,8 +9,8 @@
 # = = = = = = =
 # HOST=https://sbocanci.me
 # USE_HTTPS=True
-CLI_EMAIL=test@gmail.com
-CLI_USERNAME=test
+CLI_EMAIL=test-cli@gmail.com
+CLI_USERNAME=test-cli
 CLI_PASSWORD=qetwry135246
 
 # GAME SETTINGS:
