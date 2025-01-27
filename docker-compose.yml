@@ -9,6 +9,7 @@ services:
     # ports:
     #  - "8000:8000"
     volumes:
+      # - app_data:/app
       - .:/app
     depends_on:
       - db
@@ -37,3 +38,4 @@ services:
 
 volumes:
   postgres_data:
+  # app_data:
